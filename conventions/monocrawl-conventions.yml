@@ -1,0 +1,24 @@
+generated: '2026-10-02'
+method: searched
+generator: extract-docs-artifacts.py (local)
+source: https://www.monocrawl.com/glossary/cursor-pagination
+sources:
+- https://www.monocrawl.com/glossary/cursor-pagination
+- https://www.monocrawl.com/docs/pagination.md
+- https://www.monocrawl.com/docs/pagination-caching.md
+- https://www.monocrawl.com/docs/pagination-caching
+idempotency:
+  coverage: none
+  evidence: The documentation does not describe any idempotency key or header for write operations.
+pagination:
+  style: cursor
+  params:
+  - cursor – opaque token returned by the previous page, passed unchanged as a query parameter
+  response_fields:
+  - data.items – array of items for the page
+  - data.cursor – opaque token for the next page (null when no next page)
+  - data.has_more – source continuation indicator; null means unknown
+  evidence: Cursor pagination is used on list endpoints; each response includes a cursor token that must be sent back unchanged to retrieve the
+    next page.
+authentication: Auth header `x-api-key` is required for all requests.
+docs: https://www.monocrawl.com/glossary/cursor-pagination

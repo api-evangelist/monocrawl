@@ -1,0 +1,36 @@
+generated: '2026-10-02'
+method: derived
+generator: derive-vocabulary.py
+source: openapi/monocrawl-openapi.json
+vocabulary:
+  name: Monocrawl Domain Vocabulary
+  description: 'Terms declared by Monocrawl''s own API contract: its resource groups, objects and enumerations, with the contract''s definitions.
+    Derived, not authored.'
+  version: '2026-10-02'
+  terms:
+  - term: Batch
+    definition: Run several requests in one HTTP call.
+    tags:
+    - Resource Group
+    source: openapi/monocrawl-openapi.json
+  - term: Success
+    definition: 'Object declared by the contract with fields: _completeness, success, platform, endpoint, data, credits_used, credits_remaining,
+      request_id, cached, stale, age_seconds, fetched_at. (2 more)'
+    tags:
+    - Object
+    source: openapi/monocrawl-openapi.json#/components/schemas/Success
+  - term: Error
+    definition: 'Object declared by the contract with fields: success, error, credits_used, credits_remaining, request_id.'
+    tags:
+    - Object
+    source: openapi/monocrawl-openapi.json#/components/schemas/Error
+  - term: BatchRequest
+    definition: 'Object declared by the contract with fields: requests.'
+    tags:
+    - Object
+    source: openapi/monocrawl-openapi.json#/components/schemas/BatchRequest
+  - term: BatchResponse
+    definition: 'Object declared by the contract with fields: success, count, succeeded, failed, credits_used, credits_remaining, results.'
+    tags:
+    - Object
+    source: openapi/monocrawl-openapi.json#/components/schemas/BatchResponse

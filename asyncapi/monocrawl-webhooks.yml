@@ -1,0 +1,40 @@
+generated: '2026-10-02'
+method: searched
+generator: extract-docs-artifacts.py (local)
+source: https://www.monocrawl.com/glossary/webhooks-vs-polling
+sources:
+- https://www.monocrawl.com/glossary/webhooks-vs-polling
+- https://www.monocrawl.com/docs/billing-webhooks.md
+- https://www.monocrawl.com/docs/monitor-webhooks.md
+- https://www.monocrawl.com/docs/webhook-receiver.md
+description: Monocrawl publishes webhook events for billing, subscriptions, monitor findings, digests, attention notices and a test ping.
+events:
+- event: billing.low_balance
+  description: Threshold crossing when the balance falls below a configured threshold.
+- event: billing.credits_exhausted
+  description: Emitted once per exhaustion episode when the credit balance reaches zero.
+- event: billing.purchase_succeeded
+  description: A settled purchase that grants permanent credits and includes the current balance.
+- event: billing.auto_recharge.succeeded
+  description: Authorized auto‑reload settled payment that adds credits to the balance.
+- event: billing.auto_recharge.failed
+  description: Payment for an auto‑reload failed and needs attention.
+- event: subscription.renewed
+  description: Current allowance reset after a subscription renewal, with optional carry‑over fields.
+- event: subscription.ended
+  description: Legacy event indicating a subscription has ended; not emitted for every modern cancellation.
+- event: test.ping
+  description: A test payload sent to verify the receiver; does not affect balance.
+- event: monitor.findings
+  description: Bounded result preview of new findings from a monitor run.
+- event: monitor.digest
+  description: Summary payload, either per‑monitor or account‑wide, containing aggregated findings.
+- event: monitor.attention
+  description: Notice that action is needed, such as repeated failed checks or ambiguous subject.
+delivery:
+  signature: monocrawl-signature header formatted as t=<Unix seconds>,v1=<HMAC‑SHA256 hex> of "t.body"
+  content_type: application/json; signed with a shared secret stored on the receiver side
+note: All deliveries are signed in a monocrawl-signature header and also include monocrawl-delivery and monocrawl-event headers for delivery ID
+  and event name. The signature is an HMAC‑SHA256 of the timestamp concatenated with a dot and the raw request body, using the shared secret configured
+  for the destination. Receivers must verify the signature before parsing JSON and must reply with a 2xx status within 10 seconds.
+docs: https://www.monocrawl.com/glossary/webhooks-vs-polling

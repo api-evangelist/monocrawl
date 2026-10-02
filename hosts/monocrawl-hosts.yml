@@ -1,0 +1,52 @@
+generated: '2026-10-02'
+method: derived
+source: the pre-flight dossier, apis.yml pointers, spec servers, well-known, vendors -- nothing fetched here
+generator: derive-hosts.py
+summary:
+  hosts: 2
+  own: 2
+  other_domain: 0
+  platform: 0
+  roles:
+  - api
+  - website
+hosts:
+- host: api.monocrawl.com
+  found_by:
+  - contract-discovery
+  types: []
+  serves: []
+  registrable_domain: monocrawl.com
+  role: api
+  relation: own
+- host: www.monocrawl.com
+  found_by:
+  - pointer
+  - apis[]
+  - probed
+  - docs-index
+  - spec-found
+  - contract-discovery
+  - well-known
+  - vendor-detect
+  types:
+  - Deprecation
+  - TermsOfService
+  - Support
+  - StatusPage
+  - PrivacyPolicy
+  - Pricing
+  - Login
+  - ChangeLog
+  - GettingStarted
+  - APIReference
+  - Website
+  - Documentation
+  serves:
+  - docs
+  - spec
+  - hosting
+  vendor: vercel
+  registrable_domain: monocrawl.com
+  role: website
+  relation: own

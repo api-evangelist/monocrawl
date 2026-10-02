@@ -1,0 +1,216 @@
+# Monocrawl
+
+> Social, search, commerce and web data behind one API key and one credit balance. The catalogue contains 618 operations across 78 platform groups; check each operation's current availability before retrieving. Base URL `https://www.monocrawl.com/v1`; auth via the `x-api-key` header. Confirmed uncharged or refunded failures report zero; `credits_used: null` with `pending_reconciliation` means accounting is unresolved. Synthetic examples exist only under the explicit `/sandbox` surface.
+
+## Common Agent Tasks
+
+Choose the task before choosing an endpoint. These are ordered recipes, not automatic executions. Read each operation's current availability and parameters; connect identifiers returned by one call to the next. Catalogue totals below exclude free previews and do not quote optional fan-out, repeated pages, variable charges or future scheduled runs.
+
+- [Search TikTok and retrieve exact music IDs](https://www.monocrawl.com/docs/recipes#tiktok-search-music): `tiktok/search-top` → `tiktok/post`. 2 summed catalogue credits for one listed sequence. [Guide](https://www.monocrawl.com/docs/tiktok-search-music). [Runnable example](https://www.monocrawl.com/examples/tiktok-search-music.mjs).
+- [Search YouTube with views and video durations](https://www.monocrawl.com/docs/recipes#youtube-search-metrics): `youtube/search` → `youtube/videos`. 3 summed catalogue credits for one listed sequence. [Guide](https://www.monocrawl.com/docs/youtube-search-metrics). [Runnable example](https://www.monocrawl.com/examples/youtube-search-metrics.mjs).
+- [Track a creator’s follower count each day](https://www.monocrawl.com/docs/recipes#track-creator-growth): `monitors/create` → `monitors/timeseries`. 1 summed catalogue credit for one listed sequence. [Guide](https://www.monocrawl.com/docs/monitors#metric-fields).
+- [Read recent customer feedback from both app stores](https://www.monocrawl.com/docs/recipes#read-app-feedback): `app_store/app-reviews` → `google_play/app-reviews`. 4 summed catalogue credits for one listed sequence.
+- [Find Instagram reels and learn about their creators](https://www.monocrawl.com/docs/recipes#instagram-reel-creators): `instagram/search-reels` → `instagram/profile` → `instagram/about`. 12 summed catalogue credits for one listed sequence. [Guide](https://www.monocrawl.com/docs/instagram-creators). [Runnable example](https://www.monocrawl.com/examples/instagram-reel-creators.mjs).
+- [Find LinkedIn posts and inspect their authors](https://www.monocrawl.com/docs/recipes#linkedin-post-authors): `linkedin/search-posts-native` → `linkedin/profile`. 10 summed catalogue credits for one listed sequence. [Runnable example](https://www.monocrawl.com/examples/linkedin-post-search.mjs).
+- [Track brand complaints and emerging issues](https://www.monocrawl.com/docs/recipes#brand-complaints-monitor): `monitors/preview` → `monitors/create` → `monitors/findings`. 1 summed catalogue credit for one listed sequence.
+- [Watch a competitor and identify switching intent](https://www.monocrawl.com/docs/recipes#competitor-switching-monitor): `monitors/create` → `monitors/create` → `monitors/findings`. 2 summed catalogue credits for one listed sequence.
+- [Monitor new app or business reviews](https://www.monocrawl.com/docs/recipes#app-reviews-monitor): `monitors/create` → `monitors/run` → `monitors/findings`. 1 summed catalogue credit for one listed sequence.
+- [A creator snapshot: profile plus recent videos](https://www.monocrawl.com/docs/recipes#creator-snapshot): `tiktok/profile` → `tiktok/profile-videos`. 2 summed catalogue credits for one listed sequence.
+- [Turn a video into text](https://www.monocrawl.com/docs/recipes#video-to-text): `youtube/post-transcript`. 2 summed catalogue credits for one listed sequence.
+- [Brand listening across platforms in one call](https://www.monocrawl.com/docs/recipes#brand-listening): `search/all` → `search/all`. 10 summed catalogue credits for one listed sequence.
+- [An X conversation: search, then the replies](https://www.monocrawl.com/docs/recipes#x-conversation): `x/search-tweets` → `x/tweet-replies`. 6 summed catalogue credits for one listed sequence.
+- [What a competitor is advertising](https://www.monocrawl.com/docs/recipes#ad-intelligence): `meta_ads/search-companies` → `meta_ads/company-ads` → `meta_ads/ad-transcript`. 13 summed catalogue credits for one listed sequence.
+- [Watch a target on a schedule](https://www.monocrawl.com/docs/recipes#watch-a-target): `monitors/create` → `monitors/runs` → `monitors/timeseries`. 1 summed catalogue credit for one listed sequence.
+
+
+## Docs
+
+- [Quickstart](https://www.monocrawl.com/docs/quickstart): from a new account to a parsed response
+- [Authentication](https://www.monocrawl.com/docs/authentication): key format, headers, per-key limits
+- [API reference](https://www.monocrawl.com/docs/api-reference): path shape, envelope, pagination, batch
+- [Endpoint reference](https://www.monocrawl.com/docs/endpoints): every operation with parameters and cost
+- [Monitor relevance filters](https://www.monocrawl.com/docs/monitors#relevance-api): optional relevance_enabled, relevance_prompt and exclusions on every monitor; setup examples, undecided work, saved evidence, results and alert history
+- [Conversations](https://www.monocrawl.com/docs/conversations): matching social posts, eight-column CSV, optional priced replies/transcripts and monitoring of new dated posts. Research analysis is optional; public search API responses do not expose private dashboard analysis or saved runs.
+- [Errors](https://www.monocrawl.com/docs/errors): every error type, status and remedy
+- [Pricing](https://www.monocrawl.com/pricing): 150 free credits to start, then monthly plans with a fixed allowance
+
+## Comparisons, use cases and glossary
+
+- [Compare](https://www.monocrawl.com/compare): Monocrawl side by side with other data APIs and listening tools, with cited sources
+- [Instagram data APIs compared](https://www.monocrawl.com/compare/instagram-data-apis): Instagram data APIs compared: Meta’s official API and the main data APIs, on what each returns, how it charges and how you connect. Every claim sourced.
+- [TikTok data APIs compared](https://www.monocrawl.com/compare/tiktok-data-apis): TikTok data APIs compared: TikTok’s official APIs and the main data APIs, on what each returns, how it charges and how you connect. Every claim sourced.
+- [TikTok Shop APIs compared](https://www.monocrawl.com/compare/tiktok-shop-apis): TikTok Shop APIs compared: TikTok’s own APIs, product data APIs, scrapers and analytics APIs, on what each returns, how it charges and how you connect.
+- [YouTube data APIs compared](https://www.monocrawl.com/compare/youtube-data-apis): YouTube data APIs compared: YouTube’s official API, its analytics and research routes and the main data APIs, on data, pricing and access. Every claim sourced.
+- [YouTube transcript APIs compared](https://www.monocrawl.com/compare/youtube-transcript-apis): YouTube transcript APIs compared: YouTube’s official API, Gemini, an open-source library and hosted transcript APIs, on features, pricing and access.
+- [Facebook data APIs compared](https://www.monocrawl.com/compare/facebook-data-apis): Facebook data APIs compared: Meta’s official routes and the main data APIs, on what each returns, how it charges and how you connect. Every claim sourced.
+- [X data APIs compared](https://www.monocrawl.com/compare/x-twitter-data-apis): X data APIs compared: X’s pay-per-use API, its Enterprise plan and the main data APIs, on what each returns, how it charges and how you connect.
+- [Threads data APIs compared](https://www.monocrawl.com/compare/threads-data-apis): Threads data APIs compared: Meta’s Threads API, its research library and the main data APIs, on what each returns, how it charges and how you connect.
+- [Pinterest data APIs compared](https://www.monocrawl.com/compare/pinterest-data-apis): Pinterest APIs compared: Pinterest’s API v5 and the main Pinterest data and scraper APIs, on what each returns, how it charges and how you connect.
+- [Reddit data APIs compared](https://www.monocrawl.com/compare/reddit-data-apis): Reddit data APIs compared: Reddit’s own API and research programme and the main data APIs, on what each returns, how it charges and how you connect.
+- [Quora data APIs compared](https://www.monocrawl.com/compare/quora-data-apis): Quora APIs compared: Quora’s own Ads API and the main Quora scraper and data APIs, on what each returns for questions and answers and how it charges.
+- [Telegram data APIs compared](https://www.monocrawl.com/compare/telegram-data-apis): Telegram channel data APIs compared: the Bot API, the Telegram API and the main channel data and analytics APIs, on what each returns and how it charges.
+- [Snapchat data APIs compared](https://www.monocrawl.com/compare/snapchat-data-apis): Snapchat APIs compared: Snap’s Public Profile, Marketing and Ads Gallery APIs and the main Snapchat data APIs, on what each returns and how it charges.
+- [Truth Social data APIs compared](https://www.monocrawl.com/compare/truth-social-data-apis): Truth Social APIs compared: Trump Media’s Truth API, a live post feed and the main data APIs, on what each returns, how it charges and how you connect.
+- [Live streaming data APIs compared](https://www.monocrawl.com/compare/streaming-data-apis): Twitch, Kick and Rumble APIs compared: the platforms’ own APIs and the main streaming data and analytics APIs, on data, pricing and access. Every claim sourced.
+- [Music data APIs compared](https://www.monocrawl.com/compare/music-data-apis): Music data APIs compared: the Spotify, Apple Music and SoundCloud APIs and the main music analytics and data APIs, on data, pricing and access.
+- [Social media data APIs compared](https://www.monocrawl.com/compare/social-media-data-apis): Multi-platform social media data APIs and publishing APIs compared on networks covered, pricing and access, with each network’s official API explained.
+- [Influencer data APIs compared](https://www.monocrawl.com/compare/influencer-data-apis): Influencer data APIs compared: Instagram’s, TikTok’s and YouTube’s creator APIs, influencer databases and data APIs, on data, pricing and access.
+- [Social listening APIs compared](https://www.monocrawl.com/compare/social-listening-apis): Social listening and brand monitoring APIs compared: enterprise suites, mention-alert tools and data APIs, on networks, alerts, pricing and access.
+- [Ad library APIs compared](https://www.monocrawl.com/compare/ad-library-apis): Ad library APIs compared: the official routes for Meta, Google, TikTok and LinkedIn ads, and the main data APIs, on coverage, pricing and access.
+- [Amazon product data APIs compared](https://www.monocrawl.com/compare/amazon-product-data-apis): Amazon product data APIs compared: Amazon’s Creators and Selling Partner APIs and the main data APIs, on what each returns, how it charges and how you connect.
+- [Walmart product data APIs compared](https://www.monocrawl.com/compare/walmart-product-data-apis): Walmart product data APIs compared: Walmart’s Marketplace and Affiliate APIs and the main data APIs, on what each returns, how it charges and how you connect.
+- [AliExpress data APIs compared](https://www.monocrawl.com/compare/aliexpress-data-apis): AliExpress APIs compared: AliExpress’s Affiliate and Dropshipping APIs and the main product data APIs, on what each returns, how it charges and how you connect.
+- [Etsy data APIs compared](https://www.monocrawl.com/compare/etsy-data-apis): Etsy APIs compared: Etsy’s Open API v3 and the main Etsy data and scraper APIs, on what each returns, how it charges and how you connect.
+- [Vinted data APIs compared](https://www.monocrawl.com/compare/vinted-data-apis): Vinted APIs compared: Vinted Pro Integrations and the main Vinted data and scraper APIs, on what each returns, how it charges and how you connect.
+- [Google Shopping APIs compared](https://www.monocrawl.com/compare/google-shopping-apis): Google Shopping APIs compared: Google’s Merchant API and the main data and scraper APIs, on what each returns, how it charges and how you connect.
+- [Retail product data APIs compared](https://www.monocrawl.com/compare/retail-product-data-apis): Target, Home Depot, Sephora, Kohl’s, H&M and Wayfair product data APIs compared: the retailers’ own routes and the main data APIs, on coverage and pricing.
+- [Google Maps data APIs compared](https://www.monocrawl.com/compare/google-maps-data-apis): Google Maps data APIs compared: Google’s Places API and the main place and review data APIs, on what each returns, how it charges and how you connect.
+- [Yelp data APIs compared](https://www.monocrawl.com/compare/yelp-data-apis): Yelp APIs compared: Yelp’s Places (Fusion), AI and Insights APIs and the main Yelp data APIs, on what each returns, how it charges and how you connect.
+- [Tripadvisor data APIs compared](https://www.monocrawl.com/compare/tripadvisor-data-apis): Tripadvisor APIs compared: Terra, which replaced the Content API, and the main reviews and scraper APIs, on what each returns and how it charges.
+- [Trustpilot review APIs compared](https://www.monocrawl.com/compare/trustpilot-review-apis): Trustpilot review APIs compared: Trustpilot’s own APIs and the main data APIs, on what each returns, how it charges and how you connect. Every claim sourced.
+- [G2 data APIs compared](https://www.monocrawl.com/compare/g2-data-apis): G2 APIs compared: G2’s own API, syndication and Data Solutions, plus the main G2 review and product data APIs, on what each returns and how it charges.
+- [App review APIs compared](https://www.monocrawl.com/compare/app-store-review-apis): App Store and Google Play review APIs compared: Apple’s and Google’s own APIs and the main data APIs, on data, pricing and access. Every claim sourced.
+- [Booking.com data APIs compared](https://www.monocrawl.com/compare/booking-data-apis): Booking.com APIs compared: the Demand and Connectivity APIs and the main hotel data and scraper APIs, on what each returns and how it charges.
+- [Airbnb data APIs compared](https://www.monocrawl.com/compare/airbnb-data-apis): Airbnb data APIs compared: Airbnb’s partner API, short-term rental analytics APIs and data APIs, on what each returns, how it charges and how you connect.
+- [Zillow data APIs compared](https://www.monocrawl.com/compare/zillow-data-apis): Zillow data APIs compared: Zillow Group’s Bridge APIs, Zillow scraper APIs and property data APIs, on what each returns, how it charges and how you connect.
+- [UK property data APIs compared](https://www.monocrawl.com/compare/uk-property-data-apis): Rightmove, Zoopla and UK property data APIs compared: the portals’ own routes, Land Registry and EPC open data and the main data APIs, on data and pricing.
+- [Job posting data APIs compared](https://www.monocrawl.com/compare/job-posting-apis): Job posting APIs compared: Indeed’s partner APIs, Adzuna, Careerjet, USAJOBS and the main job data APIs, on what each returns and how it charges.
+- [Google search (SERP) APIs compared](https://www.monocrawl.com/compare/google-serp-apis): Google search APIs compared: Google’s Custom Search and Gemini grounding and the main SERP APIs, on what each returns, how it charges and how you connect.
+- [Web scraping APIs compared](https://www.monocrawl.com/compare/web-scraping-apis): Web scraping APIs compared: Firecrawl, ScrapingBee, Bright Data, Tavily and more, on crawling, Markdown, browsers, MCP and pricing. Every claim sourced.
+- [Google Trends APIs compared](https://www.monocrawl.com/compare/google-trends-apis): Google Trends APIs compared: Google’s Trends API alpha, website and BigQuery data, plus the main data and scraper APIs, on what each returns and costs.
+- [Monocrawl vs RapidAPI](https://www.monocrawl.com/compare/rapidapi)
+- [Monocrawl vs Bright Data](https://www.monocrawl.com/compare/bright-data)
+- [Monocrawl vs Apify](https://www.monocrawl.com/compare/apify)
+- [Monocrawl vs EnsembleData](https://www.monocrawl.com/compare/ensembledata)
+- [Monocrawl vs Brandwatch](https://www.monocrawl.com/compare/brandwatch)
+- [Monocrawl vs Ayrshare](https://www.monocrawl.com/compare/ayrshare)
+- [Monocrawl vs Data365](https://www.monocrawl.com/compare/data365)
+- [Monocrawl vs Exa](https://www.monocrawl.com/compare/exa)
+- [Monocrawl vs Firecrawl](https://www.monocrawl.com/compare/firecrawl)
+- [Monocrawl vs GummySearch](https://www.monocrawl.com/compare/gummysearch)
+- [Monocrawl vs Meltwater](https://www.monocrawl.com/compare/meltwater)
+- [Monocrawl vs Outstand](https://www.monocrawl.com/compare/outstand)
+- [Monocrawl vs Oxylabs](https://www.monocrawl.com/compare/oxylabs)
+- [Monocrawl vs PhantomBuster](https://www.monocrawl.com/compare/phantombuster)
+- [Monocrawl vs Phyllo](https://www.monocrawl.com/compare/phyllo)
+- [Monocrawl vs Scrape.do](https://www.monocrawl.com/compare/scrape-do)
+- [Monocrawl vs ScraperAPI](https://www.monocrawl.com/compare/scraperapi)
+- [Monocrawl vs Scrapfly](https://www.monocrawl.com/compare/scrapfly)
+- [Monocrawl vs ScrapingBee](https://www.monocrawl.com/compare/scrapingbee)
+- [Monocrawl vs SociaVault](https://www.monocrawl.com/compare/sociavault)
+- [Monocrawl vs Tavily](https://www.monocrawl.com/compare/tavily)
+- [Monocrawl vs Xpoz](https://www.monocrawl.com/compare/xpoz)
+- [Monocrawl vs F5Bot](https://www.monocrawl.com/compare/f5bot)
+- [Monocrawl vs Brand24](https://www.monocrawl.com/compare/brand24)
+- [Use cases](https://www.monocrawl.com/use-cases): workflows built on the API and Monitors
+- [Video transcripts](https://www.monocrawl.com/use-cases/video-transcripts): Get the spoken words from YouTube, TikTok, Instagram and other videos as text with timestamps. No downloads, no speech-to-text to run, and failed videos cost nothing.
+- [Brand monitoring](https://www.monocrawl.com/use-cases/brand-monitoring): Track public brand mentions, questions and complaints with Monocrawl. Schedule checks, retain source evidence and send alerts with clear cost estimates.
+- [Competitor tracking](https://www.monocrawl.com/use-cases/competitor-tracking): Track competitor content and public conversations with Monocrawl. Compare account activity, keep source links and build a repeatable competitive research workflow.
+- [Review monitoring](https://www.monocrawl.com/use-cases/review-monitoring): Monitor App Store and Google Play reviews in one feed. Track new feedback, focus on low ratings and send findings to your workflow with Monocrawl.
+- [Trend detection](https://www.monocrawl.com/use-cases/trend-detection): Get the searches rising right now in any country from Google Trends, then pull the TikTok, YouTube and Instagram posts driving them, on one key and in one format.
+- [News & OSINT monitoring](https://www.monocrawl.com/use-cases/osint-monitoring): Follow a story across news sites, X, Reddit, TikTok, YouTube, Telegram and more with one query. See who had it first, then get new posts and articles as they land.
+- [Creator research](https://www.monocrawl.com/use-cases/creator-research): Compare creator profiles, recent content and public performance across YouTube, TikTok and Instagram. Build evidence-backed creator shortlists with Monocrawl’s API.
+- [Influencer discovery](https://www.monocrawl.com/use-cases/influencer-discovery): Search TikTok, Instagram and YouTube creators by niche, confirm which country they post from and check real engagement on their recent videos before you reach out.
+- [Comment scraping](https://www.monocrawl.com/use-cases/comment-scraping): Get the comments on any public post from YouTube, TikTok, Instagram, Reddit and more, with replies nested, likes and dates, in one format for every platform.
+- [Market research](https://www.monocrawl.com/use-cases/market-research): Search Reddit threads and Trustpilot, YouTube, Amazon and app store reviews, pull every comment and review, and count what buyers complain about, pay and switch to.
+- [Price & product tracking](https://www.monocrawl.com/use-cases/price-tracking): Get today’s price for any product at every store selling it, with sale and was prices, plus more than a year of price history. Amazon, Walmart, Target, Google Shopping and more on one key.
+- [Lead generation](https://www.monocrawl.com/use-cases/lead-generation): Build lead lists from Google Maps businesses and companies hiring on job boards, then filter by the signals that matter: no website, few reviews, hiring right now. Business data only.
+- [Ad intelligence](https://www.monocrawl.com/use-cases/ad-intelligence): Search advertisers, compare Meta ad creatives and extract video transcripts. Build a searchable competitor ad library and scheduled API checks with Monocrawl.
+- [AI agents & workflows](https://www.monocrawl.com/use-cases/ai-agents): Connect Claude Code, Codex, Cursor and other MCP clients to structured public web data. Discover endpoints for free, inspect costs and control API key spending.
+- [Glossary](https://www.monocrawl.com/glossary): plain answers to common API and data questions
+- [What is API rate limiting?](https://www.monocrawl.com/glossary/api-rate-limiting): Why APIs cap requests, how the limits are counted and how a client should react.
+- [What is a 429 error?](https://www.monocrawl.com/glossary/what-is-a-429-error): What “Too Many Requests” means, why it happens and how to retry safely.
+- [What is cursor pagination?](https://www.monocrawl.com/glossary/cursor-pagination): How APIs page through long lists with a token, and why it beats page numbers for live feeds.
+- [Webhooks vs polling: which should you use?](https://www.monocrawl.com/glossary/webhooks-vs-polling): Asking for changes on a timer versus being told when they happen.
+- [What is a unified social media API?](https://www.monocrawl.com/glossary/unified-social-media-api): One key and one response format across many platforms, and what that does and does not mean.
+- [What is an MCP server?](https://www.monocrawl.com/glossary/what-is-an-mcp-server): How AI assistants call outside tools and data through the Model Context Protocol.
+- [Does TikTok have an API?](https://www.monocrawl.com/glossary/does-tiktok-have-an-api): What TikTok’s official APIs offer, who qualifies, and how developers reach public data.
+- [What are Instagram’s API rate limits?](https://www.monocrawl.com/glossary/instagram-rate-limits): The formulas Meta uses to cap Instagram API calls, and how to read them.
+- [How do Reddit API keys work?](https://www.monocrawl.com/glossary/reddit-api-keys): What a Reddit API key is, why it now needs approval, and the limits once you have one.
+- [What is social media scraping?](https://www.monocrawl.com/glossary/social-media-scraping): Collecting public profiles, posts and comments automatically, and what it takes to do well.
+- [Is web scraping legal?](https://www.monocrawl.com/glossary/is-web-scraping-legal): What the courts and privacy regulators have said about collecting public web data.
+- [Residential vs datacenter proxies: what’s the difference?](https://www.monocrawl.com/glossary/residential-vs-datacenter-proxies): Cloud IPs versus home connections, and why the difference matters for collecting data.
+- [What is a user agent?](https://www.monocrawl.com/glossary/user-agent): The header that tells a server which software sent a request.
+- [What is engagement rate?](https://www.monocrawl.com/glossary/engagement-rate): How much an audience interacts with content, the formulas and what counts as good.
+- [What is social listening?](https://www.monocrawl.com/glossary/social-listening): Tracking what people say about a brand or topic in public, and acting on it.
+- [Code guides](https://www.monocrawl.com/guides): step-by-step code for collecting public data with the API
+- [How to scrape TikTok comments with Python](https://www.monocrawl.com/guides/scrape-tiktok-comments-python): Every comment on a public video, with likes, replies and dates, saved to CSV.
+- [How to get YouTube transcripts with Python](https://www.monocrawl.com/guides/youtube-transcript-python): Timestamped lines and full text for a YouTube video, saved as TXT or SRT.
+- [How to scrape Instagram comments with Python](https://www.monocrawl.com/guides/scrape-instagram-comments-python): The comments on a public post or reel, with likes and dates, saved to CSV.
+- [How to scrape tweets with Python](https://www.monocrawl.com/guides/scrape-tweets-python): A public account’s recent posts, with likes, reposts, replies and views, saved to CSV.
+- [How to scrape TikTok Shop products with Python](https://www.monocrawl.com/guides/scrape-tiktok-shop-products-python): Every product in a TikTok Shop search, with prices, units sold and ratings, saved to CSV.
+- [How to scrape YouTube comments with Python](https://www.monocrawl.com/guides/scrape-youtube-comments-python): The comments on a public video, with likes, replies and dates, saved to CSV.
+- [How to scrape Instagram posts with Python](https://www.monocrawl.com/guides/scrape-instagram-posts-python): A public account’s recent posts and reels, with likes, comments and plays, saved to CSV.
+- [How to scrape TikTok videos from a profile with Python](https://www.monocrawl.com/guides/scrape-tiktok-videos-python): A public account’s videos, with plays, likes, comments and shares, saved to CSV.
+- [How to export Instagram followers to CSV](https://www.monocrawl.com/guides/export-instagram-followers): A public account’s followers, with handles, names and private and verified flags, saved to CSV.
+- [How to scrape LinkedIn company posts with Python](https://www.monocrawl.com/guides/scrape-linkedin-company-posts-python): A company page’s recent posts, with full text, likes and comments, saved to CSV.
+- [How to scrape Google Maps with Python](https://www.monocrawl.com/guides/google-maps-scraper-python): Up to 100 businesses a search, with phone, website and rating, saved to CSV.
+- [X (Twitter) API pricing in 2026](https://www.monocrawl.com/guides/x-api-pricing): What X’s own API costs per post, profile and follower since Pay-Per-Use, what it reads, and the same jobs on Monocrawl.
+- [Instagram API pricing in 2026](https://www.monocrawl.com/guides/instagram-api-pricing): What Meta’s Instagram APIs cost, who can use them and what they read, next to the same jobs on Monocrawl.
+- [TikTok API pricing in 2026](https://www.monocrawl.com/guides/tiktok-api-pricing): What TikTok’s and TikTok Shop’s own APIs cost, who can use them and what they read, next to the same jobs on Monocrawl.
+- [LinkedIn API pricing in 2026](https://www.monocrawl.com/guides/linkedin-api-pricing): What LinkedIn’s own APIs cost, who can use them and what they read, next to the same jobs on Monocrawl.
+- [Platforms](https://www.monocrawl.com/platforms): one page per platform with its operations, prices and a recorded example
+
+## Machine-readable
+
+- Every guide has a Markdown version: append `.md` to its /docs URL or request `Accept: text/markdown`. Example: https://www.monocrawl.com/docs/quickstart/agents.md
+- [Documentation directory](https://www.monocrawl.com/docs-markdown/index): all guides and platform references
+- Platform-scoped catalogue: `https://www.monocrawl.com/llms/PLATFORM.txt`, for example https://www.monocrawl.com/llms/tiktok.txt
+- [Cohorts](https://www.monocrawl.com/docs/cohorts.md): Saved member lists, bounded keyword sweeps, query jobs and result pagination.
+- [Browser sessions](https://www.monocrawl.com/docs/browser-sessions.md): Create, execute page JavaScript, inspect and close an owned browser session.
+- [Billing webhooks](https://www.monocrawl.com/docs/billing-webhooks.md): Payment, credit and subscription event payloads and recovery.
+- [Monitor webhooks](https://www.monocrawl.com/docs/monitor-webhooks.md): Finding previews, two digest shapes, attention events and delivery limits.
+- [Webhook receiver](https://www.monocrawl.com/docs/webhook-receiver.md): Verify raw-body signatures, persist an inbox and acknowledge retries safely.
+- [Auto-reload & recovery](https://www.monocrawl.com/docs/auto-reload.md): Eligibility, consent, monthly spend caps and failed-payment recovery.
+- [Metric semantics](https://www.monocrawl.com/docs/metric-semantics.md): Platform-specific counters, units, denominators, substitutions and unknown values.
+- [Pagination matrix](https://www.monocrawl.com/docs/pagination.md): Generated endpoint controls, optional continuation fields and bounded reads.
+- [Quickstart](https://www.monocrawl.com/docs/quickstart.md): From a new account to a parsed response.
+- [Using an AI agent](https://www.monocrawl.com/docs/quickstart/agents.md): Connect, verify and retrieve within an explicit budget.
+- [Security & data handling](https://www.monocrawl.com/docs/security.md): Credential controls, request data, stored records and retention.
+- [Data availability](https://www.monocrawl.com/docs/data-availability.md): Nulls, missing fields, partial results, source limits and freshness.
+- [Labels & evidence](https://www.monocrawl.com/docs/labels.md): Bounded row intelligence, exact sentence evidence, free previews, goal fitting and recall.
+- [Credits](https://www.monocrawl.com/docs/credits.md): Allowances, connection caps, charges, refunds and unresolved accounting.
+- [Batch requests](https://www.monocrawl.com/docs/batch.md): Independent operations, per-item failures, receipts and recovery.
+- [Streaming (SSE)](https://www.monocrawl.com/docs/streaming.md): Search progress, final results, disconnects and replay.
+- [AI agent integration](https://www.monocrawl.com/docs/ai-agents.md): MCP documentation tools, Markdown guides and scoped machine-readable references.
+- [n8n](https://www.monocrawl.com/docs/n8n.md): Import a bounded workflow with credential storage and explicit result checks.
+- [LangChain](https://www.monocrawl.com/docs/langchain.md): Runnable agent with discovery, allowlisted retrieval and budget controls.
+- [Vercel AI SDK](https://www.monocrawl.com/docs/vercel-ai-sdk.md): A bounded tool loop that retains source evidence and credit receipts.
+- [Authentication](https://www.monocrawl.com/docs/authentication.md): Key format, headers, per-key limits.
+- [API reference](https://www.monocrawl.com/docs/api-reference.md): Paths, envelope, batch, pagination.
+- [Endpoints](https://www.monocrawl.com/docs/endpoints.md): Every operation, parameters and cost.
+- [Platforms](https://www.monocrawl.com/docs/platforms.md): One reference page per platform, from the registry.
+- [Which endpoint?](https://www.monocrawl.com/docs/which-endpoint.md): From the job to the operation.
+- [Common jobs](https://www.monocrawl.com/docs/recipes.md): Ordered workflows, searchable tasks and costs from the registry.
+- [Instagram creators](https://www.monocrawl.com/docs/instagram-creators.md): Reel discovery with optional creator profiles and source-reported country, bounded pages and credit spending.
+- [YouTube search metrics](https://www.monocrawl.com/docs/youtube-search-metrics.md): One-credit opt-in views, duration and channel handles; optional separate batch workflow.
+- [TikTok search music](https://www.monocrawl.com/docs/tiktok-search-music.md): One-credit precise native video search, music IDs and source-reported region; optional selected-post lookups.
+- [TikTok profile region](https://www.monocrawl.com/docs/tiktok-profile-region.md): A bounded, identity-checked profile and account-region workflow at normal component prices.
+- [Responses & schemas](https://www.monocrawl.com/docs/responses.md): The envelope, unified shapes, honest nulls.
+- [Endpoint schemas](https://www.monocrawl.com/docs/schemas.md): Downloadable field schemas with reviewed versus observed provenance.
+- [Computed fields](https://www.monocrawl.com/docs/computed-fields.md): Formulas, units, denominators and missing-input rules.
+- [Runnable workflows](https://www.monocrawl.com/docs/workflows.md): Six linked platform journeys with pagination, saved results and budgets.
+- [Production guide](https://www.monocrawl.com/docs/production-checklist.md): Request wrapper, recovery, budgets, partial results and logging.
+- [Integration testing](https://www.monocrawl.com/docs/testing.md): Offline fixtures, free sandbox samples and capped live smoke tests.
+- [Versioning](https://www.monocrawl.com/docs/versioning.md): Additive /v1, deprecation notice, sunset headers.
+- [Pagination & caching](https://www.monocrawl.com/docs/pagination-caching.md): Continuation contracts and free cached responses.
+- [Rate limits](https://www.monocrawl.com/docs/rate-limits.md): Request and concurrency limits by plan.
+- [Jobs, webhooks & monitors](https://www.monocrawl.com/docs/jobs-webhooks.md): Async jobs, signed deliveries, timeseries.
+- [Integrations](https://www.monocrawl.com/docs/integrations.md): OpenClaw, Hermes, Gemini CLI, coding agents, chat apps, n8n and LangChain.
+- [MCP server](https://www.monocrawl.com/docs/mcp.md): Connect agents and create monitors with optional relevance filtering; Claude setup and tool examples.
+- [Errors](https://www.monocrawl.com/docs/errors.md): Every error type, status and remedy.
+- [Endpoint pricing](https://www.monocrawl.com/docs/endpoint-pricing.md): Credit tiers, refunds, rate limits.
+
+- [llms-full.txt](https://www.monocrawl.com/llms-full.txt): the whole live catalogue as markdown, regenerated from the endpoint registry
+- [OpenAPI 3.1](https://www.monocrawl.com/openapi.json): the same registry as an importable spec
+- [Agent skill](https://www.monocrawl.com/agent-onboarding/SKILL.md): one-read onboarding for coding agents
+
+## For agents
+
+- [Social media MCP server](https://www.monocrawl.com/social-media-mcp-server): what an agent can reach on TikTok, Instagram, YouTube, Reddit, X and other networks, with setup and spend controls
+- [MCP server](https://www.monocrawl.com/docs/mcp): hosted Model Context Protocol endpoint at `https://www.monocrawl.com/mcp` — tools for endpoints, balance and monitors, same metering and limits as the REST API
+- [MCP monitor example](https://www.monocrawl.com/docs/mcp#monitor-filtering): preview, create, read and update the same relevance-filtered monitors as the dashboard; schedules continue with the client closed
+- [MCP jobs and browser controls](https://www.monocrawl.com/docs/mcp#actions): explicit action tools with free previews, confirmation, replay keys and creation credit ceilings; job/session status reads use call_endpoint
+- Browser sign-in for coding agents: `https://www.monocrawl.com/mcp/oauth`. Connection commands and the skill contain no API keys. Guide: https://www.monocrawl.com/docs/integrations.
+- Public MCP discovery at `https://www.monocrawl.com/mcp`: initialize, tools/list, list_endpoints, get_endpoint and get_docs require no key. get_endpoint links the exact operation guide and published response schema with reviewed/observed provenance when available. get_docs reads the guides in bounded chunks; continue with its cursor. Data and account tools require an API key or supported OAuth sign-in.
+- Runtime REST discovery: `GET /v1/utility/capabilities?param=label` (which operations accept a capability, with endpoint-specific costs), `GET /v1/utility/endpoints?search=date_posted` (catalogue search including accepted parameters), `GET /v1/utility/endpoint?id=instagram/search-reels` (parameters, recommendations and related calls), `GET /v1/utility/quickstart` (cheapest live call), `GET /v1/credits/balance` (funds) — all free, key required

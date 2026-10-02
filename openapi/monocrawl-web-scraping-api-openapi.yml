@@ -1,0 +1,3982 @@
+openapi: 3.2.0
+info:
+  title: Monocrawl Web Scraping API
+  version: 0.1.0
+  description: One key, one envelope, one credit meter across social, search, commerce and web data.
+  contact:
+    name: Monocrawl support
+    url: https://www.monocrawl.com/contact
+  termsOfService: https://www.monocrawl.com/legal/terms-and-conditions
+servers:
+- url: https://www.monocrawl.com
+security:
+- ApiKeyHeader: []
+tags:
+- name: Web Scraping
+paths:
+  /v1/web/agent:
+    get:
+      operationId: web_agent
+      tags:
+      - Web Scraping
+      summary: Browser agent
+      description: 'Start an asynchronous browser agent: a hosted browser opens the page and the platform''s model chooses navigate, click, type or done for up to eight steps. Returns a job; poll /v1/web/jobs/{job_id} for the final page, the extracted answer and every step taken. Costs 10 credits per successful live response.'
+      parameters:
+      - name: url
+        in: query
+        required: true
+        schema:
+          type: string
+        example: https://www.gov.uk/bank-holidays
+        description: Page to start from (http/https)
+      - name: prompt
+        in: query
+        required: true
+        schema:
+          type: string
+        example: Find the date of the next bank holiday in England and Wales
+        description: What the agent should do or find (up to 2,000 characters)
+      - name: max_steps
+        in: query
+        required: false
+        schema:
+          type: string
+        example: '6'
+        description: Most actions to take, 1 to 8 (default 8)
+      - name: dry_run
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - '1'
+          - '0'
+          - 'true'
+          - 'false'
+        example: '1'
+        description: 'Read a zero-credit estimate without fetching sources, running AI, or reserving credits. Cache status is a snapshot, not a guarantee at execution. Accepted values: 1, 0, true, false. Case, spaces, hyphens and underscores are interchangeable.'
+      - name: X-Max-Credits
+        in: header
+        required: false
+        schema:
+          type: integer
+          minimum: 0
+          maximum: 9007199254740991
+        example: 5
+        description: Optional credit reservation ceiling for this individual request. Send a non-negative integer in decimal digits. Live execution checks the required reservation after resolving free cache hits or buffered continuation, before charging or calling a supplier. A higher reservation returns HTTP 422 INVALID_PARAMETERS with reason max_credits_exceeded and charges nothing. Invalid header values also return 422. Zero permits only a zero-credit reservation; omitting the header uses normal pricing. dry_run remains a free preview. This does not cap later requests, batches or scheduled runs.
+      security:
+      - ApiKeyHeader: []
+      - BearerKey: []
+      responses:
+        '200':
+          description: 'The common success envelope; `data` is endpoint-specific. Many lists use items/count/cursor; bundles use named collections and their documented continuation metadata. HTTP 200 can contain a partial bundle: inspect complete, partial and legs where supplied.'
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/Success'
+                - type: object
+                  properties:
+                    data:
+                      $schema: https://json-schema.org/draft/2020-12/schema
+                      $id: https://www.monocrawl.com/schemas/web/agent.json
+                      title: web/agent data fields
+                      description: Required core structure for successful data, with optional source fields. Additional fields are allowed. This is not a completeness guarantee.
+                      type: object
+                      properties:
+                        id:
+                          type:
+                          - string
+                          - 'null'
+                          description: Exact source identifier; preserve it as a string.
+                        kind:
+                          type:
+                          - string
+                          - 'null'
+                          description: kind
+                        status:
+                          type:
+                          - string
+                          - 'null'
+                          description: status
+                        created_at:
+                          type:
+                          - string
+                          - 'null'
+                          description: created at
+                        started_at:
+                          type:
+                          - string
+                          - 'null'
+                          description: started at
+                        completed_at:
+                          type:
+                          - string
+                          - 'null'
+                          description: completed at
+                        poll:
+                          type:
+                          - string
+                          - 'null'
+                          description: poll
+                        refund_status:
+                          type:
+                          - string
+                          - 'null'
+                          description: refund status
+                        credits_charged:
+                          type:
+                          - number
+                          - 'null'
+                          description: credits charged; null is unknown.
+                        credits_refunded:
+                          type:
+                          - number
+                          - 'null'
+                          description: credits refunded; null is unknown.
+                        attempts:
+                          type:
+                          - number
+                          - 'null'
+                          description: attempts; null is unknown.
+                        progress:
+                          type:
+                          - object
+                          - 'null'
+                          properties: {}
+                          additionalProperties: true
+                        result:
+                          type:
+                          - object
+                          - 'null'
+                          properties: {}
+                          additionalProperties: true
+                        error:
+                          type:
+                          - string
+                          - 'null'
+                          description: Failure details if present.
+                      additionalProperties: true
+                      allOf:
+                      - anyOf:
+                        - required:
+                          - id
+                          properties:
+                            id:
+                              type:
+                              - string
+                              description: Exact source identifier; preserve it as a string.
+                              minLength: 1
+                        - required:
+                          - created_at
+                          properties:
+                            created_at:
+                              type:
+                              - string
+                              description: created at
+                              minLength: 1
+                        - required:
+                          - started_at
+                          properties:
+                            started_at:
+                              type:
+                              - string
+                              description: started at
+                              minLength: 1
+                        - required:
+                          - completed_at
+                          properties:
+                            completed_at:
+                              type:
+                              - string
+                              description: completed at
+                              minLength: 1
+                        - required:
+                          - poll
+                          properties:
+                            poll:
+                              type:
+                              - string
+                              description: poll
+                              minLength: 1
+                        - required:
+                          - refund_status
+                          properties:
+                            refund_status:
+                              type:
+                              - string
+                              description: refund status
+                              minLength: 1
+                        - required:
+                          - credits_charged
+                          properties:
+                            credits_charged:
+                              type:
+                              - number
+                              description: credits charged; null is unknown.
+                        - required:
+                          - credits_refunded
+                          properties:
+                            credits_refunded:
+                              type:
+                              - number
+                              description: credits refunded; null is unknown.
+                        - required:
+                          - attempts
+                          properties:
+                            attempts:
+                              type:
+                              - number
+                              description: attempts; null is unknown.
+                        - required:
+                          - progress
+                          properties:
+                            progress:
+                              type:
+                              - object
+                              properties: {}
+                              additionalProperties: true
+                        - required:
+                          - result
+                          properties:
+                            result:
+                              type:
+                              - object
+                              properties: {}
+                              additionalProperties: true
+                        - required:
+                          - error
+                          properties:
+                            error:
+                              type:
+                              - string
+                              description: Failure details if present.
+                              minLength: 1
+                      x-contract-version: '2026-09-22'
+                      x-validation-scope: Required success payload structure; optional fields and source completeness remain separate.
+                      examples:
+                      - id: job_example
+                        status: queued
+        default:
+          description: The error envelope — the same shape for every non-2xx status.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      x-credits: 10
+      x-production-available: true
+      x-capacity:
+        status: not_assessed
+        message: Capacity is workload-dependent; configured routes do not establish sustained throughput or an availability guarantee.
+      x-availability-scope: Structural check of the effective registered chain, production permission, adapter, configured cost and quality floor without request parameters. True is not a live-health, credential, quota, subscription-entitlement, complete-data or deployment-exposure guarantee. False means no structurally eligible candidate; null means metadata could not establish availability. Composite child capability still depends on its component routes.
+      x-live-proven: true
+  /v1/web/batch-scrape:
+    get:
+      operationId: web_batch_scrape
+      tags:
+      - Web Scraping
+      summary: Start an async batch scrape
+      description: Scrape up to 25 URLs in one background job and get a job id back immediately; individual URL failures are reported per item and never fail the batch. Costs 3 credits per successful live response.
+      parameters:
+      - name: urls
+        in: query
+        required: true
+        schema:
+          type: string
+        example: https://example.com,https://www.iana.org
+        description: Comma-separated list or JSON array of URLs to scrape (max 25 per job)
+      - name: formats
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - markdown
+            - text
+            - links
+        style: form
+        explode: false
+        example:
+        - markdown
+        description: 'Comma-separated subset of markdown,text,links (default markdown) Accepted values (comma-separated): markdown, text, links. Case, spaces, hyphens and underscores are interchangeable.'
+      - name: only_main_content
+        in: query
+        required: false
+        schema:
+          type: string
+        example: 'true'
+        description: Render only the main content region of each page (default true)
+      - name: dry_run
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - '1'
+          - '0'
+          - 'true'
+          - 'false'
+        example: '1'
+        description: 'Read a zero-credit estimate without fetching sources, running AI, or reserving credits. Cache status is a snapshot, not a guarantee at execution. Accepted values: 1, 0, true, false. Case, spaces, hyphens and underscores are interchangeable.'
+      - name: X-Max-Credits
+        in: header
+        required: false
+        schema:
+          type: integer
+          minimum: 0
+          maximum: 9007199254740991
+        example: 5
+        description: Optional credit reservation ceiling for this individual request. Send a non-negative integer in decimal digits. Live execution checks the required reservation after resolving free cache hits or buffered continuation, before charging or calling a supplier. A higher reservation returns HTTP 422 INVALID_PARAMETERS with reason max_credits_exceeded and charges nothing. Invalid header values also return 422. Zero permits only a zero-credit reservation; omitting the header uses normal pricing. dry_run remains a free preview. This does not cap later requests, batches or scheduled runs.
+      security:
+      - ApiKeyHeader: []
+      - BearerKey: []
+      responses:
+        '200':
+          description: 'The common success envelope; `data` is endpoint-specific. Many lists use items/count/cursor; bundles use named collections and their documented continuation metadata. HTTP 200 can contain a partial bundle: inspect complete, partial and legs where supplied.'
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/Success'
+                - type: object
+                  properties:
+                    data:
+                      $schema: https://json-schema.org/draft/2020-12/schema
+                      $id: https://www.monocrawl.com/schemas/web/batch-scrape.json
+                      title: web/batch-scrape data fields
+                      description: Required core structure for successful data, with optional source fields. Additional fields are allowed. This is not a completeness guarantee.
+                      type: object
+                      properties:
+                        job_id:
+                          type: string
+                          minLength: 1
+                          description: Owner-scoped job identifier. Use check to read its status and result.
+                        check:
+                          type: string
+                          minLength: 1
+                          description: Relative GET path for this job. Authenticate with the same owning account.
+                        status:
+                          type: string
+                          minLength: 1
+                          description: Job status at enqueue time; this is not a completed crawl or batch result.
+                        kind:
+                          type: string
+                          minLength: 1
+                          description: 'Stored job kind: crawl or batch_scrape.'
+                        created_at:
+                          type:
+                          - string
+                          - 'null'
+                          description: Source date or timestamp; absent dates remain unknown.
+                        credits_charged:
+                          type:
+                          - number
+                          - 'null'
+                          description: Credits charged when the job was accepted.
+                        params:
+                          type: object
+                          properties: {}
+                          additionalProperties: true
+                          description: Resolved job parameters, including applied defaults and limits.
+                        _warnings:
+                          type: array
+                          items:
+                            type: string
+                      additionalProperties: true
+                      required:
+                      - job_id
+                      - check
+                      - status
+                      - kind
+                      - params
+                      allOf:
+                      - anyOf:
+                        - required:
+                          - job_id
+                          properties:
+                            job_id:
+                              type: string
+                              minLength: 1
+                              description: Owner-scoped job identifier. Use check to read its status and result.
+                        - required:
+                          - check
+                          properties:
+                            check:
+                              type: string
+                              minLength: 1
+                              description: Relative GET path for this job. Authenticate with the same owning account.
+                        - required:
+                          - created_at
+                          properties:
+                            created_at:
+                              type:
+                              - string
+                              description: Source date or timestamp; absent dates remain unknown.
+                              minLength: 1
+                        - required:
+                          - credits_charged
+                          properties:
+                            credits_charged:
+                              type:
+                              - number
+                              description: Credits charged when the job was accepted.
+                        - required:
+                          - params
+                          properties:
+                            params:
+                              type: object
+                              properties: {}
+                              additionalProperties: true
+                              description: Resolved job parameters, including applied defaults and limits.
+                      x-contract-version: '2026-09-22'
+                      x-validation-scope: Required success payload structure; optional fields and source completeness remain separate.
+                      examples:
+                      - job_id: job_example
+                        check: /v1/web/jobs/job_example
+                        status: queued
+                        kind: batch_scrape
+                        params:
+                          urls:
+                          - https://example.com/
+                          formats: markdown
+                          only_main_content: true
+        default:
+          description: The error envelope — the same shape for every non-2xx status.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      x-credits: 3
+      x-production-available: true
+      x-capacity:
+        status: not_assessed
+        message: Capacity is workload-dependent; configured routes do not establish sustained throughput or an availability guarantee.
+      x-availability-scope: Structural check of the effective registered chain, production permission, adapter, configured cost and quality floor without request parameters. True is not a live-health, credential, quota, subscription-entitlement, complete-data or deployment-exposure guarantee. False means no structurally eligible candidate; null means metadata could not establish availability. Composite child capability still depends on its component routes.
+      x-live-proven: true
+  /v1/web/crawl:
+    get:
+      operationId: web_crawl
+      tags:
+      - Web Scraping
+      summary: Start an async web crawl
+      description: Start a breadth-first same-site crawl and get a job id back immediately; poll /v1/web/jobs/{job_id} for the collected pages (url, title, markdown excerpt, status). Costs 5 credits per successful live response.
+      parameters:
+      - name: url
+        in: query
+        required: true
+        schema:
+          type: string
+        example: https://example.com
+        description: Seed URL to crawl (http/https, public hosts only)
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: string
+        example: '10'
+        description: Maximum pages to fetch (default 10, cap 50)
+      - name: max_depth
+        in: query
+        required: false
+        schema:
+          type: string
+        example: '2'
+        description: Link hops from the seed page (default 2, cap 3)
+      - name: include_paths
+        in: query
+        required: false
+        schema:
+          type: string
+        example: ^/blog/.*
+        description: Comma-separated glob patterns; a discovered path must match at least one. * matches any characters, ^ and $ anchor, everything else is literal
+      - name: exclude_paths
+        in: query
+        required: false
+        schema:
+          type: string
+        example: /tag/*,/author/*
+        description: Comma-separated glob patterns; a discovered path matching any of them is skipped
+      - name: formats
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - markdown
+            - text
+            - links
+        style: form
+        explode: false
+        example:
+        - markdown
+        description: 'Comma-separated subset of markdown,text,links (default markdown) Accepted values (comma-separated): markdown, text, links. Case, spaces, hyphens and underscores are interchangeable.'
+      - name: only_main_content
+        in: query
+        required: false
+        schema:
+          type: string
+        example: 'true'
+        description: Render only the main content region of each page (default true)
+      - name: dry_run
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - '1'
+          - '0'
+          - 'true'
+          - 'false'
+        example: '1'
+        description: 'Read a zero-credit estimate without fetching sources, running AI, or reserving credits. Cache status is a snapshot, not a guarantee at execution. Accepted values: 1, 0, true, false. Case, spaces, hyphens and underscores are interchangeable.'
+      - name: X-Max-Credits
+        in: header
+        required: false
+        schema:
+          type: integer
+          minimum: 0
+          maximum: 9007199254740991
+        example: 5
+        description: Optional credit reservation ceiling for this individual request. Send a non-negative integer in decimal digits. Live execution checks the required reservation after resolving free cache hits or buffered continuation, before charging or calling a supplier. A higher reservation returns HTTP 422 INVALID_PARAMETERS with reason max_credits_exceeded and charges nothing. Invalid header values also return 422. Zero permits only a zero-credit reservation; omitting the header uses normal pricing. dry_run remains a free preview. This does not cap later requests, batches or scheduled runs.
+      security:
+      - ApiKeyHeader: []
+      - BearerKey: []
+      responses:
+        '200':
+          description: 'The common success envelope; `data` is endpoint-specific. Many lists use items/count/cursor; bundles use named collections and their documented continuation metadata. HTTP 200 can contain a partial bundle: inspect complete, partial and legs where supplied.'
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/Success'
+                - type: object
+                  properties:
+                    data:
+                      $schema: https://json-schema.org/draft/2020-12/schema
+                      $id: https://www.monocrawl.com/schemas/web/crawl.json
+                      title: web/crawl data fields
+                      description: Required core structure for successful data, with optional source fields. Additional fields are allowed. This is not a completeness guarantee.
+                      type: object
+                      properties:
+                        job_id:
+                          type: string
+                          minLength: 1
+                          description: Owner-scoped job identifier. Use check to read its status and result.
+                        check:
+                          type: string
+                          minLength: 1
+                          description: Relative GET path for this job. Authenticate with the same owning account.
+                        status:
+                          type: string
+                          minLength: 1
+                          description: Job status at enqueue time; this is not a completed crawl or batch result.
+                        kind:
+                          type: string
+                          minLength: 1
+                          description: 'Stored job kind: crawl or batch_scrape.'
+                        created_at:
+                          type:
+                          - string
+                          - 'null'
+                          description: Source date or timestamp; absent dates remain unknown.
+                        credits_charged:
+                          type:
+                          - number
+                          - 'null'
+                          description: Credits charged when the job was accepted.
+                        params:
+                          type: object
+                          properties: {}
+                          additionalProperties: true
+                          description: Resolved job parameters, including applied defaults and limits.
+                        _warnings:
+                          type: array
+                          items:
+                            type: string
+                      additionalProperties: true
+                      required:
+                      - job_id
+                      - check
+                      - status
+                      - kind
+                      - params
+                      allOf:
+                      - anyOf:
+                        - required:
+                          - job_id
+                          properties:
+                            job_id:
+                              type: string
+                              minLength: 1
+                              description: Owner-scoped job identifier. Use check to read its status and result.
+                        - required:
+                          - check
+                          properties:
+                            check:
+                              type: string
+                              minLength: 1
+                              description: Relative GET path for this job. Authenticate with the same owning account.
+                        - required:
+                          - created_at
+                          properties:
+                            created_at:
+                              type:
+                              - string
+                              description: Source date or timestamp; absent dates remain unknown.
+                              minLength: 1
+                        - required:
+                          - credits_charged
+                          properties:
+                            credits_charged:
+                              type:
+                              - number
+                              description: Credits charged when the job was accepted.
+                        - required:
+                          - params
+                          properties:
+                            params:
+                              type: object
+                              properties: {}
+                              additionalProperties: true
+                              description: Resolved job parameters, including applied defaults and limits.
+                      x-contract-version: '2026-09-22'
+                      x-validation-scope: Required success payload structure; optional fields and source completeness remain separate.
+                      examples:
+                      - job_id: job_example
+                        check: /v1/web/jobs/job_example
+                        status: queued
+                        kind: crawl
+                        params:
+                          url: https://example.com/
+                          limit: 10
+                          max_depth: 2
+                          formats: markdown
+                          only_main_content: true
+        default:
+          description: The error envelope — the same shape for every non-2xx status.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      x-credits: 5
+      x-production-available: true
+      x-capacity:
+        status: not_assessed
+        message: Capacity is workload-dependent; configured routes do not establish sustained throughput or an availability guarantee.
+      x-availability-scope: Structural check of the effective registered chain, production permission, adapter, configured cost and quality floor without request parameters. True is not a live-health, credential, quota, subscription-entitlement, complete-data or deployment-exposure guarantee. False means no structurally eligible candidate; null means metadata could not establish availability. Composite child capability still depends on its component routes.
+      x-live-proven: true
+  /v1/web/extract:
+    get:
+      operationId: web_extract
+      tags:
+      - Web Scraping
+      summary: Extract structured data from a web page
+      description: 'Deterministic structured extraction from a public page: meta/Open Graph/Twitter tags, parsed JSON-LD blocks, canonical URL, feeds, and heading outline — no AI involved. Fetch modes: direct by default; browser, enhanced and rendered are deployment-gated and off by default. Requested output shapes are unchanged. An unavailable non-direct mode returns 424 rather than silently ignoring the requested mode. Costs 1 credit per successful live response.'
+      parameters:
+      - name: url
+        in: query
+        required: true
+        schema:
+          type: string
+        example: https://example.com
+        description: Page URL to extract from (http/https, public hosts only)
+      - name: timeout
+        in: query
+        required: false
+        schema:
+          type: string
+        example: '10000'
+        description: Fetch budget in milliseconds, clamped to 1000-15000
+      - name: fetch_mode
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - direct
+          - browser
+          - enhanced
+          - rendered
+        example: direct
+        description: 'Fetch mode: direct (default) reads static HTML; browser explicitly runs JavaScript in an owned, isolated browser. Enhanced and rendered try direct first and permit configured fallbacks. Non-direct modes require deployment enablement, an approved target and applicable resource or spending limits; otherwise the request is refused. Output formats are unchanged. Accepted values: direct, browser, enhanced, rendered. Case, spaces, hyphens and underscores are interchangeable.'
+      - name: dry_run
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - '1'
+          - '0'
+          - 'true'
+          - 'false'
+        example: '1'
+        description: 'Read a zero-credit estimate without fetching sources, running AI, or reserving credits. Cache status is a snapshot, not a guarantee at execution. Accepted values: 1, 0, true, false. Case, spaces, hyphens and underscores are interchangeable.'
+      - name: X-Max-Credits
+        in: header
+        required: false
+        schema:
+          type: integer
+          minimum: 0
+          maximum: 9007199254740991
+        example: 5
+        description: Optional credit reservation ceiling for this individual request. Send a non-negative integer in decimal digits. Live execution checks the required reservation after resolving free cache hits or buffered continuation, before charging or calling a supplier. A higher reservation returns HTTP 422 INVALID_PARAMETERS with reason max_credits_exceeded and charges nothing. Invalid header values also return 422. Zero permits only a zero-credit reservation; omitting the header uses normal pricing. dry_run remains a free preview. This does not cap later requests, batches or scheduled runs.
+      security:
+      - ApiKeyHeader: []
+      - BearerKey: []
+      responses:
+        '200':
+          description: 'The common success envelope; `data` is endpoint-specific. Many lists use items/count/cursor; bundles use named collections and their documented continuation metadata. HTTP 200 can contain a partial bundle: inspect complete, partial and legs where supplied.'
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/Success'
+                - type: object
+                  properties:
+                    data:
+                      $schema: https://json-schema.org/draft/2020-12/schema
+                      $id: https://www.monocrawl.com/schemas/web/extract.json
+                      title: web/extract data fields
+                      description: Required core structure for successful data, with optional source fields. Additional fields are allowed. This is not a completeness guarantee.
+                      type: object
+                      properties:
+                        url:
+                          type:
+                          - string
+                          - 'null'
+                          description: url
+                        final_url:
+                          type:
+                          - string
+                          - 'null'
+                          description: final url
+                        title:
+                          type:
+                          - string
+                          - 'null'
+                          description: title
+                        description:
+                          type:
+                          - string
+                          - 'null'
+                          description: description
+                        text:
+                          type:
+                          - string
+                          description: text
+                          minLength: 1
+                        markdown:
+                          type:
+                          - string
+                          - 'null'
+                          description: markdown
+                        content:
+                          type:
+                          - object
+                          - 'null'
+                          properties: {}
+                          additionalProperties: true
+                        publication:
+                          type:
+                          - object
+                          - 'null'
+                          properties: {}
+                          additionalProperties: true
+                        metadata:
+                          type:
+                          - object
+                          - 'null'
+                          properties: {}
+                          additionalProperties: true
+                        _warnings:
+                          type: array
+                          items:
+                            type:
+                            - string
+                            - 'null'
+                            description: Source text.
+                      additionalProperties: true
+                      required:
+                      - text
+                      x-contract-version: '2026-09-22'
+                      x-validation-scope: Required success payload structure; optional fields and source completeness remain separate.
+                      examples:
+                      - url: https://example.com/article
+                        text: Illustrative article text.
+        default:
+          description: The error envelope — the same shape for every non-2xx status.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      x-credits: 1
+      x-production-available: true
+      x-capacity:
+        status: not_assessed
+        message: Capacity is workload-dependent; configured routes do not establish sustained throughput or an availability guarantee.
+      x-availability-scope: Structural check of the effective registered chain, production permission, adapter, configured cost and quality floor without request parameters. True is not a live-health, credential, quota, subscription-entitlement, complete-data or deployment-exposure guarantee. False means no structurally eligible candidate; null means metadata could not establish availability. Composite child capability still depends on its component routes.
+      x-live-proven: true
+  /v1/web/jobs:
+    get:
+      operationId: web_jobs
+      tags:
+      - Web Scraping
+      summary: List async web jobs
+      description: List your asynchronous jobs, newest first, with keyset pagination. Free. Free — costs 0 credits.
+      parameters:
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: string
+        example: '25'
+        description: Jobs per page (default 25, cap 100)
+      - name: cursor
+        in: query
+        required: false
+        schema:
+          type: string
+        example: ''
+        description: Opaque cursor from the previous page; omit for the first page
+      - name: status
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - queued
+            - running
+            - completed
+            - failed
+            - cancelled
+        style: form
+        explode: false
+        example:
+        - completed
+        description: 'Filter by status: queued, running, completed, failed, cancelled (comma-separated for several) Accepted values (comma-separated): queued, running, completed, failed, cancelled. Case, spaces, hyphens and underscores are interchangeable.'
+      - name: dry_run
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - '1'
+          - '0'
+          - 'true'
+          - 'false'
+        example: '1'
+        description: 'Read a zero-credit estimate without fetching sources, running AI, or reserving credits. Cache status is a snapshot, not a guarantee at execution. Accepted values: 1, 0, true, false. Case, spaces, hyphens and underscores are interchangeable.'
+      - name: X-Max-Credits
+        in: header
+        required: false
+        schema:
+          type: integer
+          minimum: 0
+          maximum: 9007199254740991
+        example: 5
+        description: Optional credit reservation ceiling for this individual request. Send a non-negative integer in decimal digits. Live execution checks the required reservation after resolving free cache hits or buffered continuation, before charging or calling a supplier. A higher reservation returns HTTP 422 INVALID_PARAMETERS with reason max_credits_exceeded and charges nothing. Invalid header values also return 422. Zero permits only a zero-credit reservation; omitting the header uses normal pricing. dry_run remains a free preview. This does not cap later requests, batches or scheduled runs.
+      security:
+      - ApiKeyHeader: []
+      - BearerKey: []
+      responses:
+        '200':
+          description: 'The common success envelope; `data` is endpoint-specific. Many lists use items/count/cursor; bundles use named collections and their documented continuation metadata. HTTP 200 can contain a partial bundle: inspect complete, partial and legs where supplied.'
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/Success'
+                - type: object
+                  properties:
+                    data:
+                      $schema: https://json-schema.org/draft/2020-12/schema
+                      $id: https://www.monocrawl.com/schemas/web/jobs.json
+                      title: web/jobs data fields
+                      description: Required core structure for successful data, with optional source fields. Additional fields are allowed. This is not a completeness guarantee.
+                      type: object
+                      properties:
+                        items:
+                          type:
+                          - array
+                          items:
+                            type: object
+                            properties:
+                              id:
+                                type:
+                                - string
+                                - 'null'
+                                description: id
+                              kind:
+                                type:
+                                - string
+                                - 'null'
+                                description: kind
+                              status:
+                                type:
+                                - string
+                                - 'null'
+                                description: status
+                              error:
+                                type:
+                                - string
+                                - 'null'
+                                description: error
+                              refund_status:
+                                type:
+                                - string
+                                - 'null'
+                                description: refund status
+                              created_at:
+                                type:
+                                - string
+                                - 'null'
+                                description: created at
+                              started_at:
+                                type:
+                                - string
+                                - 'null'
+                                description: started at
+                              completed_at:
+                                type:
+                                - string
+                                - 'null'
+                                description: completed at
+                              credits_charged:
+                                type:
+                                - number
+                                - 'null'
+                                description: credits charged
+                              credits_refunded:
+                                type:
+                                - number
+                                - 'null'
+                                description: credits refunded
+                              attempts:
+                                type:
+                                - number
+                                - 'null'
+                                description: attempts
+                              params:
+                                type:
+                                - object
+                                - 'null'
+                                properties: {}
+                                additionalProperties: true
+                              progress:
+                                type:
+                                - object
+                                - 'null'
+                                properties: {}
+                                additionalProperties: true
+                              result:
+                                description: Operation-specific JSON value; inspect the status and requested operation before reading it.
+                            additionalProperties: true
+                            allOf:
+                            - anyOf:
+                              - required:
+                                - id
+                                properties:
+                                  id:
+                                    type:
+                                    - string
+                                    description: id
+                                    minLength: 1
+                              - required:
+                                - error
+                                properties:
+                                  error:
+                                    type:
+                                    - string
+                                    description: error
+                                    minLength: 1
+                              - required:
+                                - refund_status
+                                properties:
+                                  refund_status:
+                                    type:
+                                    - string
+                                    description: refund status
+                                    minLength: 1
+                              - required:
+                                - created_at
+                                properties:
+                                  created_at:
+                                    type:
+                                    - string
+                                    description: created at
+                                    minLength: 1
+                              - required:
+                                - started_at
+                                properties:
+                                  started_at:
+                                    type:
+                                    - string
+                                    description: started at
+                                    minLength: 1
+                              - required:
+                                - completed_at
+                                properties:
+                                  completed_at:
+                                    type:
+                                    - string
+                                    description: completed at
+                                    minLength: 1
+                              - required:
+                                - credits_charged
+                                properties:
+                                  credits_charged:
+                                    type:
+                                    - number
+                                    description: credits charged
+                              - required:
+                                - credits_refunded
+                                properties:
+                                  credits_refunded:
+                                    type:
+                                    - number
+                                    description: credits refunded
+                              - required:
+                                - attempts
+                                properties:
+                                  attempts:
+                                    type:
+                                    - number
+                                    description: attempts
+                              - required:
+                                - params
+                                properties:
+                                  params:
+                                    type:
+                                    - object
+                                    properties: {}
+                                    additionalProperties: true
+                              - required:
+                                - progress
+                                properties:
+                                  progress:
+                                    type:
+                                    - object
+                                    properties: {}
+                                    additionalProperties: true
+                              - required:
+                                - result
+                                properties:
+                                  result:
+                                    description: Operation-specific JSON value; inspect the status and requested operation before reading it.
+                        count:
+                          type:
+                          - number
+                          - 'null'
+                        cursor:
+                          type:
+                          - string
+                          - 'null'
+                        has_more:
+                          type:
+                          - boolean
+                          - 'null'
+                      additionalProperties: true
+                      required:
+                      - items
+                      x-contract-version: '2026-09-22'
+                      x-validation-scope: Required success payload structure; optional fields and source completeness remain separate.
+                      examples:
+                      - items: []
+                        count: 0
+                        cursor: null
+                        has_more: false
+        default:
+          description: The error envelope — the same shape for every non-2xx status.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      x-credits: 0
+      x-production-available: true
+      x-capacity:
+        status: not_assessed
+        message: Capacity is workload-dependent; configured routes do not establish sustained throughput or an availability guarantee.
+      x-availability-scope: Structural check of the effective registered chain, production permission, adapter, configured cost and quality floor without request parameters. True is not a live-health, credential, quota, subscription-entitlement, complete-data or deployment-exposure guarantee. False means no structurally eligible candidate; null means metadata could not establish availability. Composite child capability still depends on its component routes.
+      x-live-proven: true
+  /v1/web/jobs/cancel:
+    get:
+      operationId: web_jobs_cancel
+      tags:
+      - Web Scraping
+      summary: Cancel a job
+      description: Cancel one of your queued or running jobs. A queued job is refunded in full; a running job stops but its charge stands, because upstream work had already begun. Free — costs 0 credits.
+      parameters:
+      - name: job_id
+        in: query
+        required: true
+        schema:
+          type: string
+        example: job_0123456789abcdef01234567
+        description: Job id returned by /v1/web/crawl or /v1/web/batch-scrape
+      - name: dry_run
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - '1'
+          - '0'
+          - 'true'
+          - 'false'
+        example: '1'
+        description: 'Read a zero-credit estimate without fetching sources, running AI, or reserving credits. Cache status is a snapshot, not a guarantee at execution. Accepted values: 1, 0, true, false. Case, spaces, hyphens and underscores are interchangeable.'
+      - name: X-Max-Credits
+        in: header
+        required: false
+        schema:
+          type: integer
+          minimum: 0
+          maximum: 9007199254740991
+        example: 5
+        description: Optional credit reservation ceiling for this individual request. Send a non-negative integer in decimal digits. Live execution checks the required reservation after resolving free cache hits or buffered continuation, before charging or calling a supplier. A higher reservation returns HTTP 422 INVALID_PARAMETERS with reason max_credits_exceeded and charges nothing. Invalid header values also return 422. Zero permits only a zero-credit reservation; omitting the header uses normal pricing. dry_run remains a free preview. This does not cap later requests, batches or scheduled runs.
+      security:
+      - ApiKeyHeader: []
+      - BearerKey: []
+      responses:
+        '200':
+          description: 'The common success envelope; `data` is endpoint-specific. Many lists use items/count/cursor; bundles use named collections and their documented continuation metadata. HTTP 200 can contain a partial bundle: inspect complete, partial and legs where supplied.'
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/Success'
+                - type: object
+                  properties:
+                    data:
+                      $schema: https://json-schema.org/draft/2020-12/schema
+                      $id: https://www.monocrawl.com/schemas/web/jobs/cancel.json
+                      title: web/jobs/cancel data fields
+                      description: Required core structure for successful data, with optional source fields. Additional fields are allowed. This is not a completeness guarantee.
+                      type: object
+                      properties:
+                        id:
+                          type:
+                          - string
+                          - 'null'
+                          description: id
+                        kind:
+                          type:
+                          - string
+                          - 'null'
+                          description: kind
+                        status:
+                          type:
+                          - string
+                          - 'null'
+                          description: status
+                        error:
+                          type:
+                          - string
+                          - 'null'
+                          description: error
+                        refund_status:
+                          type:
+                          - string
+                          - 'null'
+                          description: refund status
+                        created_at:
+                          type:
+                          - string
+                          - 'null'
+                          description: created at
+                        started_at:
+                          type:
+                          - string
+                          - 'null'
+                          description: started at
+                        completed_at:
+                          type:
+                          - string
+                          - 'null'
+                          description: completed at
+                        credits_charged:
+                          type:
+                          - number
+                          - 'null'
+                          description: credits charged
+                        credits_refunded:
+                          type:
+                          - number
+                          - 'null'
+                          description: credits refunded
+                        attempts:
+                          type:
+                          - number
+                          - 'null'
+                          description: attempts
+                        params:
+                          type:
+                          - object
+                          - 'null'
+                          properties: {}
+                          additionalProperties: true
+                        progress:
+                          type:
+                          - object
+                          - 'null'
+                          properties: {}
+                          additionalProperties: true
+                        result:
+                          description: Operation-specific JSON value; inspect the status and requested operation before reading it.
+                      additionalProperties: true
+                      allOf:
+                      - anyOf:
+                        - required:
+                          - id
+                          properties:
+                            id:
+                              type:
+                              - string
+                              description: id
+                              minLength: 1
+                        - required:
+                          - error
+                          properties:
+                            error:
+                              type:
+                              - string
+                              description: error
+                              minLength: 1
+                        - required:
+                          - refund_status
+                          properties:
+                            refund_status:
+                              type:
+                              - string
+                              description: refund status
+                              minLength: 1
+                        - required:
+                          - created_at
+                          properties:
+                            created_at:
+                              type:
+                              - string
+                              description: created at
+                              minLength: 1
+                        - required:
+                          - started_at
+                          properties:
+                            started_at:
+                              type:
+                              - string
+                              description: started at
+                              minLength: 1
+                        - required:
+                          - completed_at
+                          properties:
+                            completed_at:
+                              type:
+                              - string
+                              description: completed at
+                              minLength: 1
+                        - required:
+                          - credits_charged
+                          properties:
+                            credits_charged:
+                              type:
+                              - number
+                              description: credits charged
+                        - required:
+                          - credits_refunded
+                          properties:
+                            credits_refunded:
+                              type:
+                              - number
+                              description: credits refunded
+                        - required:
+                          - attempts
+                          properties:
+                            attempts:
+                              type:
+                              - number
+                              description: attempts
+                        - required:
+                          - params
+                          properties:
+                            params:
+                              type:
+                              - object
+                              properties: {}
+                              additionalProperties: true
+                        - required:
+                          - progress
+                          properties:
+                            progress:
+                              type:
+                              - object
+                              properties: {}
+                              additionalProperties: true
+                        - required:
+                          - result
+                          properties:
+                            result:
+                              description: Operation-specific JSON value; inspect the status and requested operation before reading it.
+                      x-contract-version: '2026-09-22'
+                      x-validation-scope: Required success payload structure; optional fields and source completeness remain separate.
+                      examples:
+                      - id: null
+                        kind: null
+                        status: null
+                        error: null
+                        refund_status: null
+                        created_at: null
+                        started_at: null
+                        completed_at: null
+                        credits_charged: 0
+                        credits_refunded: 0
+                        attempts: 0
+                        params: {}
+                        progress: {}
+                        result: null
+        default:
+          description: The error envelope — the same shape for every non-2xx status.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      x-credits: 0
+      x-production-available: true
+      x-capacity:
+        status: not_assessed
+        message: Capacity is workload-dependent; configured routes do not establish sustained throughput or an availability guarantee.
+      x-availability-scope: Structural check of the effective registered chain, production permission, adapter, configured cost and quality floor without request parameters. True is not a live-health, credential, quota, subscription-entitlement, complete-data or deployment-exposure guarantee. False means no structurally eligible candidate; null means metadata could not establish availability. Composite child capability still depends on its component routes.
+      x-live-proven: true
+  /v1/web/jobs/get:
+    get:
+      operationId: web_jobs_get
+      tags:
+      - Web Scraping
+      summary: Get an async web job
+      description: 'Fetch one of your jobs by id: status, progress, the result payload once it completes, and the error if it failed. Free. Free — costs 0 credits.'
+      parameters:
+      - name: job_id
+        in: query
+        required: true
+        schema:
+          type: string
+        example: job_0123456789abcdef01234567
+        description: Job id returned by /v1/web/crawl or /v1/web/batch-scrape
+      - name: dry_run
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - '1'
+          - '0'
+          - 'true'
+          - 'false'
+        example: '1'
+        description: 'Read a zero-credit estimate without fetching sources, running AI, or reserving credits. Cache status is a snapshot, not a guarantee at execution. Accepted values: 1, 0, true, false. Case, spaces, hyphens and underscores are interchangeable.'
+      - name: X-Max-Credits
+        in: header
+        required: false
+        schema:
+          type: integer
+          minimum: 0
+          maximum: 9007199254740991
+        example: 5
+        description: Optional credit reservation ceiling for this individual request. Send a non-negative integer in decimal digits. Live execution checks the required reservation after resolving free cache hits or buffered continuation, before charging or calling a supplier. A higher reservation returns HTTP 422 INVALID_PARAMETERS with reason max_credits_exceeded and charges nothing. Invalid header values also return 422. Zero permits only a zero-credit reservation; omitting the header uses normal pricing. dry_run remains a free preview. This does not cap later requests, batches or scheduled runs.
+      security:
+      - ApiKeyHeader: []
+      - BearerKey: []
+      responses:
+        '200':
+          description: 'The common success envelope; `data` is endpoint-specific. Many lists use items/count/cursor; bundles use named collections and their documented continuation metadata. HTTP 200 can contain a partial bundle: inspect complete, partial and legs where supplied.'
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/Success'
+                - type: object
+                  properties:
+                    data:
+                      $schema: https://json-schema.org/draft/2020-12/schema
+                      $id: https://www.monocrawl.com/schemas/web/jobs/get.json
+                      title: web/jobs/get data fields
+                      description: Required core structure for successful data, with optional source fields. Additional fields are allowed. This is not a completeness guarantee.
+                      type: object
+                      properties:
+                        id:
+                          type:
+                          - string
+                          - 'null'
+                          description: id
+                        kind:
+                          type:
+                          - string
+                          - 'null'
+                          description: kind
+                        status:
+                          type:
+                          - string
+                          - 'null'
+                          description: status
+                        error:
+                          type:
+                          - string
+                          - 'null'
+                          description: error
+                        refund_status:
+                          type:
+                          - string
+                          - 'null'
+                          description: refund status
+                        created_at:
+                          type:
+                          - string
+                          - 'null'
+                          description: created at
+                        started_at:
+                          type:
+                          - string
+                          - 'null'
+                          description: started at
+                        completed_at:
+                          type:
+                          - string
+                          - 'null'
+                          description: completed at
+                        credits_charged:
+                          type:
+                          - number
+                          - 'null'
+                          description: credits charged
+                        credits_refunded:
+                          type:
+                          - number
+                          - 'null'
+                          description: credits refunded
+                        attempts:
+                          type:
+                          - number
+                          - 'null'
+                          description: attempts
+                        params:
+                          type:
+                          - object
+                          - 'null'
+                          properties: {}
+                          additionalProperties: true
+                        progress:
+                          type:
+                          - object
+                          - 'null'
+                          properties: {}
+                          additionalProperties: true
+                        result:
+                          description: Operation-specific JSON value; inspect the status and requested operation before reading it.
+                      additionalProperties: true
+                      allOf:
+                      - anyOf:
+                        - required:
+                          - id
+                          properties:
+                            id:
+                              type:
+                              - string
+                              description: id
+                              minLength: 1
+                        - required:
+                          - error
+                          properties:
+                            error:
+                              type:
+                              - string
+                              description: error
+                              minLength: 1
+                        - required:
+                          - refund_status
+                          properties:
+                            refund_status:
+                              type:
+                              - string
+                              description: refund status
+                              minLength: 1
+                        - required:
+                          - created_at
+                          properties:
+                            created_at:
+                              type:
+                              - string
+                              description: created at
+                              minLength: 1
+                        - required:
+                          - started_at
+                          properties:
+                            started_at:
+                              type:
+                              - string
+                              description: started at
+                              minLength: 1
+                        - required:
+                          - completed_at
+                          properties:
+                            completed_at:
+                              type:
+                              - string
+                              description: completed at
+                              minLength: 1
+                        - required:
+                          - credits_charged
+                          properties:
+                            credits_charged:
+                              type:
+                              - number
+                              description: credits charged
+                        - required:
+                          - credits_refunded
+                          properties:
+                            credits_refunded:
+                              type:
+                              - number
+                              description: credits refunded
+                        - required:
+                          - attempts
+                          properties:
+                            attempts:
+                              type:
+                              - number
+                              description: attempts
+                        - required:
+                          - params
+                          properties:
+                            params:
+                              type:
+                              - object
+                              properties: {}
+                              additionalProperties: true
+                        - required:
+                          - progress
+                          properties:
+                            progress:
+                              type:
+                              - object
+                              properties: {}
+                              additionalProperties: true
+                        - required:
+                          - result
+                          properties:
+                            result:
+                              description: Operation-specific JSON value; inspect the status and requested operation before reading it.
+                      x-contract-version: '2026-09-22'
+                      x-validation-scope: Required success payload structure; optional fields and source completeness remain separate.
+                      examples:
+                      - id: null
+                        kind: null
+                        status: null
+                        error: null
+                        refund_status: null
+                        created_at: null
+                        started_at: null
+                        completed_at: null
+                        credits_charged: 0
+                        credits_refunded: 0
+                        attempts: 0
+                        params: {}
+                        progress: {}
+                        result: null
+        default:
+          description: The error envelope — the same shape for every non-2xx status.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      x-credits: 0
+      x-production-available: true
+      x-capacity:
+        status: not_assessed
+        message: Capacity is workload-dependent; configured routes do not establish sustained throughput or an availability guarantee.
+      x-availability-scope: Structural check of the effective registered chain, production permission, adapter, configured cost and quality floor without request parameters. True is not a live-health, credential, quota, subscription-entitlement, complete-data or deployment-exposure guarantee. False means no structurally eligible candidate; null means metadata could not establish availability. Composite child capability still depends on its component routes.
+      x-live-proven: true
+  /v1/web/map:
+    get:
+      operationId: web_map
+      tags:
+      - Web Scraping
+      summary: Map URLs on a site
+      description: Discover a site's URLs from its sitemap.xml (one level of sitemap indexes) with same-origin page links as fallback. Costs 3 credits per successful live response.
+      parameters:
+      - name: url
+        in: query
+        required: true
+        schema:
+          type: string
+        example: https://example.com
+        description: Site URL to map (http/https, public hosts only)
+      - name: search
+        in: query
+        required: false
+        schema:
+          type: string
+        example: blog
+        description: Only return URLs containing this text (case-insensitive)
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: string
+        example: '100'
+        description: Maximum URLs to return (default 100, cap 500)
+      - name: sitemap
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - include
+          - only
+          - skip
+        example: include
+        description: 'Sitemap use: include (default: sitemap first, page links as fallback), only, or skip Accepted values: include, only, skip. Case, spaces, hyphens and underscores are interchangeable.'
+      - name: include_subdomains
+        in: query
+        required: false
+        schema:
+          type: string
+        example: 'false'
+        description: Also include URLs on subdomains of the site
+      - name: ignore_query_parameters
+        in: query
+        required: false
+        schema:
+          type: string
+        example: 'false'
+        description: Strip query strings before deduplicating URLs
+      - name: dry_run
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - '1'
+          - '0'
+          - 'true'
+          - 'false'
+        example: '1'
+        description: 'Read a zero-credit estimate without fetching sources, running AI, or reserving credits. Cache status is a snapshot, not a guarantee at execution. Accepted values: 1, 0, true, false. Case, spaces, hyphens and underscores are interchangeable.'
+      - name: X-Max-Credits
+        in: header
+        required: false
+        schema:
+          type: integer
+          minimum: 0
+          maximum: 9007199254740991
+        example: 5
+        description: Optional credit reservation ceiling for this individual request. Send a non-negative integer in decimal digits. Live execution checks the required reservation after resolving free cache hits or buffered continuation, before charging or calling a supplier. A higher reservation returns HTTP 422 INVALID_PARAMETERS with reason max_credits_exceeded and charges nothing. Invalid header values also return 422. Zero permits only a zero-credit reservation; omitting the header uses normal pricing. dry_run remains a free preview. This does not cap later requests, batches or scheduled runs.
+      security:
+      - ApiKeyHeader: []
+      - BearerKey: []
+      responses:
+        '200':
+          description: 'The common success envelope; `data` is endpoint-specific. Many lists use items/count/cursor; bundles use named collections and their documented continuation metadata. HTTP 200 can contain a partial bundle: inspect complete, partial and legs where supplied.'
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/Success'
+                - type: object
+                  properties:
+                    data:
+                      $schema: https://json-schema.org/draft/2020-12/schema
+                      $id: https://www.monocrawl.com/schemas/web/map.json
+                      title: web/map data fields
+                      description: Optional data supplied by this operation. Null means unknown.
+                      type: object
+                      properties:
+                        _meta:
+                          description: Optional  meta supplied by this operation. Null means unknown.
+                          type:
+                          - object
+                          - 'null'
+                          properties:
+                            billing:
+                              description: Optional billing supplied by this operation. Null means unknown.
+                              type:
+                              - object
+                              - 'null'
+                              properties:
+                                charged:
+                                  description: Optional charged supplied by this operation. Null means unknown.
+                                  type:
+                                  - number
+                                  - 'null'
+                                list_price:
+                                  description: Optional list price supplied by this operation. Null means unknown.
+                                  type:
+                                  - number
+                                  - 'null'
+                                reason:
+                                  description: Optional reason supplied by this operation. Null means unknown.
+                                  type:
+                                  - string
+                                  - 'null'
+                              additionalProperties: true
+                          additionalProperties: true
+                        _warnings:
+                          description: Optional  warnings supplied by this operation. Null means unknown.
+                          type:
+                          - array
+                          - 'null'
+                          items:
+                            description: Optional record supplied by this operation. Null means unknown.
+                            type:
+                            - string
+                            - 'null'
+                        count:
+                          description: Number of records in this response, not lifetime or total matches.
+                          type:
+                          - number
+                          - 'null'
+                        discovery:
+                          description: Optional discovery supplied by this operation. Null means unknown.
+                          type:
+                          - object
+                          - 'null'
+                          properties:
+                            document_limit_bytes:
+                              description: Optional document limit bytes supplied by this operation. Null means unknown.
+                              type:
+                              - number
+                              - 'null'
+                            documents_fetched:
+                              description: Optional documents fetched supplied by this operation. Null means unknown.
+                              type:
+                              - number
+                              - 'null'
+                            max_documents:
+                              description: Optional max documents supplied by this operation. Null means unknown.
+                              type:
+                              - number
+                              - 'null'
+                            max_sitemaps:
+                              description: Optional max sitemaps supplied by this operation. Null means unknown.
+                              type:
+                              - number
+                              - 'null'
+                            time_limit_ms:
+                              description: Optional time limit ms supplied by this operation. Null means unknown.
+                              type:
+                              - number
+                              - 'null'
+                          additionalProperties: true
+                        items:
+                          description: Source array was empty in the reviewed captures; item fields remain unspecified.
+                          type:
+                          - array
+                          items: {}
+                        limit:
+                          description: Optional limit supplied by this operation. Null means unknown.
+                          type:
+                          - number
+                          - 'null'
+                        origin:
+                          description: Optional origin supplied by this operation. Null means unknown.
+                          type:
+                          - string
+                          - 'null'
+                        sources:
+                          description: Optional sources supplied by this operation. Null means unknown.
+                          type:
+                          - array
+                          - 'null'
+                          items:
+                            description: Optional record supplied by this operation. Null means unknown.
+                            type:
+                            - string
+                            - 'null'
+                        url:
+                          description: Original source URL when supplied.
+                          type:
+                          - string
+                          - 'null'
+                      additionalProperties: true
+                      required:
+                      - items
+                      x-contract-version: '2026-09-22'
+                      x-validation-scope: Required success payload structure; optional fields and source completeness remain separate.
+                      examples:
+                      - _meta:
+                          billing:
+                            charged: 0
+                            list_price: 0
+                            reason: example
+                        _warnings:
+                        - example
+                        count: 0
+                        discovery:
+                          document_limit_bytes: 0
+                          documents_fetched: 0
+                          max_documents: 0
+                          max_sitemaps: 0
+                          time_limit_ms: 0
+                        items: []
+                        limit: 0
+                        origin: example
+                        sources:
+                        - example
+                        url: https://example.com/example
+        default:
+          description: The error envelope — the same shape for every non-2xx status.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      x-credits: 3
+      x-production-available: true
+      x-capacity:
+        status: not_assessed
+        message: Capacity is workload-dependent; configured routes do not establish sustained throughput or an availability guarantee.
+      x-availability-scope: Structural check of the effective registered chain, production permission, adapter, configured cost and quality floor without request parameters. True is not a live-health, credential, quota, subscription-entitlement, complete-data or deployment-exposure guarantee. False means no structurally eligible candidate; null means metadata could not establish availability. Composite child capability still depends on its component routes.
+      x-live-proven: true
+  /v1/web/parse:
+    get:
+      operationId: web_parse
+      tags:
+      - Web Scraping
+      summary: Parse a document
+      description: Extract text and metadata from HTML, plain text, Markdown, CSV/TSV, JSON, XML and PDF. Read visible text from one static JPEG, PNG or WebP image up to 2 MB and 16 megapixels, including TikTok/Instagram post covers via data.cover_ocr. Empty PDF extraction is uncharged. Office files, archives and unsupported image formats return 422. Costs 2 credits per successful live response.
+      parameters:
+      - name: url
+        in: query
+        required: true
+        schema:
+          type: string
+        example: https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf
+        description: Public document URL. Also accepts one static JPEG, PNG or WebP image up to 2 MB and 16 megapixels for text extraction; other slides or video frames require separate requests.
+      - name: timeout
+        in: query
+        required: false
+        schema:
+          type: string
+        example: '10000'
+        description: Fetch budget in milliseconds, clamped to 1000-15000
+      - name: dry_run
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - '1'
+          - '0'
+          - 'true'
+          - 'false'
+        example: '1'
+        description: 'Read a zero-credit estimate without fetching sources, running AI, or reserving credits. Cache status is a snapshot, not a guarantee at execution. Accepted values: 1, 0, true, false. Case, spaces, hyphens and underscores are interchangeable.'
+      - name: X-Max-Credits
+        in: header
+        required: false
+        schema:
+          type: integer
+          minimum: 0
+          maximum: 9007199254740991
+        example: 5
+        description: Optional credit reservation ceiling for this individual request. Send a non-negative integer in decimal digits. Live execution checks the required reservation after resolving free cache hits or buffered continuation, before charging or calling a supplier. A higher reservation returns HTTP 422 INVALID_PARAMETERS with reason max_credits_exceeded and charges nothing. Invalid header values also return 422. Zero permits only a zero-credit reservation; omitting the header uses normal pricing. dry_run remains a free preview. This does not cap later requests, batches or scheduled runs.
+      security:
+      - ApiKeyHeader: []
+      - BearerKey: []
+      responses:
+        '200':
+          description: 'The common success envelope; `data` is endpoint-specific. Many lists use items/count/cursor; bundles use named collections and their documented continuation metadata. HTTP 200 can contain a partial bundle: inspect complete, partial and legs where supplied.'
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/Success'
+                - type: object
+                  properties:
+                    data:
+                      $schema: https://json-schema.org/draft/2020-12/schema
+                      $id: https://www.monocrawl.com/schemas/web/parse.json
+                      title: web/parse data fields
+                      description: Required core structure for successful data, with optional source fields. Additional fields are allowed. This is not a completeness guarantee.
+                      type: object
+                      properties:
+                        url:
+                          type:
+                          - string
+                          - 'null'
+                          description: url
+                        final_url:
+                          type:
+                          - string
+                          - 'null'
+                          description: final url
+                        content_type:
+                          type:
+                          - string
+                          - 'null'
+                          description: content type
+                        detected_type:
+                          type:
+                          - string
+                          - 'null'
+                          description: detected type
+                        detected_via:
+                          type:
+                          - string
+                          - 'null'
+                          description: detected via
+                        text:
+                          type:
+                          - string
+                          - 'null'
+                          description: text
+                        byte_size:
+                          type:
+                          - number
+                          - 'null'
+                          description: byte size; null is unknown.
+                        text_length:
+                          type:
+                          - number
+                          - 'null'
+                          description: text length; null is unknown.
+                        pages:
+                          type:
+                          - number
+                          - 'null'
+                          description: pages; null is unknown.
+                        metadata:
+                          type:
+                          - object
+                          - 'null'
+                          properties: {}
+                          additionalProperties: true
+                        truncated:
+                          type:
+                          - boolean
+                          - 'null'
+                          description: Whether returned document text was cut short.
+                        texts:
+                          type: array
+                          items:
+                            type:
+                            - string
+                            - 'null'
+                            description: Source text.
+                        _warnings:
+                          type: array
+                          items:
+                            type:
+                            - string
+                            - 'null'
+                            description: Source text.
+                      additionalProperties: true
+                      allOf:
+                      - anyOf:
+                        - required:
+                          - url
+                          properties:
+                            url:
+                              type:
+                              - string
+                              description: url
+                              minLength: 1
+                        - required:
+                          - final_url
+                          properties:
+                            final_url:
+                              type:
+                              - string
+                              description: final url
+                              minLength: 1
+                        - required:
+                          - content_type
+                          properties:
+                            content_type:
+                              type:
+                              - string
+                              description: content type
+                              minLength: 1
+                        - required:
+                          - detected_type
+                          properties:
+                            detected_type:
+                              type:
+                              - string
+                              description: detected type
+                              minLength: 1
+                        - required:
+                          - detected_via
+                          properties:
+                            detected_via:
+                              type:
+                              - string
+                              description: detected via
+                              minLength: 1
+                        - required:
+                          - text
+                          properties:
+                            text:
+                              type:
+                              - string
+                              description: text
+                              minLength: 1
+                        - required:
+                          - byte_size
+                          properties:
+                            byte_size:
+                              type:
+                              - number
+                              description: byte size; null is unknown.
+                        - required:
+                          - text_length
+                          properties:
+                            text_length:
+                              type:
+                              - number
+                              description: text length; null is unknown.
+                        - required:
+                          - pages
+                          properties:
+                            pages:
+                              type:
+                              - number
+                              description: pages; null is unknown.
+                        - required:
+                          - metadata
+                          properties:
+                            metadata:
+                              type:
+                              - object
+                              properties: {}
+                              additionalProperties: true
+                        - required:
+                          - truncated
+                          properties:
+                            truncated:
+                              type:
+                              - boolean
+                              description: Whether returned document text was cut short.
+                        - required:
+                          - texts
+                          properties:
+                            texts:
+                              type: array
+                              items:
+                                type:
+                                - string
+                                - 'null'
+                                description: Source text.
+                      x-contract-version: '2026-09-22'
+                      x-validation-scope: Required success payload structure; optional fields and source completeness remain separate.
+                      examples:
+                      - detected_type: image
+                        text: Example visible text
+                        texts:
+                        - Example visible text
+                        truncated: false
+        default:
+          description: The error envelope — the same shape for every non-2xx status.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      x-credits: 2
+      x-production-available: true
+      x-capacity:
+        status: not_assessed
+        message: Capacity is workload-dependent; configured routes do not establish sustained throughput or an availability guarantee.
+      x-availability-scope: Structural check of the effective registered chain, production permission, adapter, configured cost and quality floor without request parameters. True is not a live-health, credential, quota, subscription-entitlement, complete-data or deployment-exposure guarantee. False means no structurally eligible candidate; null means metadata could not establish availability. Composite child capability still depends on its component routes.
+      x-live-proven: true
+  /v1/web/scrape:
+    get:
+      operationId: web_scrape
+      tags:
+      - Web Scraping
+      summary: Scrape a web page
+      description: 'Fetch a public web page and return its content as markdown, text, raw HTML, links, and/or page metadata. Fetch modes: direct by default; browser, enhanced and rendered are deployment-gated and off by default. Requested output shapes are unchanged. An unavailable non-direct mode returns 424 rather than silently ignoring the requested mode. Costs 1 credit per successful live response.'
+      parameters:
+      - name: url
+        in: query
+        required: true
+        schema:
+          type: string
+        example: https://example.com
+        description: Page URL to scrape (http/https, public hosts only)
+      - name: formats
+        in: query
+        required: false
+        schema:
+          type: array
+          items:
+            type: string
+            enum:
+            - markdown
+            - html
+            - text
+            - links
+            - metadata
+        style: form
+        explode: false
+        example:
+        - markdown
+        - metadata
+        description: 'Comma-separated subset of markdown,html,text,links,metadata (default markdown,metadata) Accepted values (comma-separated): markdown, html, text, links, metadata. Case, spaces, hyphens and underscores are interchangeable.'
+      - name: only_main_content
+        in: query
+        required: false
+        schema:
+          type: string
+        example: 'true'
+        description: Strip page chrome (nav/header/footer/aside) and return the main content region (default true)
+      - name: timeout
+        in: query
+        required: false
+        schema:
+          type: string
+        example: '10000'
+        description: Fetch budget in milliseconds, clamped to 1000-15000
+      - name: fetch_mode
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - direct
+          - browser
+          - enhanced
+          - rendered
+        example: direct
+        description: 'Fetch mode: direct (default) reads static HTML; browser explicitly runs JavaScript in an owned, isolated browser. Enhanced and rendered try direct first and permit configured fallbacks. Non-direct modes require deployment enablement, an approved target and applicable resource or spending limits; otherwise the request is refused. Output formats are unchanged. Accepted values: direct, browser, enhanced, rendered. Case, spaces, hyphens and underscores are interchangeable.'
+      - name: dry_run
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - '1'
+          - '0'
+          - 'true'
+          - 'false'
+        example: '1'
+        description: 'Read a zero-credit estimate without fetching sources, running AI, or reserving credits. Cache status is a snapshot, not a guarantee at execution. Accepted values: 1, 0, true, false. Case, spaces, hyphens and underscores are interchangeable.'
+      - name: X-Max-Credits
+        in: header
+        required: false
+        schema:
+          type: integer
+          minimum: 0
+          maximum: 9007199254740991
+        example: 5
+        description: Optional credit reservation ceiling for this individual request. Send a non-negative integer in decimal digits. Live execution checks the required reservation after resolving free cache hits or buffered continuation, before charging or calling a supplier. A higher reservation returns HTTP 422 INVALID_PARAMETERS with reason max_credits_exceeded and charges nothing. Invalid header values also return 422. Zero permits only a zero-credit reservation; omitting the header uses normal pricing. dry_run remains a free preview. This does not cap later requests, batches or scheduled runs.
+      security:
+      - ApiKeyHeader: []
+      - BearerKey: []
+      responses:
+        '200':
+          description: 'The common success envelope; `data` is endpoint-specific. Many lists use items/count/cursor; bundles use named collections and their documented continuation metadata. HTTP 200 can contain a partial bundle: inspect complete, partial and legs where supplied.'
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/Success'
+                - type: object
+                  properties:
+                    data:
+                      $schema: https://json-schema.org/draft/2020-12/schema
+                      $id: https://www.monocrawl.com/schemas/web/scrape.json
+                      title: web/scrape data fields
+                      description: Optional data supplied by this operation. Null means unknown.
+                      type: object
+                      properties:
+                        _warnings:
+                          description: Optional  warnings supplied by this operation. Null means unknown.
+                          type:
+                          - array
+                          - 'null'
+                          items:
+                            description: Optional record supplied by this operation. Null means unknown.
+                            type:
+                            - string
+                            - 'null'
+                        content_strategy:
+                          description: Optional content strategy supplied by this operation. Null means unknown.
+                          type:
+                          - string
+                          - 'null'
+                        content_type:
+                          description: Optional content type supplied by this operation. Null means unknown.
+                          type:
+                          - string
+                          - 'null'
+                        description:
+                          description: Source description; null or absent means not supplied.
+                          type:
+                          - string
+                          - 'null'
+                        final_url:
+                          description: Optional final url supplied by this operation. Null means unknown.
+                          type:
+                          - string
+                          - 'null'
+                        language:
+                          description: Optional language supplied by this operation. Null means unknown.
+                          type:
+                          - string
+                          - 'null'
+                        markdown:
+                          description: Optional markdown supplied by this operation. Null means unknown.
+                          type:
+                          - string
+                          - 'null'
+                        only_main_content:
+                          description: Optional only main content supplied by this operation. Null means unknown.
+                          type:
+                          - boolean
+                          - 'null'
+                        status:
+                          description: Optional status supplied by this operation. Null means unknown.
+                          type:
+                          - number
+                          - 'null'
+                        title:
+                          description: Source title when supplied.
+                          type:
+                          - string
+                          - 'null'
+                        url:
+                          description: Original source URL when supplied.
+                          type:
+                          - string
+                          - 'null'
+                      additionalProperties: true
+                      allOf:
+                      - anyOf:
+                        - required:
+                          - content_strategy
+                          properties:
+                            content_strategy:
+                              description: Optional content strategy supplied by this operation. Null means unknown.
+                              type:
+                              - string
+                              minLength: 1
+                        - required:
+                          - content_type
+                          properties:
+                            content_type:
+                              description: Optional content type supplied by this operation. Null means unknown.
+                              type:
+                              - string
+                              minLength: 1
+                        - required:
+                          - description
+                          properties:
+                            description:
+                              description: Source description; null or absent means not supplied.
+                              type:
+                              - string
+                              minLength: 1
+                        - required:
+                          - final_url
+                          properties:
+                            final_url:
+                              description: Optional final url supplied by this operation. Null means unknown.
+                              type:
+                              - string
+                              minLength: 1
+                        - required:
+                          - language
+                          properties:
+                            language:
+                              description: Optional language supplied by this operation. Null means unknown.
+                              type:
+                              - string
+                              minLength: 1
+                        - required:
+                          - markdown
+                          properties:
+                            markdown:
+                              description: Optional markdown supplied by this operation. Null means unknown.
+                              type:
+                              - string
+                              minLength: 1
+                        - required:
+                          - only_main_content
+                          properties:
+                            only_main_content:
+                              description: Optional only main content supplied by this operation. Null means unknown.
+                              type:
+                              - boolean
+                        - required:
+                          - title
+                          properties:
+                            title:
+                              description: Source title when supplied.
+                              type:
+                              - string
+                              minLength: 1
+                        - required:
+                          - url
+                          properties:
+                            url:
+                              description: Original source URL when supplied.
+                              type:
+                              - string
+                              minLength: 1
+                      x-contract-version: '2026-09-22'
+                      x-validation-scope: Required success payload structure; optional fields and source completeness remain separate.
+                      examples:
+                      - _warnings:
+                        - example
+                        content_strategy: example
+                        content_type: example
+                        description: example
+                        final_url: https://example.com/example
+                        language: example
+                        markdown: example
+                        only_main_content: false
+                        status: 0
+                        title: example
+                        url: https://example.com/example
+        default:
+          description: The error envelope — the same shape for every non-2xx status.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      x-credits: 1
+      x-production-available: true
+      x-capacity:
+        status: not_assessed
+        message: Capacity is workload-dependent; configured routes do not establish sustained throughput or an availability guarantee.
+      x-availability-scope: Structural check of the effective registered chain, production permission, adapter, configured cost and quality floor without request parameters. True is not a live-health, credential, quota, subscription-entitlement, complete-data or deployment-exposure guarantee. False means no structurally eligible candidate; null means metadata could not establish availability. Composite child capability still depends on its component routes.
+      x-live-proven: true
+  /v1/web/sessions:
+    get:
+      operationId: web_sessions
+      tags:
+      - Web Scraping
+      summary: List browser sessions
+      description: Your browser sessions, newest first, with a cursor to the next page. Expired sessions are marked as they are listed. Free — costs 0 credits.
+      parameters:
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: string
+        example: '25'
+        description: Sessions per page (default 25, cap 100)
+      - name: cursor
+        in: query
+        required: false
+        schema:
+          type: string
+        example: '1757100000000'
+        description: Opaque cursor from the previous page
+      - name: dry_run
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - '1'
+          - '0'
+          - 'true'
+          - 'false'
+        example: '1'
+        description: 'Read a zero-credit estimate without fetching sources, running AI, or reserving credits. Cache status is a snapshot, not a guarantee at execution. Accepted values: 1, 0, true, false. Case, spaces, hyphens and underscores are interchangeable.'
+      - name: X-Max-Credits
+        in: header
+        required: false
+        schema:
+          type: integer
+          minimum: 0
+          maximum: 9007199254740991
+        example: 5
+        description: Optional credit reservation ceiling for this individual request. Send a non-negative integer in decimal digits. Live execution checks the required reservation after resolving free cache hits or buffered continuation, before charging or calling a supplier. A higher reservation returns HTTP 422 INVALID_PARAMETERS with reason max_credits_exceeded and charges nothing. Invalid header values also return 422. Zero permits only a zero-credit reservation; omitting the header uses normal pricing. dry_run remains a free preview. This does not cap later requests, batches or scheduled runs.
+      security:
+      - ApiKeyHeader: []
+      - BearerKey: []
+      responses:
+        '200':
+          description: 'The common success envelope; `data` is endpoint-specific. Many lists use items/count/cursor; bundles use named collections and their documented continuation metadata. HTTP 200 can contain a partial bundle: inspect complete, partial and legs where supplied.'
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/Success'
+                - type: object
+                  properties:
+                    data:
+                      $schema: https://json-schema.org/draft/2020-12/schema
+                      $id: https://www.monocrawl.com/schemas/web/sessions.json
+                      title: web/sessions data fields
+                      description: Required core structure for successful data, with optional source fields. Additional fields are allowed. This is not a completeness guarantee.
+                      type: object
+                      properties:
+                        items:
+                          type:
+                          - array
+                          items:
+                            type: object
+                            properties:
+                              session_id:
+                                type:
+                                - string
+                                - 'null'
+                                description: session id
+                              kind:
+                                type:
+                                - string
+                                - 'null'
+                                description: kind
+                              status:
+                                type:
+                                - string
+                                - 'null'
+                                description: status
+                              url:
+                                type:
+                                - string
+                                - 'null'
+                                description: url
+                              viewer_url:
+                                type:
+                                - string
+                                - 'null'
+                                description: viewer url
+                              expires_at:
+                                type:
+                                - string
+                                - 'null'
+                                description: expires at
+                              last_activity_at:
+                                type:
+                                - string
+                                - 'null'
+                                description: last activity at
+                              closed_at:
+                                type:
+                                - string
+                                - 'null'
+                                description: closed at
+                              created_at:
+                                type:
+                                - string
+                                - 'null'
+                                description: created at
+                              updated_at:
+                                type:
+                                - string
+                                - 'null'
+                                description: updated at
+                              execution:
+                                type:
+                                - string
+                                - 'null'
+                                description: execution
+                              supplier_status:
+                                type:
+                                - string
+                                - 'null'
+                                description: supplier status
+                              ttl_seconds:
+                                type:
+                                - number
+                                - 'null'
+                                description: ttl seconds
+                              activity_ttl_seconds:
+                                type:
+                                - number
+                                - 'null'
+                                description: activity ttl seconds
+                              credits_hold:
+                                type:
+                                - number
+                                - 'null'
+                                description: credits hold
+                              credits_billed:
+                                type:
+                                - number
+                                - 'null'
+                                description: credits billed
+                            additionalProperties: true
+                            allOf:
+                            - anyOf:
+                              - required:
+                                - session_id
+                                properties:
+                                  session_id:
+                                    type:
+                                    - string
+                                    description: session id
+                                    minLength: 1
+                              - required:
+                                - url
+                                properties:
+                                  url:
+                                    type:
+                                    - string
+                                    description: url
+                                    minLength: 1
+                              - required:
+                                - viewer_url
+                                properties:
+                                  viewer_url:
+                                    type:
+                                    - string
+                                    description: viewer url
+                                    minLength: 1
+                              - required:
+                                - expires_at
+                                properties:
+                                  expires_at:
+                                    type:
+                                    - string
+                                    description: expires at
+                                    minLength: 1
+                              - required:
+                                - last_activity_at
+                                properties:
+                                  last_activity_at:
+                                    type:
+                                    - string
+                                    description: last activity at
+                                    minLength: 1
+                              - required:
+                                - closed_at
+                                properties:
+                                  closed_at:
+                                    type:
+                                    - string
+                                    description: closed at
+                                    minLength: 1
+                              - required:
+                                - created_at
+                                properties:
+                                  created_at:
+                                    type:
+                                    - string
+                                    description: created at
+                                    minLength: 1
+                              - required:
+                                - updated_at
+                                properties:
+                                  updated_at:
+                                    type:
+                                    - string
+                                    description: updated at
+                                    minLength: 1
+                              - required:
+                                - execution
+                                properties:
+                                  execution:
+                                    type:
+                                    - string
+                                    description: execution
+                                    minLength: 1
+                              - required:
+                                - supplier_status
+                                properties:
+                                  supplier_status:
+                                    type:
+                                    - string
+                                    description: supplier status
+                                    minLength: 1
+                              - required:
+                                - ttl_seconds
+                                properties:
+                                  ttl_seconds:
+                                    type:
+                                    - number
+                                    description: ttl seconds
+                              - required:
+                                - activity_ttl_seconds
+                                properties:
+                                  activity_ttl_seconds:
+                                    type:
+                                    - number
+                                    description: activity ttl seconds
+                              - required:
+                                - credits_hold
+                                properties:
+                                  credits_hold:
+                                    type:
+                                    - number
+                                    description: credits hold
+                              - required:
+                                - credits_billed
+                                properties:
+                                  credits_billed:
+                                    type:
+                                    - number
+                                    description: credits billed
+                        count:
+                          type:
+                          - number
+                          - 'null'
+                        cursor:
+                          type:
+                          - string
+                          - 'null'
+                        has_more:
+                          type:
+                          - boolean
+                          - 'null'
+                      additionalProperties: true
+                      required:
+                      - items
+                      x-contract-version: '2026-09-22'
+                      x-validation-scope: Required success payload structure; optional fields and source completeness remain separate.
+                      examples:
+                      - items: []
+                        count: 0
+                        cursor: null
+                        has_more: false
+        default:
+          description: The error envelope — the same shape for every non-2xx status.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      x-credits: 0
+      x-production-available: true
+      x-capacity:
+        status: not_assessed
+        message: Capacity is workload-dependent; configured routes do not establish sustained throughput or an availability guarantee.
+      x-availability-scope: Structural check of the effective registered chain, production permission, adapter, configured cost and quality floor without request parameters. True is not a live-health, credential, quota, subscription-entitlement, complete-data or deployment-exposure guarantee. False means no structurally eligible candidate; null means metadata could not establish availability. Composite child capability still depends on its component routes.
+      x-live-proven: true
+  /v1/web/sessions/close:
+    get:
+      operationId: web_sessions_close
+      tags:
+      - Web Scraping
+      summary: Close a browser session
+      description: Release the hosted browser and mark the session closed. Closing early does not refund the hold. Free — costs 0 credits.
+      parameters:
+      - name: session_id
+        in: query
+        required: true
+        schema:
+          type: string
+        example: ws_k3j2h1g0abcd
+        description: Session id returned by web/sessions/create
+      - name: dry_run
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - '1'
+          - '0'
+          - 'true'
+          - 'false'
+        example: '1'
+        description: 'Read a zero-credit estimate without fetching sources, running AI, or reserving credits. Cache status is a snapshot, not a guarantee at execution. Accepted values: 1, 0, true, false. Case, spaces, hyphens and underscores are interchangeable.'
+      - name: X-Max-Credits
+        in: header
+        required: false
+        schema:
+          type: integer
+          minimum: 0
+          maximum: 9007199254740991
+        example: 5
+        description: Optional credit reservation ceiling for this individual request. Send a non-negative integer in decimal digits. Live execution checks the required reservation after resolving free cache hits or buffered continuation, before charging or calling a supplier. A higher reservation returns HTTP 422 INVALID_PARAMETERS with reason max_credits_exceeded and charges nothing. Invalid header values also return 422. Zero permits only a zero-credit reservation; omitting the header uses normal pricing. dry_run remains a free preview. This does not cap later requests, batches or scheduled runs.
+      security:
+      - ApiKeyHeader: []
+      - BearerKey: []
+      responses:
+        '200':
+          description: 'The common success envelope; `data` is endpoint-specific. Many lists use items/count/cursor; bundles use named collections and their documented continuation metadata. HTTP 200 can contain a partial bundle: inspect complete, partial and legs where supplied.'
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/Success'
+                - type: object
+                  properties:
+                    data:
+                      $schema: https://json-schema.org/draft/2020-12/schema
+                      $id: https://www.monocrawl.com/schemas/web/sessions/close.json
+                      title: web/sessions/close data fields
+                      description: Required core structure for successful data, with optional source fields. Additional fields are allowed. This is not a completeness guarantee.
+                      type: object
+                      properties:
+                        session_id:
+                          type:
+                          - string
+                          - 'null'
+                          description: session id
+                        kind:
+                          type:
+                          - string
+                          - 'null'
+                          description: kind
+                        status:
+                          type:
+                          - string
+                          - 'null'
+                          description: status
+                        url:
+                          type:
+                          - string
+                          - 'null'
+                          description: url
+                        viewer_url:
+                          type:
+                          - string
+                          - 'null'
+                          description: viewer url
+                        expires_at:
+                          type:
+                          - string
+                          - 'null'
+                          description: expires at
+                        last_activity_at:
+                          type:
+                          - string
+                          - 'null'
+                          description: last activity at
+                        closed_at:
+                          type:
+                          - string
+                          - 'null'
+                          description: closed at
+                        created_at:
+                          type:
+                          - string
+                          - 'null'
+                          description: created at
+                        updated_at:
+                          type:
+                          - string
+                          - 'null'
+                          description: updated at
+                        execution:
+                          type:
+                          - string
+                          - 'null'
+                          description: execution
+                        supplier_status:
+                          type:
+                          - string
+                          - 'null'
+                          description: supplier status
+                        ttl_seconds:
+                          type:
+                          - number
+                          - 'null'
+                          description: ttl seconds
+                        activity_ttl_seconds:
+                          type:
+                          - number
+                          - 'null'
+                          description: activity ttl seconds
+                        credits_hold:
+                          type:
+                          - number
+                          - 'null'
+                          description: credits hold
+                        credits_billed:
+                          type:
+                          - number
+                          - 'null'
+                          description: credits billed
+                      additionalProperties: true
+                      allOf:
+                      - anyOf:
+                        - required:
+                          - session_id
+                          properties:
+                            session_id:
+                              type:
+                              - string
+                              description: session id
+                              minLength: 1
+                        - required:
+                          - url
+                          properties:
+                            url:
+                              type:
+                              - string
+                              description: url
+                              minLength: 1
+                        - required:
+                          - viewer_url
+                          properties:
+                            viewer_url:
+                              type:
+                              - string
+                              description: viewer url
+                              minLength: 1
+                        - required:
+                          - expires_at
+                          properties:
+                            expires_at:
+                              type:
+                              - string
+                              description: expires at
+                              minLength: 1
+                        - required:
+                          - last_activity_at
+                          properties:
+                            last_activity_at:
+                              type:
+                              - string
+                              description: last activity at
+                              minLength: 1
+                        - required:
+                          - closed_at
+                          properties:
+                            closed_at:
+                              type:
+                              - string
+                              description: closed at
+                              minLength: 1
+                        - required:
+                          - created_at
+                          properties:
+                            created_at:
+                              type:
+                              - string
+                              description: created at
+                              minLength: 1
+                        - required:
+                          - updated_at
+                          properties:
+                            updated_at:
+                              type:
+                              - string
+                              description: updated at
+                              minLength: 1
+                        - required:
+                          - execution
+                          properties:
+                            execution:
+                              type:
+                              - string
+                              description: execution
+                              minLength: 1
+                        - required:
+                          - supplier_status
+                          properties:
+                            supplier_status:
+                              type:
+                              - string
+                              description: supplier status
+                              minLength: 1
+                        - required:
+                          - ttl_seconds
+                          properties:
+                            ttl_seconds:
+                              type:
+                              - number
+                              description: ttl seconds
+                        - required:
+                          - activity_ttl_seconds
+                          properties:
+                            activity_ttl_seconds:
+                              type:
+                              - number
+                              description: activity ttl seconds
+                        - required:
+                          - credits_hold
+                          properties:
+                            credits_hold:
+                              type:
+                              - number
+                              description: credits hold
+                        - required:
+                          - credits_billed
+                          properties:
+                            credits_billed:
+                              type:
+                              - number
+                              description: credits billed
+                      x-contract-version: '2026-09-22'
+                      x-validation-scope: Required success payload structure; optional fields and source completeness remain separate.
+                      examples:
+                      - session_id: null
+                        kind: null
+                        status: null
+                        url: null
+                        viewer_url: null
+                        expires_at: null
+                        last_activity_at: null
+                        closed_at: null
+                        created_at: null
+                        updated_at: null
+                        execution: null
+                        supplier_status: null
+                        ttl_seconds: 0
+                        activity_ttl_seconds: 0
+                        credits_hold: 0
+                        credits_billed: 0
+        default:
+          description: The error envelope — the same shape for every non-2xx status.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      x-credits: 0
+      x-production-available: true
+      x-capacity:
+        status: not_assessed
+        message: Capacity is workload-dependent; configured routes do not establish sustained throughput or an availability guarantee.
+      x-availability-scope: Structural check of the effective registered chain, production permission, adapter, configured cost and quality floor without request parameters. True is not a live-health, credential, quota, subscription-entitlement, complete-data or deployment-exposure guarantee. False means no structurally eligible candidate; null means metadata could not establish availability. Composite child capability still depends on its component routes.
+      x-live-proven: true
+  /v1/web/sessions/create:
+    get:
+      operationId: web_sessions_create
+      tags:
+      - Web Scraping
+      summary: Open a browser session
+      description: 'Open an interactive hosted browser session: returns the session id, status, expiry and the credits held (billed at creation). Up to three live sessions per account; the longest lifetime is fifteen minutes. Drive it with web/sessions/execute; close it with web/sessions/close. Costs 5 credits per successful live response.'
+      parameters:
+      - name: url
+        in: query
+        required: false
+        schema:
+          type: string
+        example: https://example.com
+        description: Page to open first (http/https)
+      - name: ttl_seconds
+        in: query
+        required: false
+        schema:
+          type: string
+        example: '60'
+        description: 'Current five-credit session: 30–60 seconds; default 60. Longer sessions require separately reviewed pricing and are rejected before opening.'
+      - name: activity_ttl_seconds
+        in: query
+        required: false
+        schema:
+          type: string
+        example: '120'
+        description: Close after this many idle seconds (optional)
+      - name: dry_run
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - '1'
+          - '0'
+          - 'true'
+          - 'false'
+        example: '1'
+        description: 'Read a zero-credit estimate without fetching sources, running AI, or reserving credits. Cache status is a snapshot, not a guarantee at execution. Accepted values: 1, 0, true, false. Case, spaces, hyphens and underscores are interchangeable.'
+      - name: X-Max-Credits
+        in: header
+        required: false
+        schema:
+          type: integer
+          minimum: 0
+          maximum: 9007199254740991
+        example: 5
+        description: Optional credit reservation ceiling for this individual request. Send a non-negative integer in decimal digits. Live execution checks the required reservation after resolving free cache hits or buffered continuation, before charging or calling a supplier. A higher reservation returns HTTP 422 INVALID_PARAMETERS with reason max_credits_exceeded and charges nothing. Invalid header values also return 422. Zero permits only a zero-credit reservation; omitting the header uses normal pricing. dry_run remains a free preview. This does not cap later requests, batches or scheduled runs.
+      security:
+      - ApiKeyHeader: []
+      - BearerKey: []
+      responses:
+        '200':
+          description: 'The common success envelope; `data` is endpoint-specific. Many lists use items/count/cursor; bundles use named collections and their documented continuation metadata. HTTP 200 can contain a partial bundle: inspect complete, partial and legs where supplied.'
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/Success'
+                - type: object
+                  properties:
+                    data:
+                      $schema: https://json-schema.org/draft/2020-12/schema
+                      $id: https://www.monocrawl.com/schemas/web/sessions/create.json
+                      title: web/sessions/create data fields
+                      description: Required core structure for successful data, with optional source fields. Additional fields are allowed. This is not a completeness guarantee.
+                      type: object
+                      properties:
+                        id:
+                          type:
+                          - string
+                          - 'null'
+                          description: id
+                        session_id:
+                          type:
+                          - string
+                          - 'null'
+                          description: session id
+                        status:
+                          type:
+                          - string
+                          - 'null'
+                          description: status
+                        url:
+                          type:
+                          - string
+                          - 'null'
+                          description: url
+                        created_at:
+                          type:
+                          - string
+                          - 'null'
+                          description: created at
+                        expires_at:
+                          type:
+                          - string
+                          - 'null'
+                          description: expires at
+                        opened_title:
+                          type:
+                          - string
+                          - 'null'
+                          description: opened title
+                        ttl_seconds:
+                          type:
+                          - number
+                          - 'null'
+                          description: ttl seconds; null is unknown.
+                        credits_billed:
+                          type:
+                          - number
+                          - 'null'
+                          description: credits billed; null is unknown.
+                      additionalProperties: true
+                      allOf:
+                      - anyOf:
+                        - required:
+                          - id
+                          properties:
+                            id:
+                              type:
+                              - string
+                              description: id
+                              minLength: 1
+                        - required:
+                          - session_id
+                          properties:
+                            session_id:
+                              type:
+                              - string
+                              description: session id
+                              minLength: 1
+                        - required:
+                          - url
+                          properties:
+                            url:
+                              type:
+                              - string
+                              description: url
+                              minLength: 1
+                        - required:
+                          - created_at
+                          properties:
+                            created_at:
+                              type:
+                              - string
+                              description: created at
+                              minLength: 1
+                        - required:
+                          - expires_at
+                          properties:
+                            expires_at:
+                              type:
+                              - string
+                              description: expires at
+                              minLength: 1
+                        - required:
+                          - opened_title
+                          properties:
+                            opened_title:
+                              type:
+                              - string
+                              description: opened title
+                              minLength: 1
+                        - required:
+                          - ttl_seconds
+                          properties:
+                            ttl_seconds:
+                              type:
+                              - number
+                              description: ttl seconds; null is unknown.
+                        - required:
+                          - credits_billed
+                          properties:
+                            credits_billed:
+                              type:
+                              - number
+                              description: credits billed; null is unknown.
+                      x-contract-version: '2026-09-22'
+                      x-validation-scope: Required success payload structure; optional fields and source completeness remain separate.
+                      examples:
+                      - session_id: ws_example
+                        status: active
+        default:
+          description: The error envelope — the same shape for every non-2xx status.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      x-credits: 5
+      x-production-available: true
+      x-capacity:
+        status: not_assessed
+        message: Capacity is workload-dependent; configured routes do not establish sustained throughput or an availability guarantee.
+      x-availability-scope: Structural check of the effective registered chain, production permission, adapter, configured cost and quality floor without request parameters. True is not a live-health, credential, quota, subscription-entitlement, complete-data or deployment-exposure guarantee. False means no structurally eligible candidate; null means metadata could not establish availability. Composite child capability still depends on its component routes.
+      x-live-proven: true
+  /v1/web/sessions/execute:
+    get:
+      operationId: web_sessions_execute
+      tags:
+      - Web Scraping
+      summary: Run code in a browser session
+      description: 'Evaluate JavaScript in the session''s page, optionally after navigating: success flag, the returned value, any thrown error, the page URL and the duration. Costs 1 credit per successful live response.'
+      parameters:
+      - name: session_id
+        in: query
+        required: true
+        schema:
+          type: string
+        example: ws_k3j2h1g0abcd
+        description: Session id returned by web/sessions/create
+      - name: code
+        in: query
+        required: true
+        schema:
+          type: string
+        example: document.title
+        description: JavaScript evaluated in the page (a promise is awaited); the value is returned as JSON
+      - name: url
+        in: query
+        required: false
+        schema:
+          type: string
+        example: https://example.com
+        description: Navigate here first (optional)
+      - name: language
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - javascript
+        example: javascript
+        description: 'Only javascript: code runs in the page over DevTools, not node, python or bash on a host Accepted values: javascript. Case, spaces, hyphens and underscores are interchangeable.'
+      - name: timeout
+        in: query
+        required: false
+        schema:
+          type: string
+        example: '10000'
+        description: Milliseconds to allow, 1000 to 30000 (default 10000)
+      - name: dry_run
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - '1'
+          - '0'
+          - 'true'
+          - 'false'
+        example: '1'
+        description: 'Read a zero-credit estimate without fetching sources, running AI, or reserving credits. Cache status is a snapshot, not a guarantee at execution. Accepted values: 1, 0, true, false. Case, spaces, hyphens and underscores are interchangeable.'
+      - name: X-Max-Credits
+        in: header
+        required: false
+        schema:
+          type: integer
+          minimum: 0
+          maximum: 9007199254740991
+        example: 5
+        description: Optional credit reservation ceiling for this individual request. Send a non-negative integer in decimal digits. Live execution checks the required reservation after resolving free cache hits or buffered continuation, before charging or calling a supplier. A higher reservation returns HTTP 422 INVALID_PARAMETERS with reason max_credits_exceeded and charges nothing. Invalid header values also return 422. Zero permits only a zero-credit reservation; omitting the header uses normal pricing. dry_run remains a free preview. This does not cap later requests, batches or scheduled runs.
+      security:
+      - ApiKeyHeader: []
+      - BearerKey: []
+      responses:
+        '200':
+          description: 'The common success envelope; `data` is endpoint-specific. Many lists use items/count/cursor; bundles use named collections and their documented continuation metadata. HTTP 200 can contain a partial bundle: inspect complete, partial and legs where supplied.'
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/Success'
+                - type: object
+                  properties:
+                    data:
+                      $schema: https://json-schema.org/draft/2020-12/schema
+                      $id: https://www.monocrawl.com/schemas/web/sessions/execute.json
+                      title: web/sessions/execute data fields
+                      description: Required core structure for successful data, with optional source fields. Additional fields are allowed. This is not a completeness guarantee.
+                      type: object
+                      properties:
+                        session_id:
+                          type:
+                          - string
+                          - 'null'
+                          description: session id
+                        result_type:
+                          type:
+                          - string
+                          - 'null'
+                          description: result type
+                        error:
+                          type:
+                          - string
+                          - 'null'
+                          description: error
+                        url:
+                          type:
+                          - string
+                          - 'null'
+                          description: url
+                        language:
+                          type:
+                          - string
+                          - 'null'
+                          description: language
+                        success:
+                          type:
+                          - boolean
+                          - 'null'
+                          description: Whether page JavaScript completed.
+                        duration_ms:
+                          type:
+                          - number
+                          - 'null'
+                          description: Execution duration.
+                      additionalProperties: true
+                      allOf:
+                      - anyOf:
+                        - required:
+                          - session_id
+                          properties:
+                            session_id:
+                              type:
+                              - string
+                              description: session id
+                              minLength: 1
+                        - required:
+                          - result_type
+                          properties:
+                            result_type:
+                              type:
+                              - string
+                              description: result type
+                              minLength: 1
+                        - required:
+                          - error
+                          properties:
+                            error:
+                              type:
+                              - string
+                              description: error
+                              minLength: 1
+                        - required:
+                          - url
+                          properties:
+                            url:
+                              type:
+                              - string
+                              description: url
+                              minLength: 1
+                        - required:
+                          - language
+                          properties:
+                            language:
+                              type:
+                              - string
+                              description: language
+                              minLength: 1
+                        - required:
+                          - success
+                          properties:
+                            success:
+                              type:
+                              - boolean
+                              description: Whether page JavaScript completed.
+                        - required:
+                          - duration_ms
+                          properties:
+                            duration_ms:
+                              type:
+                              - number
+                              description: Execution duration.
+                      x-contract-version: '2026-09-22'
+                      x-validation-scope: Required success payload structure; optional fields and source completeness remain separate.
+                      examples:
+                      - session_id: ws_example
+                        success: true
+                        language: javascript
+        default:
+          description: The error envelope — the same shape for every non-2xx status.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      x-credits: 1
+      x-production-available: true
+      x-capacity:
+        status: not_assessed
+        message: Capacity is workload-dependent; configured routes do not establish sustained throughput or an availability guarantee.
+      x-availability-scope: Structural check of the effective registered chain, production permission, adapter, configured cost and quality floor without request parameters. True is not a live-health, credential, quota, subscription-entitlement, complete-data or deployment-exposure guarantee. False means no structurally eligible candidate; null means metadata could not establish availability. Composite child capability still depends on its component routes.
+      x-live-proven: true
+  /v1/web/sessions/get:
+    get:
+      operationId: web_sessions_get
+      tags:
+      - Web Scraping
+      summary: Browser session status
+      description: 'One browser session: status, expiry, credits held and billed, and the supplier''s live status while active. Free — costs 0 credits.'
+      parameters:
+      - name: session_id
+        in: query
+        required: true
+        schema:
+          type: string
+        example: ws_k3j2h1g0abcd
+        description: Session id returned by web/sessions/create
+      - name: dry_run
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - '1'
+          - '0'
+          - 'true'
+          - 'false'
+        example: '1'
+        description: 'Read a zero-credit estimate without fetching sources, running AI, or reserving credits. Cache status is a snapshot, not a guarantee at execution. Accepted values: 1, 0, true, false. Case, spaces, hyphens and underscores are interchangeable.'
+      - name: X-Max-Credits
+        in: header
+        required: false
+        schema:
+          type: integer
+          minimum: 0
+          maximum: 9007199254740991
+        example: 5
+        description: Optional credit reservation ceiling for this individual request. Send a non-negative integer in decimal digits. Live execution checks the required reservation after resolving free cache hits or buffered continuation, before charging or calling a supplier. A higher reservation returns HTTP 422 INVALID_PARAMETERS with reason max_credits_exceeded and charges nothing. Invalid header values also return 422. Zero permits only a zero-credit reservation; omitting the header uses normal pricing. dry_run remains a free preview. This does not cap later requests, batches or scheduled runs.
+      security:
+      - ApiKeyHeader: []
+      - BearerKey: []
+      responses:
+        '200':
+          description: 'The common success envelope; `data` is endpoint-specific. Many lists use items/count/cursor; bundles use named collections and their documented continuation metadata. HTTP 200 can contain a partial bundle: inspect complete, partial and legs where supplied.'
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/Success'
+                - type: object
+                  properties:
+                    data:
+                      $schema: https://json-schema.org/draft/2020-12/schema
+                      $id: https://www.monocrawl.com/schemas/web/sessions/get.json
+                      title: web/sessions/get data fields
+                      description: Required core structure for successful data, with optional source fields. Additional fields are allowed. This is not a completeness guarantee.
+                      type: object
+                      properties:
+                        session_id:
+                          type:
+                          - string
+                          - 'null'
+                          description: session id
+                        kind:
+                          type:
+                          - string
+                          - 'null'
+                          description: kind
+                        status:
+                          type:
+                          - string
+                          - 'null'
+                          description: status
+                        url:
+                          type:
+                          - string
+                          - 'null'
+                          description: url
+                        viewer_url:
+                          type:
+                          - string
+                          - 'null'
+                          description: viewer url
+                        expires_at:
+                          type:
+                          - string
+                          - 'null'
+                          description: expires at
+                        last_activity_at:
+                          type:
+                          - string
+                          - 'null'
+                          description: last activity at
+                        closed_at:
+                          type:
+                          - string
+                          - 'null'
+                          description: closed at
+                        created_at:
+                          type:
+                          - string
+                          - 'null'
+                          description: created at
+                        updated_at:
+                          type:
+                          - string
+                          - 'null'
+                          description: updated at
+                        execution:
+                          type:
+                          - string
+                          - 'null'
+                          description: execution
+                        supplier_status:
+                          type:
+                          - string
+                          - 'null'
+                          description: supplier status
+                        ttl_seconds:
+                          type:
+                          - number
+                          - 'null'
+                          description: ttl seconds
+                        activity_ttl_seconds:
+                          type:
+                          - number
+                          - 'null'
+                          description: activity ttl seconds
+                        credits_hold:
+                          type:
+                          - number
+                          - 'null'
+                          description: credits hold
+                        credits_billed:
+                          type:
+                          - number
+                          - 'null'
+                          description: credits billed
+                      additionalProperties: true
+                      allOf:
+                      - anyOf:
+                        - required:
+                          - session_id
+                          properties:
+                            session_id:
+                              type:
+                              - string
+                              description: session id
+                              minLength: 1
+                        - required:
+                          - url
+                          properties:
+                            url:
+                              type:
+                              - string
+                              description: url
+                              minLength: 1
+                        - required:
+                          - viewer_url
+                          properties:
+                            viewer_url:
+                              type:
+                              - string
+                              description: viewer url
+                              minLength: 1
+                        - required:
+                          - expires_at
+                          properties:
+                            expires_at:
+                              type:
+                              - string
+                              description: expires at
+                              minLength: 1
+                        - required:
+                          - last_activity_at
+                          properties:
+                            last_activity_at:
+                              type:
+                              - string
+                              description: last activity at
+                              minLength: 1
+                        - required:
+                          - closed_at
+                          properties:
+                            closed_at:
+                              type:
+                              - string
+                              description: closed at
+                              minLength: 1
+                        - required:
+                          - created_at
+                          properties:
+                            created_at:
+                              type:
+                              - string
+                              description: created at
+                              minLength: 1
+                        - required:
+                          - updated_at
+                          properties:
+                            updated_at:
+                              type:
+                              - string
+                              description: updated at
+                              minLength: 1
+                        - required:
+                          - execution
+                          properties:
+                            execution:
+                              type:
+                              - string
+                              description: execution
+                              minLength: 1
+                        - required:
+                          - supplier_status
+                          properties:
+                            supplier_status:
+                              type:
+                              - string
+                              description: supplier status
+                              minLength: 1
+                        - required:
+                          - ttl_seconds
+                          properties:
+                            ttl_seconds:
+                              type:
+                              - number
+                              description: ttl seconds
+                        - required:
+                          - activity_ttl_seconds
+                          properties:
+                            activity_ttl_seconds:
+                              type:
+                              - number
+                              description: activity ttl seconds
+                        - required:
+                          - credits_hold
+                          properties:
+                            credits_hold:
+                              type:
+                              - number
+                              description: credits hold
+                        - required:
+                          - credits_billed
+                          properties:
+                            credits_billed:
+                              type:
+                              - number
+                              description: credits billed
+                      x-contract-version: '2026-09-22'
+                      x-validation-scope: Required success payload structure; optional fields and source completeness remain separate.
+                      examples:
+                      - session_id: null
+                        kind: null
+                        status: null
+                        url: null
+                        viewer_url: null
+                        expires_at: null
+                        last_activity_at: null
+                        closed_at: null
+                        created_at: null
+                        updated_at: null
+                        execution: null
+                        supplier_status: null
+                        ttl_seconds: 0
+                        activity_ttl_seconds: 0
+                        credits_hold: 0
+                        credits_billed: 0
+        default:
+          description: The error envelope — the same shape for every non-2xx status.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      x-credits: 0
+      x-production-available: true
+      x-capacity:
+        status: not_assessed
+        message: Capacity is workload-dependent; configured routes do not establish sustained throughput or an availability guarantee.
+      x-availability-scope: Structural check of the effective registered chain, production permission, adapter, configured cost and quality floor without request parameters. True is not a live-health, credential, quota, subscription-entitlement, complete-data or deployment-exposure guarantee. False means no structurally eligible candidate; null means metadata could not establish availability. Composite child capability still depends on its component routes.
+      x-live-proven: true
+  /v1/web/social-profiles:
+    get:
+      operationId: web_social_profiles
+      tags:
+      - Web Scraping
+      summary: Social profile discovery
+      description: Starting from one known profile, the same person or brand's profiles on other platforms, with a confidence score and the evidence behind each match, plus link-in-bio and website URLs. Costs 15 credits per successful live response.
+      parameters:
+      - name: platform
+        in: query
+        required: true
+        schema:
+          type: string
+        example: instagram
+        description: Platform of the known profile
+      - name: handle
+        in: query
+        required: true
+        schema:
+          type: string
+        example: nasa
+        description: Handle on that platform
+      - name: dry_run
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - '1'
+          - '0'
+          - 'true'
+          - 'false'
+        example: '1'
+        description: 'Read a zero-credit estimate without fetching sources, running AI, or reserving credits. Cache status is a snapshot, not a guarantee at execution. Accepted values: 1, 0, true, false. Case, spaces, hyphens and underscores are interchangeable.'
+      - name: X-Max-Credits
+        in: header
+        required: false
+        schema:
+          type: integer
+          minimum: 0
+          maximum: 9007199254740991
+        example: 5
+        description: Optional credit reservation ceiling for this individual request. Send a non-negative integer in decimal digits. Live execution checks the required reservation after resolving free cache hits or buffered continuation, before charging or calling a supplier. A higher reservation returns HTTP 422 INVALID_PARAMETERS with reason max_credits_exceeded and charges nothing. Invalid header values also return 422. Zero permits only a zero-credit reservation; omitting the header uses normal pricing. dry_run remains a free preview. This does not cap later requests, batches or scheduled runs.
+      security:
+      - ApiKeyHeader: []
+      - BearerKey: []
+      responses:
+        '200':
+          description: 'The common success envelope; `data` is endpoint-specific. Many lists use items/count/cursor; bundles use named collections and their documented continuation metadata. HTTP 200 can contain a partial bundle: inspect complete, partial and legs where supplied.'
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/Success'
+                - type: object
+                  properties:
+                    data:
+                      $schema: https://json-schema.org/draft/2020-12/schema
+                      $id: https://www.monocrawl.com/schemas/web/social-profiles.json
+                      title: web/social-profiles data fields
+                      description: Optional data supplied by this operation. Null means unknown.
+                      type: object
+                      properties:
+                        _warnings:
+                          description: Optional  warnings supplied by this operation. Null means unknown.
+                          type:
+                          - array
+                          - 'null'
+                          items:
+                            description: Optional record supplied by this operation. Null means unknown.
+                            type:
+                            - string
+                            - 'null'
+                        has_more:
+                          description: Source continuation indicator; null means unknown.
+                          type:
+                          - boolean
+                          - 'null'
+                        items:
+                          description: Returned records. Source coverage and completeness vary.
+                          type:
+                          - array
+                          items:
+                            description: Optional record supplied by this operation. Null means unknown.
+                            type: object
+                            properties:
+                              confidence:
+                                description: Optional confidence supplied by this operation. Null means unknown.
+                                type:
+                                - number
+                                - 'null'
+                              evidence:
+                                description: Optional evidence supplied by this operation. Null means unknown.
+                                type:
+                                - array
+                                - 'null'
+                                items:
+                                  description: Optional record supplied by this operation. Null means unknown.
+                                  type:
+                                  - string
+                                  - 'null'
+                              handle:
+                                description: Optional handle supplied by this operation. Null means unknown.
+                                type:
+                                - string
+                                - 'null'
+                              platform:
+                                description: Optional platform supplied by this operation. Null means unknown.
+                                type:
+                                - string
+                                - 'null'
+                              url:
+                                description: Original source URL when supplied.
+                                type:
+                                - string
+                                - 'null'
+                            additionalProperties: true
+                            allOf:
+                            - anyOf:
+                              - required:
+                                - confidence
+                                properties:
+                                  confidence:
+                                    description: Optional confidence supplied by this operation. Null means unknown.
+                                    type:
+                                    - number
+                              - required:
+                                - evidence
+                                properties:
+                                  evidence:
+                                    description: Optional evidence supplied by this operation. Null means unknown.
+                                    type:
+                                    - array
+                                    items:
+                                      description: Optional record supplied by this operation. Null means unknown.
+                                      type:
+                                      - string
+                                      - 'null'
+                              - required:
+                                - handle
+                                properties:
+                                  handle:
+                                    description: Optional handle supplied by this operation. Null means unknown.
+                                    type:
+                                    - string
+                                    minLength: 1
+                              - required:
+                                - url
+                                properties:
+                                  url:
+                                    description: Original source URL when supplied.
+                                    type:
+                                    - string
+                                    minLength: 1
+                        link_in_bio_urls:
+                          description: Source array was empty in the reviewed captures; item fields remain unspecified.
+                          type:
+                          - array
+                          - 'null'
+                          items: {}
+                        linked_profile_urls:
+                          description: Source array was empty in the reviewed captures; item fields remain unspecified.
+                          type:
+                          - array
+                          - 'null'
+                          items: {}
+                        partial:
+                          description: Optional partial supplied by this operation. Null means unknown.
+                          type:
+                          - boolean
+                          - 'null'
+                        same_handle_candidates:
+                          description: Optional same handle candidates supplied by this operation. Null means unknown.
+                          type:
+                          - array
+                          - 'null'
+                          items:
+                            description: Optional record supplied by this operation. Null means unknown.
+                            type:
+                            - string
+                            - 'null'
+                        source:
+                          description: Optional source supplied by this operation. Null means unknown.
+                          type:
+                          - object
+                          - 'null'
+                          properties:
+                            handle:
+                              description: Optional handle supplied by this operation. Null means unknown.
+                              type:
+                              - string
+                              - 'null'
+                            platform:
+                              description: Optional platform supplied by this operation. Null means unknown.
+                              type:
+                              - string
+                              - 'null'
+                            url:
+                              description: Original source URL when supplied.
+                              type:
+                              - string
+                              - 'null'
+                          additionalProperties: true
+                        website_urls:
+                          description: Optional website urls supplied by this operation. Null means unknown.
+                          type:
+                          - array
+                          - 'null'
+                          items:
+                            description: Optional record supplied by this operation. Null means unknown.
+                            type:
+                            - string
+                            - 'null'
+                      additionalProperties: true
+                      required:
+                      - items
+                      x-contract-version: '2026-09-22'
+                      x-validation-scope: Required success payload structure; optional fields and source completeness remain separate.
+                      examples:
+                      - _warnings:
+                        - example
+                        has_more: false
+                        items:
+                        - confidence: 0
+                          evidence:
+                          - example
+                          handle: example
+                          platform: example
+                          url: https://example.com/example
+                        link_in_bio_urls: []
+                        linked_profile_urls: []
+                        partial: false
+                        same_handle_candidates:
+                        - example
+                        source:
+                          handle: example
+                          platform: example
+                          url: https://example.com/example
+                        website_urls:
+                        - example
+        default:
+          description: The error envelope — the same shape for every non-2xx status.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      x-credits: 15
+      x-production-available: true
+      x-capacity:
+        status: not_assessed
+        message: Capacity is workload-dependent; configured routes do not establish sustained throughput or an availability guarantee.
+      x-availability-scope: Structural check of the effective registered chain, production permission, adapter, configured cost and quality floor without request parameters. True is not a live-health, credential, quota, subscription-entitlement, complete-data or deployment-exposure guarantee. False means no structurally eligible candidate; null means metadata could not establish availability. Composite child capability still depends on its component routes.
+      x-live-proven: true
+components:
+  schemas:
+    Success:
+      type: object
+      required:
+      - success
+      - platform
+      - endpoint
+      - data
+      - credits_used
+      - credits_remaining
+      - request_id
+      properties:
+        _completeness:
+          type: object
+          description: Reported response completeness, not a guarantee of complete platform history. Missing source assertions remain unknown.
+          properties:
+            state:
+              type: string
+              enum:
+              - complete
+              - partial
+              - unknown
+            scope:
+              type: string
+            inspection_limited:
+              type: boolean
+        success:
+          const: true
+        platform:
+          type: string
+        endpoint:
+          type: string
+          description: The resolved path, e.g. `/v1/github/profile`.
+        data:
+          description: Amazon responses include marketplace.country and marketplace.domain (resolved request marketplace, UK by default). X profiles preserve location, bio_link and cover_url when supplied. TikTok profiles preserve commerce_user, seller, region, location and business_category when supplied; region identifies the account region rather than personal residence. TikTok comments use platform_default selection, which can change between fetches; keep the same video and options when following cursors. Amazon review variant is readable text. Facebook profiles preserve cover_url, following and created_at when supplied; likes_count and followers are distinct and follower totals may be rounded. Endpoint-specific normalized payload, not one universal post/profile schema. Many lists use items/count/cursor; a null cursor means no usable next cursor was supplied, not proof that all history was retrieved. Check has_more and warnings where present. Social full-profile bundles use posts_cursor and posts_pagination.next_params; retain all returned next parameters. YouTube channel bundles instead use recent_videos, cursor and recent_videos_pagination. Inspect complete/partial/legs where supplied for bounded or failed components. Optional model-derived fields are labelled, not source facts.
+        credits_used:
+          type: integer
+        credits_remaining:
+          type: integer
+        request_id:
+          type: string
+        cached:
+          type: boolean
+        stale:
+          type: boolean
+          description: True only for an explicitly labelled, zero-credit reference snapshot served after a temporary upstream failure.
+        age_seconds:
+          type: integer
+          minimum: 0
+          description: Age of a stale snapshot since its original retrieval; not reset by outage recovery.
+        fetched_at:
+          type: string
+          format: date-time
+          description: Original retrieval time of a stale snapshot, in UTC.
+        synthetic:
+          type: boolean
+          description: Present and true only on the explicitly requested /sandbox surface. Synthetic responses are representative and charged 0 credits; production /v1 never returns them.
+        degraded:
+          type: boolean
+          description: Reserved for sandbox compatibility. Production /v1 reports upstream failure as an error and never serves a representative fallback.
+    Error:
+      type: object
+      required:
+      - success
+      - error
+      - credits_used
+      - request_id
+      properties:
+        success:
+          const: false
+        error:
+          type: object
+          required:
+          - type
+          - message
+          - status
+          properties:
+            type:
+              type: string
+              enum:
+              - UNAUTHORIZED
+              - KEY_REVOKED
+              - KEY_LIMIT_EXCEEDED
+              - RATE_LIMITED
+              - INSUFFICIENT_CREDITS
+              - RESOURCE_NOT_FOUND
+              - INVALID_PARAMETERS
+              - TARGET_ACCESS_DENIED
+              - UPSTREAM_ERROR
+              - UPSTREAM_TIMEOUT
+              - FREE_CAPACITY_UNAVAILABLE
+              - CAPACITY_UNAVAILABLE
+              - ENDPOINT_NOT_FOUND
+              - ENDPOINT_NOT_AVAILABLE
+              - FAIR_USE_EXCEEDED
+              - INTERNAL_ERROR
+            message:
+              type: string
+            status:
+              type: integer
+            doc_url:
+              type: string
+              description: Deep link to the exact section of the errors guide for this type.
+            details:
+              type: object
+        credits_used:
+          type:
+          - integer
+          - 'null'
+          description: Confirmed net charge; null when billing is pending reconciliation. Inspect error.details.billing_status and retain request_id.
+        credits_remaining:
+          type: integer
+        request_id:
+          type: string
+  securitySchemes:
+    ApiKeyHeader:
+      type: apiKey
+      in: header
+      name: x-api-key
+      description: Your API key (`mn_…`), from the console. The recommended style.
+    BearerKey:
+      type: http
+      scheme: bearer
+      description: The same key as a Bearer token, for clients that only expose an Authorization field. Keys are never accepted in the query string — URLs leak into logs and referrers.

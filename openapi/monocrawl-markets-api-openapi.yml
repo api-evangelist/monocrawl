@@ -1,0 +1,2512 @@
+openapi: 3.2.0
+info:
+  title: Monocrawl Markets API
+  version: 0.1.0
+  description: One key, one envelope, one credit meter across social, search, commerce and web data.
+  contact:
+    name: Monocrawl support
+    url: https://www.monocrawl.com/contact
+  termsOfService: https://www.monocrawl.com/legal/terms-and-conditions
+servers:
+- url: https://www.monocrawl.com
+security:
+- ApiKeyHeader: []
+tags:
+- name: Markets
+paths:
+  /v1/finance/history:
+    get:
+      operationId: finance_history
+      tags:
+      - Markets
+      summary: Price history
+      description: OHLCV bars for one instrument over a range at an interval. Costs 1 credit per successful live response.
+      parameters:
+      - name: symbol
+        in: query
+        required: true
+        schema:
+          type: string
+        example: AAPL
+        description: Ticker symbol
+      - name: interval
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - 1m
+          - 2m
+          - 5m
+          - 15m
+          - 30m
+          - 60m
+          - 90m
+          - 1h
+          - 1d
+          - 5d
+          - 1wk
+          - 1mo
+          - 3mo
+        example: 1d
+        description: '1m, 2m, 5m, 15m, 30m, 60m, 90m, 1h, 1d, 5d, 1wk, 1mo or 3mo Accepted values: 1m, 2m, 5m, 15m, 30m, 60m, 90m, 1h, 1d, 5d, 1wk, 1mo, 3mo. Case, spaces, hyphens and underscores are interchangeable.'
+      - name: range
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - 1d
+          - 5d
+          - 7d
+          - 15d
+          - 1mo
+          - 3mo
+          - 6mo
+          - 1y
+          - 2y
+          - 5y
+          - 10y
+          - ytd
+          - max
+        example: 1mo
+        description: '1d, 5d, 7d, 15d, 1mo, 3mo, 6mo, 1y, 2y, 5y, 10y, ytd or max Accepted values: 1d, 5d, 7d, 15d, 1mo, 3mo, 6mo, 1y, 2y, 5y, 10y, ytd, max. Case, spaces, hyphens and underscores are interchangeable.'
+      - name: dry_run
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - '1'
+          - '0'
+          - 'true'
+          - 'false'
+        example: '1'
+        description: 'Read a zero-credit estimate without fetching sources, running AI, or reserving credits. Cache status is a snapshot, not a guarantee at execution. Accepted values: 1, 0, true, false. Case, spaces, hyphens and underscores are interchangeable.'
+      - name: X-Max-Credits
+        in: header
+        required: false
+        schema:
+          type: integer
+          minimum: 0
+          maximum: 9007199254740991
+        example: 5
+        description: Optional credit reservation ceiling for this individual request. Send a non-negative integer in decimal digits. Live execution checks the required reservation after resolving free cache hits or buffered continuation, before charging or calling a supplier. A higher reservation returns HTTP 422 INVALID_PARAMETERS with reason max_credits_exceeded and charges nothing. Invalid header values also return 422. Zero permits only a zero-credit reservation; omitting the header uses normal pricing. dry_run remains a free preview. This does not cap later requests, batches or scheduled runs.
+      security:
+      - ApiKeyHeader: []
+      - BearerKey: []
+      responses:
+        '200':
+          description: 'The common success envelope; `data` is endpoint-specific. Many lists use items/count/cursor; bundles use named collections and their documented continuation metadata. HTTP 200 can contain a partial bundle: inspect complete, partial and legs where supplied.'
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/Success'
+                - type: object
+                  properties:
+                    data:
+                      $schema: https://json-schema.org/draft/2020-12/schema
+                      $id: https://www.monocrawl.com/schemas/finance/history.json
+                      title: finance/history data fields
+                      description: Optional data supplied by this operation. Null means unknown.
+                      type: object
+                      properties:
+                        count:
+                          description: Number of records in this response, not lifetime or total matches.
+                          type:
+                          - number
+                          - 'null'
+                        currency:
+                          description: Optional currency supplied by this operation. Null means unknown.
+                          type:
+                          - string
+                          - 'null'
+                        exchange:
+                          description: Optional exchange supplied by this operation. Null means unknown.
+                          type:
+                          - string
+                          - 'null'
+                        has_more:
+                          description: Source continuation indicator; null means unknown.
+                          type:
+                          - boolean
+                          - 'null'
+                        interval:
+                          description: Optional interval supplied by this operation. Null means unknown.
+                          type:
+                          - string
+                          - 'null'
+                        items:
+                          description: Returned records. Source coverage and completeness vary.
+                          type:
+                          - array
+                          items:
+                            description: Optional record supplied by this operation. Null means unknown.
+                            type: object
+                            properties:
+                              adjusted_close:
+                                description: Optional adjusted close supplied by this operation. Null means unknown.
+                                type:
+                                - number
+                                - 'null'
+                              close:
+                                description: Optional close supplied by this operation. Null means unknown.
+                                type:
+                                - number
+                                - 'null'
+                              date:
+                                description: Optional date supplied by this operation. Null means unknown.
+                                type:
+                                - string
+                                - 'null'
+                              high:
+                                description: Optional high supplied by this operation. Null means unknown.
+                                type:
+                                - number
+                                - 'null'
+                              low:
+                                description: Optional low supplied by this operation. Null means unknown.
+                                type:
+                                - number
+                                - 'null'
+                              open:
+                                description: Optional open supplied by this operation. Null means unknown.
+                                type:
+                                - number
+                                - 'null'
+                              time:
+                                description: Optional time supplied by this operation. Null means unknown.
+                                type:
+                                - string
+                                - 'null'
+                              volume:
+                                description: Optional volume supplied by this operation. Null means unknown.
+                                type:
+                                - number
+                                - 'null'
+                            additionalProperties: true
+                            allOf:
+                            - anyOf:
+                              - required:
+                                - adjusted_close
+                                properties:
+                                  adjusted_close:
+                                    description: Optional adjusted close supplied by this operation. Null means unknown.
+                                    type:
+                                    - number
+                              - required:
+                                - close
+                                properties:
+                                  close:
+                                    description: Optional close supplied by this operation. Null means unknown.
+                                    type:
+                                    - number
+                              - required:
+                                - date
+                                properties:
+                                  date:
+                                    description: Optional date supplied by this operation. Null means unknown.
+                                    type:
+                                    - string
+                                    minLength: 1
+                              - required:
+                                - high
+                                properties:
+                                  high:
+                                    description: Optional high supplied by this operation. Null means unknown.
+                                    type:
+                                    - number
+                              - required:
+                                - low
+                                properties:
+                                  low:
+                                    description: Optional low supplied by this operation. Null means unknown.
+                                    type:
+                                    - number
+                              - required:
+                                - open
+                                properties:
+                                  open:
+                                    description: Optional open supplied by this operation. Null means unknown.
+                                    type:
+                                    - number
+                              - required:
+                                - time
+                                properties:
+                                  time:
+                                    description: Optional time supplied by this operation. Null means unknown.
+                                    type:
+                                    - string
+                                    minLength: 1
+                              - required:
+                                - volume
+                                properties:
+                                  volume:
+                                    description: Optional volume supplied by this operation. Null means unknown.
+                                    type:
+                                    - number
+                        name:
+                          description: Optional name supplied by this operation. Null means unknown.
+                          type:
+                          - string
+                          - 'null'
+                        previous_close:
+                          description: Optional previous close supplied by this operation. Null means unknown.
+                          type:
+                          - number
+                          - 'null'
+                        price:
+                          description: Source price. Currency, taxes and availability depend on the listing.
+                          type:
+                          - number
+                          - 'null'
+                        range:
+                          description: Optional range supplied by this operation. Null means unknown.
+                          type:
+                          - string
+                          - 'null'
+                        symbol:
+                          description: Optional symbol supplied by this operation. Null means unknown.
+                          type:
+                          - string
+                          - 'null'
+                        timezone:
+                          description: Optional timezone supplied by this operation. Null means unknown.
+                          type:
+                          - string
+                          - 'null'
+                      additionalProperties: true
+                      required:
+                      - items
+                      x-contract-version: '2026-09-22'
+                      x-validation-scope: Required success payload structure; optional fields and source completeness remain separate.
+                      examples:
+                      - count: 0
+                        currency: example
+                        exchange: example
+                        has_more: false
+                        interval: example
+                        items:
+                        - adjusted_close: 0
+                          close: 0
+                          date: '2026-09-01T12:00:00Z'
+                          high: 0
+                          low: 0
+                          open: 0
+                          time: example
+                          volume: 0
+                        name: example
+                        previous_close: 0
+                        price: 0
+                        range: example
+                        symbol: example
+                        timezone: example
+        default:
+          description: The error envelope — the same shape for every non-2xx status.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      x-credits: 1
+      x-production-available: true
+      x-capacity:
+        status: not_assessed
+        message: Capacity is workload-dependent; configured routes do not establish sustained throughput or an availability guarantee.
+      x-availability-scope: Structural check of the effective registered chain, production permission, adapter, configured cost and quality floor without request parameters. True is not a live-health, credential, quota, subscription-entitlement, complete-data or deployment-exposure guarantee. False means no structurally eligible candidate; null means metadata could not establish availability. Composite child capability still depends on its component routes.
+      x-live-proven: true
+  /v1/finance/news:
+    get:
+      operationId: finance_news
+      tags:
+      - Markets
+      summary: Instrument news
+      description: 'Recent news articles about one instrument: title, publisher, link, time and related tickers. Costs 1 credit per successful live response.'
+      parameters:
+      - name: symbol
+        in: query
+        required: true
+        schema:
+          type: string
+        example: AAPL
+        description: Ticker symbol
+      - name: dry_run
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - '1'
+          - '0'
+          - 'true'
+          - 'false'
+        example: '1'
+        description: 'Read a zero-credit estimate without fetching sources, running AI, or reserving credits. Cache status is a snapshot, not a guarantee at execution. Accepted values: 1, 0, true, false. Case, spaces, hyphens and underscores are interchangeable.'
+      - name: X-Max-Credits
+        in: header
+        required: false
+        schema:
+          type: integer
+          minimum: 0
+          maximum: 9007199254740991
+        example: 5
+        description: Optional credit reservation ceiling for this individual request. Send a non-negative integer in decimal digits. Live execution checks the required reservation after resolving free cache hits or buffered continuation, before charging or calling a supplier. A higher reservation returns HTTP 422 INVALID_PARAMETERS with reason max_credits_exceeded and charges nothing. Invalid header values also return 422. Zero permits only a zero-credit reservation; omitting the header uses normal pricing. dry_run remains a free preview. This does not cap later requests, batches or scheduled runs.
+      security:
+      - ApiKeyHeader: []
+      - BearerKey: []
+      responses:
+        '200':
+          description: 'The common success envelope; `data` is endpoint-specific. Many lists use items/count/cursor; bundles use named collections and their documented continuation metadata. HTTP 200 can contain a partial bundle: inspect complete, partial and legs where supplied.'
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/Success'
+                - type: object
+                  properties:
+                    data:
+                      $schema: https://json-schema.org/draft/2020-12/schema
+                      $id: https://www.monocrawl.com/schemas/finance/news.json
+                      title: finance/news data fields
+                      description: Optional data supplied by this operation. Null means unknown.
+                      type: object
+                      properties:
+                        count:
+                          description: Number of records in this response, not lifetime or total matches.
+                          type:
+                          - number
+                          - 'null'
+                        has_more:
+                          description: Source continuation indicator; null means unknown.
+                          type:
+                          - boolean
+                          - 'null'
+                        items:
+                          description: Returned records. Source coverage and completeness vary.
+                          type:
+                          - array
+                          items:
+                            description: Optional record supplied by this operation. Null means unknown.
+                            type: object
+                            properties:
+                              id:
+                                description: Source identifier. Preserve the supplied type and exact value.
+                                type:
+                                - string
+                                - 'null'
+                              image:
+                                description: Optional image supplied by this operation. Null means unknown.
+                                type:
+                                - string
+                                - 'null'
+                              published_at:
+                                description: Source publication time when available.
+                                type:
+                                - string
+                                - 'null'
+                              publisher:
+                                description: Optional publisher supplied by this operation. Null means unknown.
+                                type:
+                                - string
+                                - 'null'
+                              related_symbols:
+                                description: Optional related symbols supplied by this operation. Null means unknown.
+                                type:
+                                - array
+                                - 'null'
+                                items:
+                                  description: Optional record supplied by this operation. Null means unknown.
+                                  type:
+                                  - string
+                                  - 'null'
+                              title:
+                                description: Source title when supplied.
+                                type:
+                                - string
+                                - 'null'
+                              type:
+                                description: Optional type supplied by this operation. Null means unknown.
+                                type:
+                                - string
+                                - 'null'
+                              url:
+                                description: Original source URL when supplied.
+                                type:
+                                - string
+                                - 'null'
+                            additionalProperties: true
+                            allOf:
+                            - anyOf:
+                              - required:
+                                - id
+                                properties:
+                                  id:
+                                    description: Source identifier. Preserve the supplied type and exact value.
+                                    type:
+                                    - string
+                                    minLength: 1
+                              - required:
+                                - image
+                                properties:
+                                  image:
+                                    description: Optional image supplied by this operation. Null means unknown.
+                                    type:
+                                    - string
+                                    minLength: 1
+                              - required:
+                                - published_at
+                                properties:
+                                  published_at:
+                                    description: Source publication time when available.
+                                    type:
+                                    - string
+                                    minLength: 1
+                              - required:
+                                - publisher
+                                properties:
+                                  publisher:
+                                    description: Optional publisher supplied by this operation. Null means unknown.
+                                    type:
+                                    - string
+                                    minLength: 1
+                              - required:
+                                - related_symbols
+                                properties:
+                                  related_symbols:
+                                    description: Optional related symbols supplied by this operation. Null means unknown.
+                                    type:
+                                    - array
+                                    items:
+                                      description: Optional record supplied by this operation. Null means unknown.
+                                      type:
+                                      - string
+                                      - 'null'
+                              - required:
+                                - title
+                                properties:
+                                  title:
+                                    description: Source title when supplied.
+                                    type:
+                                    - string
+                                    minLength: 1
+                              - required:
+                                - url
+                                properties:
+                                  url:
+                                    description: Original source URL when supplied.
+                                    type:
+                                    - string
+                                    minLength: 1
+                        symbol:
+                          description: Optional symbol supplied by this operation. Null means unknown.
+                          type:
+                          - string
+                          - 'null'
+                      additionalProperties: true
+                      required:
+                      - items
+                      x-contract-version: '2026-09-22'
+                      x-validation-scope: Required success payload structure; optional fields and source completeness remain separate.
+                      examples:
+                      - count: 0
+                        has_more: false
+                        items:
+                        - id: example
+                          image: https://example.com/example
+                          published_at: '2026-09-01T12:00:00Z'
+                          publisher: example
+                          related_symbols:
+                          - example
+                          title: example
+                          type: example
+                          url: https://example.com/example
+                        symbol: example
+        default:
+          description: The error envelope — the same shape for every non-2xx status.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      x-credits: 1
+      x-production-available: true
+      x-capacity:
+        status: not_assessed
+        message: Capacity is workload-dependent; configured routes do not establish sustained throughput or an availability guarantee.
+      x-availability-scope: Structural check of the effective registered chain, production permission, adapter, configured cost and quality floor without request parameters. True is not a live-health, credential, quota, subscription-entitlement, complete-data or deployment-exposure guarantee. False means no structurally eligible candidate; null means metadata could not establish availability. Composite child capability still depends on its component routes.
+      x-live-proven: true
+  /v1/finance/options:
+    get:
+      operationId: finance_options
+      tags:
+      - Markets
+      summary: Options chain
+      description: 'The nearest expiry''s options chain for one instrument: calls and puts with strike, last, bid, ask, volume, open interest and implied volatility, plus the other expiries. Costs 2 credits per successful live response.'
+      parameters:
+      - name: symbol
+        in: query
+        required: true
+        schema:
+          type: string
+        example: AAPL
+        description: Ticker symbol
+      - name: dry_run
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - '1'
+          - '0'
+          - 'true'
+          - 'false'
+        example: '1'
+        description: 'Read a zero-credit estimate without fetching sources, running AI, or reserving credits. Cache status is a snapshot, not a guarantee at execution. Accepted values: 1, 0, true, false. Case, spaces, hyphens and underscores are interchangeable.'
+      - name: X-Max-Credits
+        in: header
+        required: false
+        schema:
+          type: integer
+          minimum: 0
+          maximum: 9007199254740991
+        example: 5
+        description: Optional credit reservation ceiling for this individual request. Send a non-negative integer in decimal digits. Live execution checks the required reservation after resolving free cache hits or buffered continuation, before charging or calling a supplier. A higher reservation returns HTTP 422 INVALID_PARAMETERS with reason max_credits_exceeded and charges nothing. Invalid header values also return 422. Zero permits only a zero-credit reservation; omitting the header uses normal pricing. dry_run remains a free preview. This does not cap later requests, batches or scheduled runs.
+      security:
+      - ApiKeyHeader: []
+      - BearerKey: []
+      responses:
+        '200':
+          description: 'The common success envelope; `data` is endpoint-specific. Many lists use items/count/cursor; bundles use named collections and their documented continuation metadata. HTTP 200 can contain a partial bundle: inspect complete, partial and legs where supplied.'
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/Success'
+                - type: object
+                  properties:
+                    data:
+                      $schema: https://json-schema.org/draft/2020-12/schema
+                      $id: https://www.monocrawl.com/schemas/finance/options.json
+                      title: finance/options data fields
+                      description: Optional data supplied by this operation. Null means unknown.
+                      type: object
+                      properties:
+                        calls:
+                          description: Optional calls supplied by this operation. Null means unknown.
+                          type:
+                          - array
+                          - 'null'
+                          items:
+                            description: Optional record supplied by this operation. Null means unknown.
+                            type:
+                            - object
+                            - 'null'
+                            properties:
+                              ask:
+                                description: Optional ask supplied by this operation. Null means unknown.
+                                type:
+                                - number
+                                - 'null'
+                              bid:
+                                description: Optional bid supplied by this operation. Null means unknown.
+                                type:
+                                - number
+                                - 'null'
+                              change:
+                                description: Optional change supplied by this operation. Null means unknown.
+                                type:
+                                - number
+                                - 'null'
+                              change_percent:
+                                description: Optional change percent supplied by this operation. Null means unknown.
+                                type:
+                                - number
+                                - 'null'
+                              implied_volatility:
+                                description: Optional implied volatility supplied by this operation. Null means unknown.
+                                type:
+                                - number
+                                - 'null'
+                              in_the_money:
+                                description: Optional in the money supplied by this operation. Null means unknown.
+                                type:
+                                - boolean
+                                - 'null'
+                              last:
+                                description: Optional last supplied by this operation. Null means unknown.
+                                type:
+                                - number
+                                - 'null'
+                              open_interest:
+                                description: Optional open interest supplied by this operation. Null means unknown.
+                                type:
+                                - number
+                                - 'null'
+                              strike:
+                                description: Optional strike supplied by this operation. Null means unknown.
+                                type:
+                                - number
+                                - 'null'
+                              symbol:
+                                description: Optional symbol supplied by this operation. Null means unknown.
+                                type:
+                                - string
+                                - 'null'
+                              volume:
+                                description: Optional volume supplied by this operation. Null means unknown.
+                                type:
+                                - number
+                                - 'null'
+                            additionalProperties: true
+                        expiries:
+                          description: Optional expiries supplied by this operation. Null means unknown.
+                          type:
+                          - array
+                          - 'null'
+                          items:
+                            description: Optional record supplied by this operation. Null means unknown.
+                            type:
+                            - string
+                            - 'null'
+                        expiry:
+                          description: Optional expiry supplied by this operation. Null means unknown.
+                          type:
+                          - string
+                          - 'null'
+                        has_mini_options:
+                          description: Optional has mini options supplied by this operation. Null means unknown.
+                          type:
+                          - boolean
+                          - 'null'
+                        puts:
+                          description: Optional puts supplied by this operation. Null means unknown.
+                          type:
+                          - array
+                          - 'null'
+                          items:
+                            description: Optional record supplied by this operation. Null means unknown.
+                            type:
+                            - object
+                            - 'null'
+                            properties:
+                              ask:
+                                description: Optional ask supplied by this operation. Null means unknown.
+                                type:
+                                - number
+                                - 'null'
+                              bid:
+                                description: Optional bid supplied by this operation. Null means unknown.
+                                type:
+                                - number
+                                - 'null'
+                              change:
+                                description: Optional change supplied by this operation. Null means unknown.
+                                type:
+                                - number
+                                - 'null'
+                              change_percent:
+                                description: Optional change percent supplied by this operation. Null means unknown.
+                                type:
+                                - number
+                                - 'null'
+                              implied_volatility:
+                                description: Optional implied volatility supplied by this operation. Null means unknown.
+                                type:
+                                - number
+                                - 'null'
+                              in_the_money:
+                                description: Optional in the money supplied by this operation. Null means unknown.
+                                type:
+                                - boolean
+                                - 'null'
+                              last:
+                                description: Optional last supplied by this operation. Null means unknown.
+                                type:
+                                - number
+                                - 'null'
+                              open_interest:
+                                description: Optional open interest supplied by this operation. Null means unknown.
+                                type:
+                                - number
+                                - 'null'
+                              strike:
+                                description: Optional strike supplied by this operation. Null means unknown.
+                                type:
+                                - number
+                                - 'null'
+                              symbol:
+                                description: Optional symbol supplied by this operation. Null means unknown.
+                                type:
+                                - string
+                                - 'null'
+                              volume:
+                                description: Optional volume supplied by this operation. Null means unknown.
+                                type:
+                                - number
+                                - 'null'
+                            additionalProperties: true
+                        quote:
+                          description: Optional quote supplied by this operation. Null means unknown.
+                          type:
+                          - object
+                          - 'null'
+                          properties:
+                            as_of:
+                              description: Optional as of supplied by this operation. Null means unknown.
+                              type:
+                              - string
+                              - 'null'
+                            change:
+                              description: Optional change supplied by this operation. Null means unknown.
+                              type:
+                              - number
+                              - 'null'
+                            change_percent:
+                              description: Optional change percent supplied by this operation. Null means unknown.
+                              type:
+                              - number
+                              - 'null'
+                            currency:
+                              description: Optional currency supplied by this operation. Null means unknown.
+                              type:
+                              - string
+                              - 'null'
+                            day_high:
+                              description: Optional day high supplied by this operation. Null means unknown.
+                              type:
+                              - number
+                              - 'null'
+                            day_low:
+                              description: Optional day low supplied by this operation. Null means unknown.
+                              type:
+                              - number
+                              - 'null'
+                            exchange:
+                              description: Optional exchange supplied by this operation. Null means unknown.
+                              type:
+                              - string
+                              - 'null'
+                            fifty_two_week_high:
+                              description: Optional fifty two week high supplied by this operation. Null means unknown.
+                              type:
+                              - number
+                              - 'null'
+                            fifty_two_week_low:
+                              description: Optional fifty two week low supplied by this operation. Null means unknown.
+                              type:
+                              - number
+                              - 'null'
+                            market_cap:
+                              description: Optional market cap supplied by this operation. Null means unknown.
+                              type:
+                              - number
+                              - 'null'
+                            market_state:
+                              description: Optional market state supplied by this operation. Null means unknown.
+                              type:
+                              - string
+                              - 'null'
+                            name:
+                              description: Optional name supplied by this operation. Null means unknown.
+                              type:
+                              - string
+                              - 'null'
+                            open:
+                              description: Optional open supplied by this operation. Null means unknown.
+                              type:
+                              - number
+                              - 'null'
+                            previous_close:
+                              description: Optional previous close supplied by this operation. Null means unknown.
+                              type:
+                              - number
+                              - 'null'
+                            price:
+                              description: Source price. Currency, taxes and availability depend on the listing.
+                              type:
+                              - number
+                              - 'null'
+                            shares_outstanding:
+                              description: Optional shares outstanding supplied by this operation. Null means unknown.
+                              type:
+                              - number
+                              - 'null'
+                            symbol:
+                              description: Optional symbol supplied by this operation. Null means unknown.
+                              type:
+                              - string
+                              - 'null'
+                            type:
+                              description: Optional type supplied by this operation. Null means unknown.
+                              type:
+                              - string
+                              - 'null'
+                            volume:
+                              description: Optional volume supplied by this operation. Null means unknown.
+                              type:
+                              - number
+                              - 'null'
+                          additionalProperties: true
+                        strikes:
+                          description: Optional strikes supplied by this operation. Null means unknown.
+                          type:
+                          - array
+                          - 'null'
+                          items:
+                            description: Optional record supplied by this operation. Null means unknown.
+                            type:
+                            - number
+                            - 'null'
+                        symbol:
+                          description: Optional symbol supplied by this operation. Null means unknown.
+                          type:
+                          - string
+                          - 'null'
+                      additionalProperties: true
+                      allOf:
+                      - anyOf:
+                        - required:
+                          - calls
+                          properties:
+                            calls:
+                              description: Optional calls supplied by this operation. Null means unknown.
+                              type:
+                              - array
+                              items:
+                                description: Optional record supplied by this operation. Null means unknown.
+                                type:
+                                - object
+                                - 'null'
+                                properties:
+                                  ask:
+                                    description: Optional ask supplied by this operation. Null means unknown.
+                                    type:
+                                    - number
+                                    - 'null'
+                                  bid:
+                                    description: Optional bid supplied by this operation. Null means unknown.
+                                    type:
+                                    - number
+                                    - 'null'
+                                  change:
+                                    description: Optional change supplied by this operation. Null means unknown.
+                                    type:
+                                    - number
+                                    - 'null'
+                                  change_percent:
+                                    description: Optional change percent supplied by this operation. Null means unknown.
+                                    type:
+                                    - number
+                                    - 'null'
+                                  implied_volatility:
+                                    description: Optional implied volatility supplied by this operation. Null means unknown.
+                                    type:
+                                    - number
+                                    - 'null'
+                                  in_the_money:
+                                    description: Optional in the money supplied by this operation. Null means unknown.
+                                    type:
+                                    - boolean
+                                    - 'null'
+                                  last:
+                                    description: Optional last supplied by this operation. Null means unknown.
+                                    type:
+                                    - number
+                                    - 'null'
+                                  open_interest:
+                                    description: Optional open interest supplied by this operation. Null means unknown.
+                                    type:
+                                    - number
+                                    - 'null'
+                                  strike:
+                                    description: Optional strike supplied by this operation. Null means unknown.
+                                    type:
+                                    - number
+                                    - 'null'
+                                  symbol:
+                                    description: Optional symbol supplied by this operation. Null means unknown.
+                                    type:
+                                    - string
+                                    - 'null'
+                                  volume:
+                                    description: Optional volume supplied by this operation. Null means unknown.
+                                    type:
+                                    - number
+                                    - 'null'
+                                additionalProperties: true
+                        - required:
+                          - expiries
+                          properties:
+                            expiries:
+                              description: Optional expiries supplied by this operation. Null means unknown.
+                              type:
+                              - array
+                              items:
+                                description: Optional record supplied by this operation. Null means unknown.
+                                type:
+                                - string
+                                - 'null'
+                        - required:
+                          - expiry
+                          properties:
+                            expiry:
+                              description: Optional expiry supplied by this operation. Null means unknown.
+                              type:
+                              - string
+                              minLength: 1
+                        - required:
+                          - has_mini_options
+                          properties:
+                            has_mini_options:
+                              description: Optional has mini options supplied by this operation. Null means unknown.
+                              type:
+                              - boolean
+                        - required:
+                          - puts
+                          properties:
+                            puts:
+                              description: Optional puts supplied by this operation. Null means unknown.
+                              type:
+                              - array
+                              items:
+                                description: Optional record supplied by this operation. Null means unknown.
+                                type:
+                                - object
+                                - 'null'
+                                properties:
+                                  ask:
+                                    description: Optional ask supplied by this operation. Null means unknown.
+                                    type:
+                                    - number
+                                    - 'null'
+                                  bid:
+                                    description: Optional bid supplied by this operation. Null means unknown.
+                                    type:
+                                    - number
+                                    - 'null'
+                                  change:
+                                    description: Optional change supplied by this operation. Null means unknown.
+                                    type:
+                                    - number
+                                    - 'null'
+                                  change_percent:
+                                    description: Optional change percent supplied by this operation. Null means unknown.
+                                    type:
+                                    - number
+                                    - 'null'
+                                  implied_volatility:
+                                    description: Optional implied volatility supplied by this operation. Null means unknown.
+                                    type:
+                                    - number
+                                    - 'null'
+                                  in_the_money:
+                                    description: Optional in the money supplied by this operation. Null means unknown.
+                                    type:
+                                    - boolean
+                                    - 'null'
+                                  last:
+                                    description: Optional last supplied by this operation. Null means unknown.
+                                    type:
+                                    - number
+                                    - 'null'
+                                  open_interest:
+                                    description: Optional open interest supplied by this operation. Null means unknown.
+                                    type:
+                                    - number
+                                    - 'null'
+                                  strike:
+                                    description: Optional strike supplied by this operation. Null means unknown.
+                                    type:
+                                    - number
+                                    - 'null'
+                                  symbol:
+                                    description: Optional symbol supplied by this operation. Null means unknown.
+                                    type:
+                                    - string
+                                    - 'null'
+                                  volume:
+                                    description: Optional volume supplied by this operation. Null means unknown.
+                                    type:
+                                    - number
+                                    - 'null'
+                                additionalProperties: true
+                        - required:
+                          - quote
+                          properties:
+                            quote:
+                              description: Optional quote supplied by this operation. Null means unknown.
+                              type:
+                              - object
+                              properties:
+                                as_of:
+                                  description: Optional as of supplied by this operation. Null means unknown.
+                                  type:
+                                  - string
+                                  - 'null'
+                                change:
+                                  description: Optional change supplied by this operation. Null means unknown.
+                                  type:
+                                  - number
+                                  - 'null'
+                                change_percent:
+                                  description: Optional change percent supplied by this operation. Null means unknown.
+                                  type:
+                                  - number
+                                  - 'null'
+                                currency:
+                                  description: Optional currency supplied by this operation. Null means unknown.
+                                  type:
+                                  - string
+                                  - 'null'
+                                day_high:
+                                  description: Optional day high supplied by this operation. Null means unknown.
+                                  type:
+                                  - number
+                                  - 'null'
+                                day_low:
+                                  description: Optional day low supplied by this operation. Null means unknown.
+                                  type:
+                                  - number
+                                  - 'null'
+                                exchange:
+                                  description: Optional exchange supplied by this operation. Null means unknown.
+                                  type:
+                                  - string
+                                  - 'null'
+                                fifty_two_week_high:
+                                  description: Optional fifty two week high supplied by this operation. Null means unknown.
+                                  type:
+                                  - number
+                                  - 'null'
+                                fifty_two_week_low:
+                                  description: Optional fifty two week low supplied by this operation. Null means unknown.
+                                  type:
+                                  - number
+                                  - 'null'
+                                market_cap:
+                                  description: Optional market cap supplied by this operation. Null means unknown.
+                                  type:
+                                  - number
+                                  - 'null'
+                                market_state:
+                                  description: Optional market state supplied by this operation. Null means unknown.
+                                  type:
+                                  - string
+                                  - 'null'
+                                name:
+                                  description: Optional name supplied by this operation. Null means unknown.
+                                  type:
+                                  - string
+                                  - 'null'
+                                open:
+                                  description: Optional open supplied by this operation. Null means unknown.
+                                  type:
+                                  - number
+                                  - 'null'
+                                previous_close:
+                                  description: Optional previous close supplied by this operation. Null means unknown.
+                                  type:
+                                  - number
+                                  - 'null'
+                                price:
+                                  description: Source price. Currency, taxes and availability depend on the listing.
+                                  type:
+                                  - number
+                                  - 'null'
+                                shares_outstanding:
+                                  description: Optional shares outstanding supplied by this operation. Null means unknown.
+                                  type:
+                                  - number
+                                  - 'null'
+                                symbol:
+                                  description: Optional symbol supplied by this operation. Null means unknown.
+                                  type:
+                                  - string
+                                  - 'null'
+                                type:
+                                  description: Optional type supplied by this operation. Null means unknown.
+                                  type:
+                                  - string
+                                  - 'null'
+                                volume:
+                                  description: Optional volume supplied by this operation. Null means unknown.
+                                  type:
+                                  - number
+                                  - 'null'
+                              additionalProperties: true
+                        - required:
+                          - strikes
+                          properties:
+                            strikes:
+                              description: Optional strikes supplied by this operation. Null means unknown.
+                              type:
+                              - array
+                              items:
+                                description: Optional record supplied by this operation. Null means unknown.
+                                type:
+                                - number
+                                - 'null'
+                        - required:
+                          - symbol
+                          properties:
+                            symbol:
+                              description: Optional symbol supplied by this operation. Null means unknown.
+                              type:
+                              - string
+                              minLength: 1
+                      x-contract-version: '2026-09-22'
+                      x-validation-scope: Required success payload structure; optional fields and source completeness remain separate.
+                      examples:
+                      - calls:
+                        - ask: 0
+                          bid: 0
+                          change: 0
+                          change_percent: 0
+                          implied_volatility: 0
+                          in_the_money: false
+                          last: 0
+                          open_interest: 0
+                          strike: 0
+                          symbol: example
+                          volume: 0
+                        expiries:
+                        - example
+                        expiry: example
+                        has_mini_options: false
+                        puts:
+                        - ask: 0
+                          bid: 0
+                          change: 0
+                          change_percent: 0
+                          implied_volatility: 0
+                          in_the_money: false
+                          last: 0
+                          open_interest: 0
+                          strike: 0
+                          symbol: example
+                          volume: 0
+                        quote:
+                          as_of: example
+                          change: 0
+                          change_percent: 0
+                          currency: example
+                          day_high: 0
+                          day_low: 0
+                          exchange: example
+                          fifty_two_week_high: 0
+                          fifty_two_week_low: 0
+                          market_cap: 0
+                          market_state: example
+                          name: example
+                          open: 0
+                          previous_close: 0
+                          price: 0
+                          shares_outstanding: 0
+                          symbol: example
+                          type: example
+                          volume: 0
+                        strikes:
+                        - 0
+                        symbol: example
+        default:
+          description: The error envelope — the same shape for every non-2xx status.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      x-credits: 2
+      x-production-available: true
+      x-capacity:
+        status: not_assessed
+        message: Capacity is workload-dependent; configured routes do not establish sustained throughput or an availability guarantee.
+      x-availability-scope: Structural check of the effective registered chain, production permission, adapter, configured cost and quality floor without request parameters. True is not a live-health, credential, quota, subscription-entitlement, complete-data or deployment-exposure guarantee. False means no structurally eligible candidate; null means metadata could not establish availability. Composite child capability still depends on its component routes.
+      x-live-proven: true
+  /v1/finance/statements:
+    get:
+      operationId: finance_statements
+      tags:
+      - Markets
+      summary: Company financial statements
+      description: 'Income statement, balance sheet or cash-flow statement of a listed company, one row per fiscal period: annual rows for each fiscal year, quarter-end rows with trailing-twelve-month figures, plus the latest trailing twelve months. Costs 3 credits per successful live response.'
+      parameters:
+      - name: symbol
+        in: query
+        required: true
+        schema:
+          type: string
+        example: AAPL
+        description: Ticker symbol
+      - name: statement
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - income
+          - balance
+          - cash
+        x-value-aliases:
+          pl: income
+          profit and loss: income
+          income statement: income
+          balance sheet: balance
+          cash flow: cash
+        example: income
+        description: 'income, balance or cash Accepted values: income, balance, cash. Case, spaces, hyphens and underscores are interchangeable.'
+      - name: period
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - all
+          - annual
+          - quarterly
+        x-value-aliases:
+          quarter: quarterly
+          quarters: quarterly
+          ttm: quarterly
+          year: annual
+          years: annual
+          yearly: annual
+        example: all
+        description: 'all, annual or quarterly Accepted values: all, annual, quarterly. Case, spaces, hyphens and underscores are interchangeable.'
+      - name: dry_run
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - '1'
+          - '0'
+          - 'true'
+          - 'false'
+        example: '1'
+        description: 'Read a zero-credit estimate without fetching sources, running AI, or reserving credits. Cache status is a snapshot, not a guarantee at execution. Accepted values: 1, 0, true, false. Case, spaces, hyphens and underscores are interchangeable.'
+      - name: X-Max-Credits
+        in: header
+        required: false
+        schema:
+          type: integer
+          minimum: 0
+          maximum: 9007199254740991
+        example: 5
+        description: Optional credit reservation ceiling for this individual request. Send a non-negative integer in decimal digits. Live execution checks the required reservation after resolving free cache hits or buffered continuation, before charging or calling a supplier. A higher reservation returns HTTP 422 INVALID_PARAMETERS with reason max_credits_exceeded and charges nothing. Invalid header values also return 422. Zero permits only a zero-credit reservation; omitting the header uses normal pricing. dry_run remains a free preview. This does not cap later requests, batches or scheduled runs.
+      security:
+      - ApiKeyHeader: []
+      - BearerKey: []
+      responses:
+        '200':
+          description: 'The common success envelope; `data` is endpoint-specific. Many lists use items/count/cursor; bundles use named collections and their documented continuation metadata. HTTP 200 can contain a partial bundle: inspect complete, partial and legs where supplied.'
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/Success'
+                - type: object
+                  properties:
+                    data:
+                      $schema: https://json-schema.org/draft/2020-12/schema
+                      $id: https://www.monocrawl.com/schemas/finance/statements.json
+                      title: finance/statements data fields
+                      description: Optional data supplied by this operation. Null means unknown.
+                      type: object
+                      properties:
+                        count:
+                          description: Number of records in this response, not lifetime or total matches.
+                          type:
+                          - number
+                          - 'null'
+                        note:
+                          description: Optional note supplied by this operation. Null means unknown.
+                          type:
+                          - string
+                          - 'null'
+                        period:
+                          description: Optional period supplied by this operation. Null means unknown.
+                          type:
+                          - string
+                          - 'null'
+                        periods:
+                          description: Optional periods supplied by this operation. Null means unknown.
+                          type:
+                          - array
+                          - 'null'
+                          items:
+                            description: Optional record supplied by this operation. Null means unknown.
+                            type:
+                            - object
+                            - 'null'
+                            properties:
+                              basis:
+                                description: Optional basis supplied by this operation. Null means unknown.
+                                type:
+                                - string
+                                - 'null'
+                              metric_count:
+                                description: Optional metric count supplied by this operation. Null means unknown.
+                                type:
+                                - number
+                                - 'null'
+                              metrics:
+                                description: Optional metrics supplied by this operation. Null means unknown.
+                                type:
+                                - object
+                                - 'null'
+                                properties:
+                                  basicAverageShares:
+                                    description: Optional basicAverageShares supplied by this operation. Null means unknown.
+                                    type:
+                                    - number
+                                    - 'null'
+                                  basicEPS:
+                                    description: Optional basicEPS supplied by this operation. Null means unknown.
+                                    type:
+                                    - number
+                                    - 'null'
+                                  costOfRevenue:
+                                    description: Optional costOfRevenue supplied by this operation. Null means unknown.
+                                    type:
+                                    - number
+                                    - 'null'
+                                  dilutedAverageShares:
+                                    description: Optional dilutedAverageShares supplied by this operation. Null means unknown.
+                                    type:
+                                    - number
+                                    - 'null'
+                                  dilutedEPS:
+                                    description: Optional dilutedEPS supplied by this operation. Null means unknown.
+                                    type:
+                                    - number
+                                    - 'null'
+                                  dilutedNIAvailtoComStockholders:
+                                    description: Optional dilutedNIAvailtoComStockholders supplied by this operation. Null means unknown.
+                                    type:
+                                    - number
+                                    - 'null'
+                                  eBIT:
+                                    description: Optional eBIT supplied by this operation. Null means unknown.
+                                    type:
+                                    - number
+                                    - 'null'
+                                  eBITDA:
+                                    description: Optional eBITDA supplied by this operation. Null means unknown.
+                                    type:
+                                    - number
+                                    - 'null'
+                                  grossProfit:
+                                    description: Optional grossProfit supplied by this operation. Null means unknown.
+                                    type:
+                                    - number
+                                    - 'null'
+                                  interestExpense:
+                                    description: Optional interestExpense supplied by this operation. Null means unknown.
+                                    type:
+                                    - number
+                                    - 'null'
+                                  interestExpenseNonOperating:
+                                    description: Optional interestExpenseNonOperating supplied by this operation. Null means unknown.
+                                    type:
+                                    - number
+                                    - 'null'
+                                  interestIncome:
+                                    description: Optional interestIncome supplied by this operation. Null means unknown.
+                                    type:
+                                    - number
+                                    - 'null'
+                                  interestIncomeNonOperating:
+                                    description: Optional interestIncomeNonOperating supplied by this operation. Null means unknown.
+                                    type:
+                                    - number
+                                    - 'null'
+                                  netIncome:
+                                    description: Optional netIncome supplied by this operation. Null means unknown.
+                                    type:
+                                    - number
+                                    - 'null'
+                                  netIncomeCommonStockholders:
+                                    description: Optional netIncomeCommonStockholders supplied by this operation. Null means unknown.
+                                    type:
+                                    - number
+                                    - 'null'
+                                  netIncomeContinuousOperations:
+                                    description: Optional netIncomeContinuousOperations supplied by this operation. Null means unknown.
+                                    type:
+                                    - number
+                                    - 'null'
+                                  netIncomeFromContinuingAndDiscontinuedOperation:
+                                    description: Optional netIncomeFromContinuingAndDiscontinuedOperation supplied by this operation. Null means unknown.
+                                    type:
+                                    - number
+                                    - 'null'
+                                  netIncomeFromContinuingOperationNetMinorityInterest:
+                                    description: Optional netIncomeFromContinuingOperationNetMinorityInterest supplied by this operation. Null means unknown.
+                                    type:
+                                    - number
+                                    - 'null'
+                                  netIncomeIncludingNoncontrollingInterests:
+                                    description: Optional netIncomeIncludingNoncontrollingInterests supplied by this operation. Null means unknown.
+                                    type:
+                                    - number
+                                    - 'null'
+                                  netInterestIncome:
+                                    description: Optional netInterestIncome supplied by this operation. Null means unknown.
+                                    type:
+                                    - number
+                                    - 'null'
+                                  netNonOperatingInterestIncomeExpense:
+                                    description: Optional netNonOperatingInterestIncomeExpense supplied by this operation. Null means unknown.
+                                    type:
+                                    - number
+                                    - 'null'
+                                  normalizedEBITDA:
+                                    description: Optional normalizedEBITDA supplied by this operation. Null means unknown.
+                                    type:
+                                    - number
+                                    - 'null'
+                                  normalizedIncome:
+                                    description: Optional normalizedIncome supplied by this operation. Null means unknown.
+                                    type:
+                                    - number
+                                    - 'null'
+                                  operatingExpense:
+                                    description: Optional operatingExpense supplied by this operation. Null means unknown.
+                                    type:
+                                    - number
+                                    - 'null'
+                                  operatingIncome:
+                                    description: Optional operatingIncome supplied by this operation. Null means unknown.
+                                    type:
+                                    - number
+                                    - 'null'
+                                  operatingRevenue:
+                                    description: Optional operatingRevenue supplied by this operation. Null means unknown.
+                                    type:
+                                    - number
+                                    - 'null'
+                                  otherIncomeExpense:
+                                    description: Optional otherIncomeExpense supplied by this operation. Null means unknown.
+                                    type:
+                                    - number
+                                    - 'null'
+                                  otherNonOperatingIncomeExpenses:
+                                    description: Optional otherNonOperatingIncomeExpenses supplied by this operation. Null means unknown.
+                                    type:
+                                    - number
+                                    - 'null'
+                                  pretaxIncome:
+                                    description: Optional pretaxIncome supplied by this operation. Null means unknown.
+                                    type:
+                                    - number
+                                    - 'null'
+                                  reconciledCostOfRevenue:
+                                    description: Optional reconciledCostOfRevenue supplied by this operation. Null means unknown.
+                                    type:
+                                    - number
+                                    - 'null'
+                                  reconciledDepreciation:
+                                    description: Optional reconciledDepreciation supplied by this operation. Null means unknown.
+                                    type:
+                                    - number
+                                    - 'null'
+                                  researchAndDevelopment:
+                                    description: Optional researchAndDevelopment supplied by this operation. Null means unknown.
+                                    type:
+                                    - number
+                                    - 'null'
+                                  sellingGeneralAndAdministration:
+                                    description: Optional sellingGeneralAndAdministration supplied by this operation. Null means unknown.
+                                    type:
+                                    - number
+                                    - 'null'
+                                  taxEffectOfUnusualItems:
+                                    description: Optional taxEffectOfUnusualItems supplied by this operation. Null means unknown.
+                                    type:
+                                    - number
+                                    - 'null'
+                                  taxProvision:
+                                    description: Optional taxProvision supplied by this operation. Null means unknown.
+                                    type:
+                                    - number
+                                    - 'null'
+                                  taxRateForCalcs:
+                                    description: Optional taxRateForCalcs supplied by this operation. Null means unknown.
+                                    type:
+                                    - number
+                                    - 'null'
+                                  totalExpenses:
+                                    description: Optional totalExpenses supplied by this operation. Null means unknown.
+                                    type:
+                                    - number
+                                    - 'null'
+                                  totalOperatingIncomeAsReported:
+                                    description: Optional totalOperatingIncomeAsReported supplied by this operation. Null means unknown.
+                                    type:
+                                    - number
+                                    - 'null'
+                                  totalRevenue:
+                                    description: Optional totalRevenue supplied by this operation. Null means unknown.
+                                    type:
+                                    - number
+                                    - 'null'
+                                additionalProperties: true
+                              period_end:
+                                description: Optional period end supplied by this operation. Null means unknown.
+                                type:
+                                - string
+                                - 'null'
+                            additionalProperties: true
+                        platform:
+                          description: Optional platform supplied by this operation. Null means unknown.
+                          type:
+                          - string
+                          - 'null'
+                        statement:
+                          description: Optional statement supplied by this operation. Null means unknown.
+                          type:
+                          - string
+                          - 'null'
+                        symbol:
+                          description: Optional symbol supplied by this operation. Null means unknown.
+                          type:
+                          - string
+                          - 'null'
+                        trailing_twelve_months:
+                          description: Optional trailing twelve months supplied by this operation. Null means unknown.
+                          type:
+                          - object
+                          - 'null'
+                          properties:
+                            basis:
+                              description: Optional basis supplied by this operation. Null means unknown.
+                              type:
+                              - string
+                              - 'null'
+                            metric_count:
+                              description: Optional metric count supplied by this operation. Null means unknown.
+                              type:
+                              - number
+                              - 'null'
+                            metrics:
+                              description: Optional metrics supplied by this operation. Null means unknown.
+                              type:
+                              - object
+                              - 'null'
+                              properties:
+                                basicAverageShares:
+                                  description: Optional basicAverageShares supplied by this operation. Null means unknown.
+                                  type:
+                                  - number
+                                  - 'null'
+                                basicEPS:
+                                  description: Optional basicEPS supplied by this operation. Null means unknown.
+                                  type:
+                                  - number
+                                  - 'null'
+                                costOfRevenue:
+                                  description: Optional costOfRevenue supplied by this operation. Null means unknown.
+                                  type:
+                                  - number
+                                  - 'null'
+                                dilutedAverageShares:
+                                  description: Optional dilutedAverageShares supplied by this operation. Null means unknown.
+                                  type:
+                                  - number
+                                  - 'null'
+                                dilutedEPS:
+                                  description: Optional dilutedEPS supplied by this operation. Null means unknown.
+                                  type:
+                                  - number
+                                  - 'null'
+                                dilutedNIAvailtoComStockholders:
+                                  description: Optional dilutedNIAvailtoComStockholders supplied by this operation. Null means unknown.
+                                  type:
+                                  - number
+                                  - 'null'
+                                eBIT:
+                                  description: Optional eBIT supplied by this operation. Null means unknown.
+                                  type:
+                                  - number
+                                  - 'null'
+                                eBITDA:
+                                  description: Optional eBITDA supplied by this operation. Null means unknown.
+                                  type:
+                                  - number
+                                  - 'null'
+                                grossProfit:
+                                  description: Optional grossProfit supplied by this operation. Null means unknown.
+                                  type:
+                                  - number
+                                  - 'null'
+                                interestExpense:
+                                  description: Optional interestExpense supplied by this operation. Null means unknown.
+                                  type:
+                                  - number
+                                  - 'null'
+                                interestExpenseNonOperating:
+                                  description: Optional interestExpenseNonOperating supplied by this operation. Null means unknown.
+                                  type:
+                                  - number
+                                  - 'null'
+                                interestIncome:
+                                  description: Optional interestIncome supplied by this operation. Null means unknown.
+                                  type:
+                                  - number
+                                  - 'null'
+                                interestIncomeNonOperating:
+                                  description: Optional interestIncomeNonOperating supplied by this operation. Null means unknown.
+                                  type:
+                                  - number
+                                  - 'null'
+                                netIncome:
+                                  description: Optional netIncome supplied by this operation. Null means unknown.
+                                  type:
+                                  - number
+                                  - 'null'
+                                netIncomeCommonStockholders:
+                                  description: Optional netIncomeCommonStockholders supplied by this operation. Null means unknown.
+                                  type:
+                                  - number
+                                  - 'null'
+                                netIncomeContinuousOperations:
+                                  description: Optional netIncomeContinuousOperations supplied by this operation. Null means unknown.
+                                  type:
+                                  - number
+                                  - 'null'
+                                netIncomeFromContinuingAndDiscontinuedOperation:
+                                  description: Optional netIncomeFromContinuingAndDiscontinuedOperation supplied by this operation. Null means unknown.
+                                  type:
+                                  - number
+                                  - 'null'
+                                netIncomeFromContinuingOperationNetMinorityInterest:
+                                  description: Optional netIncomeFromContinuingOperationNetMinorityInterest supplied by this operation. Null means unknown.
+                                  type:
+                                  - number
+                                  - 'null'
+                                netIncomeIncludingNoncontrollingInterests:
+                                  description: Optional netIncomeIncludingNoncontrollingInterests supplied by this operation. Null means unknown.
+                                  type:
+                                  - number
+                                  - 'null'
+                                netInterestIncome:
+                                  description: Optional netInterestIncome supplied by this operation. Null means unknown.
+                                  type:
+                                  - number
+                                  - 'null'
+                                netNonOperatingInterestIncomeExpense:
+                                  description: Optional netNonOperatingInterestIncomeExpense supplied by this operation. Null means unknown.
+                                  type:
+                                  - number
+                                  - 'null'
+                                normalizedEBITDA:
+                                  description: Optional normalizedEBITDA supplied by this operation. Null means unknown.
+                                  type:
+                                  - number
+                                  - 'null'
+                                normalizedIncome:
+                                  description: Optional normalizedIncome supplied by this operation. Null means unknown.
+                                  type:
+                                  - number
+                                  - 'null'
+                                operatingExpense:
+                                  description: Optional operatingExpense supplied by this operation. Null means unknown.
+                                  type:
+                                  - number
+                                  - 'null'
+                                operatingIncome:
+                                  description: Optional operatingIncome supplied by this operation. Null means unknown.
+                                  type:
+                                  - number
+                                  - 'null'
+                                operatingRevenue:
+                                  description: Optional operatingRevenue supplied by this operation. Null means unknown.
+                                  type:
+                                  - number
+                                  - 'null'
+                                otherIncomeExpense:
+                                  description: Optional otherIncomeExpense supplied by this operation. Null means unknown.
+                                  type:
+                                  - number
+                                  - 'null'
+                                otherNonOperatingIncomeExpenses:
+                                  description: Optional otherNonOperatingIncomeExpenses supplied by this operation. Null means unknown.
+                                  type:
+                                  - number
+                                  - 'null'
+                                pretaxIncome:
+                                  description: Optional pretaxIncome supplied by this operation. Null means unknown.
+                                  type:
+                                  - number
+                                  - 'null'
+                                reconciledCostOfRevenue:
+                                  description: Optional reconciledCostOfRevenue supplied by this operation. Null means unknown.
+                                  type:
+                                  - number
+                                  - 'null'
+                                reconciledDepreciation:
+                                  description: Optional reconciledDepreciation supplied by this operation. Null means unknown.
+                                  type:
+                                  - number
+                                  - 'null'
+                                researchAndDevelopment:
+                                  description: Optional researchAndDevelopment supplied by this operation. Null means unknown.
+                                  type:
+                                  - number
+                                  - 'null'
+                                sellingGeneralAndAdministration:
+                                  description: Optional sellingGeneralAndAdministration supplied by this operation. Null means unknown.
+                                  type:
+                                  - number
+                                  - 'null'
+                                taxEffectOfUnusualItems:
+                                  description: Optional taxEffectOfUnusualItems supplied by this operation. Null means unknown.
+                                  type:
+                                  - number
+                                  - 'null'
+                                taxProvision:
+                                  description: Optional taxProvision supplied by this operation. Null means unknown.
+                                  type:
+                                  - number
+                                  - 'null'
+                                taxRateForCalcs:
+                                  description: Optional taxRateForCalcs supplied by this operation. Null means unknown.
+                                  type:
+                                  - number
+                                  - 'null'
+                                totalExpenses:
+                                  description: Optional totalExpenses supplied by this operation. Null means unknown.
+                                  type:
+                                  - number
+                                  - 'null'
+                                totalOperatingIncomeAsReported:
+                                  description: Optional totalOperatingIncomeAsReported supplied by this operation. Null means unknown.
+                                  type:
+                                  - number
+                                  - 'null'
+                                totalRevenue:
+                                  description: Optional totalRevenue supplied by this operation. Null means unknown.
+                                  type:
+                                  - number
+                                  - 'null'
+                              additionalProperties: true
+                          additionalProperties: true
+                      additionalProperties: true
+                      allOf:
+                      - anyOf:
+                        - required:
+                          - note
+                          properties:
+                            note:
+                              description: Optional note supplied by this operation. Null means unknown.
+                              type:
+                              - string
+                              minLength: 1
+                        - required:
+                          - period
+                          properties:
+                            period:
+                              description: Optional period supplied by this operation. Null means unknown.
+                              type:
+                              - string
+                              minLength: 1
+                        - required:
+                          - periods
+                          properties:
+                            periods:
+                              description: Optional periods supplied by this operation. Null means unknown.
+                              type:
+                              - array
+                              items:
+                                description: Optional record supplied by this operation. Null means unknown.
+                                type:
+                                - object
+                                - 'null'
+                                properties:
+                                  basis:
+                                    description: Optional basis supplied by this operation. Null means unknown.
+                                    type:
+                                    - string
+                                    - 'null'
+                                  metric_count:
+                                    description: Optional metric count supplied by this operation. Null means unknown.
+                                    type:
+                                    - number
+                                    - 'null'
+                                  metrics:
+                                    description: Optional metrics supplied by this operation. Null means unknown.
+                                    type:
+                                    - object
+                                    - 'null'
+                                    properties:
+                                      basicAverageShares:
+                                        description: Optional basicAverageShares supplied by this operation. Null means unknown.
+                                        type:
+                                        - number
+                                        - 'null'
+                                      basicEPS:
+                                        description: Optional basicEPS supplied by this operation. Null means unknown.
+                                        type:
+                                        - number
+                                        - 'null'
+                                      costOfRevenue:
+                                        description: Optional costOfRevenue supplied by this operation. Null means unknown.
+                                        type:
+                                        - number
+                                        - 'null'
+                                      dilutedAverageShares:
+                                        description: Optional dilutedAverageShares supplied by this operation. Null means unknown.
+                                        type:
+                                        - number
+                                        - 'null'
+                                      dilutedEPS:
+                                        description: Optional dilutedEPS supplied by this operation. Null means unknown.
+                                        type:
+                                        - number
+                                        - 'null'
+                                      dilutedNIAvailtoComStockholders:
+                                        description: Optional dilutedNIAvailtoComStockholders supplied by this operation. Null means unknown.
+                                        type:
+                                        - number
+                                        - 'null'
+                                      eBIT:
+                                        description: Optional eBIT supplied by this operation. Null means unknown.
+                                        type:
+                                        - number
+                                        - 'null'
+                                      eBITDA:
+                                        description: Optional eBITDA supplied by this operation. Null means unknown.
+                                        type:
+                                        - number
+                                        - 'null'
+                                      grossProfit:
+                                        description: Optional grossProfit supplied by this operation. Null means unknown.
+                                        type:
+                                        - number
+                                        - 'null'
+                                      interestExpense:
+                                        description: Optional interestExpense supplied by this operation. Null means unknown.
+                                        type:
+                                        - number
+                                        - 'null'
+                                      interestExpenseNonOperating:
+                                        description: Optional interestExpenseNonOperating supplied by this operation. Null means unknown.
+                                        type:
+                                        - number
+                                        - 'null'
+                                      interestIncome:
+                                        description: Optional interestIncome supplied by this operation. Null means unknown.
+                                        type:
+                                        - number
+                                        - 'null'
+                                      interestIncomeNonOperating:
+                                        description: Optional interestIncomeNonOperating supplied by this operation. Null means unknown.
+                                        type:
+                                        - number
+                                        - 'null'
+                                      netIncome:
+                                        description: Optional netIncome supplied by this operation. Null means unknown.
+                                        type:
+                                        - number
+                                        - 'null'
+                                      netIncomeCommonStockholders:
+                                        description: Optional netIncomeCommonStockholders supplied by this operation. Null means unknown.
+                                        type:
+                                        - number
+                                        - 'null'
+                                      netIncomeContinuousOperations:
+                                        description: Optional netIncomeContinuousOperations supplied by this operation. Null means unknown.
+                                        type:
+                                        - number
+                                        - 'null'
+                                      netIncomeFromContinuingAndDiscontinuedOperation:
+                                        description: Optional netIncomeFromContinuingAndDiscontinuedOperation supplied by this operation. Null means unknown.
+                                        type:
+                                        - number
+                                        - 'null'
+                                      netIncomeFromContinuingOperationNetMinorityInterest:
+                                        description: Optional netIncomeFromContinuingOperationNetMinorityInterest supplied by this operation. Null means unknown.
+                                        type:
+                                        - number
+                                        - 'null'
+                                      netIncomeIncludingNoncontrollingInterests:
+                                        description: Optional netIncomeIncludingNoncontrollingInterests supplied by this operation. Null means unknown.
+                                        type:
+                                        - number
+                                        - 'null'
+                                      netInterestIncome:
+                                        description: Optional netInterestIncome supplied by this operation. Null means unknown.
+                                        type:
+                                        - number
+                                        - 'null'
+                                      netNonOperatingInterestIncomeExpense:
+                                        description: Optional netNonOperatingInterestIncomeExpense supplied by this operation. Null means unknown.
+                                        type:
+                                        - number
+                                        - 'null'
+                                      normalizedEBITDA:
+                                        description: Optional normalizedEBITDA supplied by this operation. Null means unknown.
+                                        type:
+                                        - number
+                                        - 'null'
+                                      normalizedIncome:
+                                        description: Optional normalizedIncome supplied by this operation. Null means unknown.
+                                        type:
+                                        - number
+                                        - 'null'
+                                      operatingExpense:
+                                        description: Optional operatingExpense supplied by this operation. Null means unknown.
+                                        type:
+                                        - number
+                                        - 'null'
+                                      operatingIncome:
+                                        description: Optional operatingIncome supplied by this operation. Null means unknown.
+                                        type:
+                                        - number
+                                        - 'null'
+                                      operatingRevenue:
+                                        description: Optional operatingRevenue supplied by this operation. Null means unknown.
+                                        type:
+                                        - number
+                                        - 'null'
+                                      otherIncomeExpense:
+                                        description: Optional otherIncomeExpense supplied by this operation. Null means unknown.
+                                        type:
+                                        - number
+                                        - 'null'
+                                      otherNonOperatingIncomeExpenses:
+                                        description: Optional otherNonOperatingIncomeExpenses supplied by this operation. Null means unknown.
+                                        type:
+                                        - number
+                                        - 'null'
+                                      pretaxIncome:
+                                        description: Optional pretaxIncome supplied by this operation. Null means unknown.
+                                        type:
+                                        - number
+                                        - 'null'
+                                      reconciledCostOfRevenue:
+                                        description: Optional reconciledCostOfRevenue supplied by this operation. Null means unknown.
+                                        type:
+                                        - number
+                                        - 'null'
+                                      reconciledDepreciation:
+                                        description: Optional reconciledDepreciation supplied by this operation. Null means unknown.
+                                        type:
+                                        - number
+                                        - 'null'
+                                      researchAndDevelopment:
+                                        description: Optional researchAndDevelopment supplied by this operation. Null means unknown.
+                                        type:
+                                        - number
+                                        - 'null'
+                                      sellingGeneralAndAdministration:
+                                        description: Optional sellingGeneralAndAdministration supplied by this operation. Null means unknown.
+                                        type:
+                                        - number
+                                        - 'null'
+                                      taxEffectOfUnusualItems:
+                                        description: Optional taxEffectOfUnusualItems supplied by this operation. Null means unknown.
+                                        type:
+                                        - number
+                                        - 'null'
+                                      taxProvision:
+                                        description: Optional taxProvision supplied by this operation. Null means unknown.
+                                        type:
+                                        - number
+                                        - 'null'
+                                      taxRateForCalcs:
+                                        description: Optional taxRateForCalcs supplied by this operation. Null means unknown.
+                                        type:
+                                        - number
+                                        - 'null'
+                                      totalExpenses:
+                                        description: Optional totalExpenses supplied by this operation. Null means unknown.
+                                        type:
+                                        - number
+                                        - 'null'
+                                      totalOperatingIncomeAsReported:
+                                        description: Optional totalOperatingIncomeAsReported supplied by this operation. Null means unknown.
+                                        type:
+                                        - number
+                                        - 'null'
+                                      totalRevenue:
+                                        description: Optional totalRevenue supplied by this operation. Null means unknown.
+                                        type:
+                                        - number
+                                        - 'null'
+                                    additionalProperties: true
+                                  period_end:
+                                    description: Optional period end supplied by this operation. Null means unknown.
+                                    type:
+                                    - string
+                                    - 'null'
+                                additionalProperties: true
+                        - required:
+                          - statement
+                          properties:
+                            statement:
+                              description: Optional statement supplied by this operation. Null means unknown.
+                              type:
+                              - string
+                              minLength: 1
+                        - required:
+                          - symbol
+                          properties:
+                            symbol:
+                              description: Optional symbol supplied by this operation. Null means unknown.
+                              type:
+                              - string
+                              minLength: 1
+                        - required:
+                          - trailing_twelve_months
+                          properties:
+                            trailing_twelve_months:
+                              description: Optional trailing twelve months supplied by this operation. Null means unknown.
+                              type:
+                              - object
+                              properties:
+                                basis:
+                                  description: Optional basis supplied by this operation. Null means unknown.
+                                  type:
+                                  - string
+                                  - 'null'
+                                metric_count:
+                                  description: Optional metric count supplied by this operation. Null means unknown.
+                                  type:
+                                  - number
+                                  - 'null'
+                                metrics:
+                                  description: Optional metrics supplied by this operation. Null means unknown.
+                                  type:
+                                  - object
+                                  - 'null'
+                                  properties:
+                                    basicAverageShares:
+                                      description: Optional basicAverageShares supplied by this operation. Null means unknown.
+                                      type:
+                                      - number
+                                      - 'null'
+                                    basicEPS:
+                                      description: Optional basicEPS supplied by this operation. Null means unknown.
+                                      type:
+                                      - number
+                                      - 'null'
+                                    costOfRevenue:
+                                      description: Optional costOfRevenue supplied by this operation. Null means unknown.
+                                      type:
+                                      - number
+                                      - 'null'
+                                    dilutedAverageShares:
+                                      description: Optional dilutedAverageShares supplied by this operation. Null means unknown.
+                                      type:
+                                      - number
+                                      - 'null'
+                                    dilutedEPS:
+                                      description: Optional dilutedEPS supplied by this operation. Null means unknown.
+                                      type:
+                                      - number
+                                      - 'null'
+                                    dilutedNIAvailtoComStockholders:
+                                      description: Optional dilutedNIAvailtoComStockholders supplied by this operation. Null means unknown.
+                                      type:
+                                      - number
+                                      - 'null'
+                                    eBIT:
+                                      description: Optional eBIT supplied by this operation. Null means unknown.
+                                      type:
+                                      - number
+                                      - 'null'
+                                    eBITDA:
+                                      description: Optional eBITDA supplied by this operation. Null means unknown.
+                                      type:
+                                      - number
+                                      - 'null'
+                                    grossProfit:
+                                      description: Optional grossProfit supplied by this operation. Null means unknown.
+                                      type:
+                                      - number
+                                      - 'null'
+                                    interestExpense:
+                                      description: Optional interestExpense supplied by this operation. Null means unknown.
+                                      type:
+                                      - number
+                                      - 'null'
+                                    interestExpenseNonOperating:
+                                      description: Optional interestExpenseNonOperating supplied by this operation. Null means unknown.
+                                      type:
+                                      - number
+                                      - 'null'
+                                    interestIncome:
+                                      description: Optional interestIncome supplied by this operation. Null means unknown.
+                                      type:
+                                      - number
+                                      - 'null'
+                                    interestIncomeNonOperating:
+                                      description: Optional interestIncomeNonOperating supplied by this operation. Null means unknown.
+                                      type:
+                                      - number
+                                      - 'null'
+                                    netIncome:
+                                      description: Optional netIncome supplied by this operation. Null means unknown.
+                                      type:
+                                      - number
+                                      - 'null'
+                                    netIncomeCommonStockholders:
+                                      description: Optional netIncomeCommonStockholders supplied by this operation. Null means unknown.
+                                      type:
+                                      - number
+                                      - 'null'
+                                    netIncomeContinuousOperations:
+                                      description: Optional netIncomeContinuousOperations supplied by this operation. Null means unknown.
+                                      type:
+                                      - number
+                                      - 'null'
+                                    netIncomeFromContinuingAndDiscontinuedOperation:
+                                      description: Optional netIncomeFromContinuingAndDiscontinuedOperation supplied by this operation. Null means unknown.
+                                      type:
+                                      - number
+                                      - 'null'
+                                    netIncomeFromContinuingOperationNetMinorityInterest:
+                                      description: Optional netIncomeFromContinuingOperationNetMinorityInterest supplied by this operation. Null means unknown.
+                                      type:
+                                      - number
+                                      - 'null'
+                                    netIncomeIncludingNoncontrollingInterests:
+                                      description: Optional netIncomeIncludingNoncontrollingInterests supplied by this operation. Null means unknown.
+                                      type:
+                                      - number
+                                      - 'null'
+                                    netInterestIncome:
+                                      description: Optional netInterestIncome supplied by this operation. Null means unknown.
+                                      type:
+                                      - number
+                                      - 'null'
+                                    netNonOperatingInterestIncomeExpense:
+                                      description: Optional netNonOperatingInterestIncomeExpense supplied by this operation. Null means unknown.
+                                      type:
+                                      - number
+                                      - 'null'
+                                    normalizedEBITDA:
+                                      description: Optional normalizedEBITDA supplied by this operation. Null means unknown.
+                                      type:
+                                      - number
+                                      - 'null'
+                                    normalizedIncome:
+                                      description: Optional normalizedIncome supplied by this operation. Null means unknown.
+                                      type:
+                                      - number
+                                      - 'null'
+                                    operatingExpense:
+                                      description: Optional operatingExpense supplied by this operation. Null means unknown.
+                                      type:
+                                      - number
+                                      - 'null'
+                                    operatingIncome:
+                                      description: Optional operatingIncome supplied by this operation. Null means unknown.
+                                      type:
+                                      - number
+                                      - 'null'
+                                    operatingRevenue:
+                                      description: Optional operatingRevenue supplied by this operation. Null means unknown.
+                                      type:
+                                      - number
+                                      - 'null'
+                                    otherIncomeExpense:
+                                      description: Optional otherIncomeExpense supplied by this operation. Null means unknown.
+                                      type:
+                                      - number
+                                      - 'null'
+                                    otherNonOperatingIncomeExpenses:
+                                      description: Optional otherNonOperatingIncomeExpenses supplied by this operation. Null means unknown.
+                                      type:
+                                      - number
+                                      - 'null'
+                                    pretaxIncome:
+                                      description: Optional pretaxIncome supplied by this operation. Null means unknown.
+                                      type:
+                                      - number
+                                      - 'null'
+                                    reconciledCostOfRevenue:
+                                      description: Optional reconciledCostOfRevenue supplied by this operation. Null means unknown.
+                                      type:
+                                      - number
+                                      - 'null'
+                                    reconciledDepreciation:
+                                      description: Optional reconciledDepreciation supplied by this operation. Null means unknown.
+                                      type:
+                                      - number
+                                      - 'null'
+                                    researchAndDevelopment:
+                                      description: Optional researchAndDevelopment supplied by this operation. Null means unknown.
+                                      type:
+                                      - number
+                                      - 'null'
+                                    sellingGeneralAndAdministration:
+                                      description: Optional sellingGeneralAndAdministration supplied by this operation. Null means unknown.
+                                      type:
+                                      - number
+                                      - 'null'
+                                    taxEffectOfUnusualItems:
+                                      description: Optional taxEffectOfUnusualItems supplied by this operation. Null means unknown.
+                                      type:
+                                      - number
+                                      - 'null'
+                                    taxProvision:
+                                      description: Optional taxProvision supplied by this operation. Null means unknown.
+                                      type:
+                                      - number
+                                      - 'null'
+                                    taxRateForCalcs:
+                                      description: Optional taxRateForCalcs supplied by this operation. Null means unknown.
+                                      type:
+                                      - number
+                                      - 'null'
+                                    totalExpenses:
+                                      description: Optional totalExpenses supplied by this operation. Null means unknown.
+                                      type:
+                                      - number
+                                      - 'null'
+                                    totalOperatingIncomeAsReported:
+                                      description: Optional totalOperatingIncomeAsReported supplied by this operation. Null means unknown.
+                                      type:
+                                      - number
+                                      - 'null'
+                                    totalRevenue:
+                                      description: Optional totalRevenue supplied by this operation. Null means unknown.
+                                      type:
+                                      - number
+                                      - 'null'
+                                  additionalProperties: true
+                              additionalProperties: true
+                      x-contract-version: '2026-09-22'
+                      x-validation-scope: Required success payload structure; optional fields and source completeness remain separate.
+                      examples:
+                      - count: 0
+                        note: example
+                        period: example
+                        periods:
+                        - basis: example
+                          metric_count: 0
+                          metrics:
+                            basicAverageShares: 0
+                            basicEPS: 0
+                            costOfRevenue: 0
+                            dilutedAverageShares: 0
+                            dilutedEPS: 0
+                            dilutedNIAvailtoComStockholders: 0
+                            eBIT: 0
+                            eBITDA: 0
+                            grossProfit: 0
+                            interestExpense: 0
+                            interestExpenseNonOperating: 0
+                            interestIncome: 0
+                            interestIncomeNonOperating: 0
+                            netIncome: 0
+                            netIncomeCommonStockholders: 0
+                            netIncomeContinuousOperations: 0
+                            netIncomeFromContinuingAndDiscontinuedOperation: 0
+                            netIncomeFromContinuingOperationNetMinorityInterest: 0
+                            netIncomeIncludingNoncontrollingInterests: 0
+                            netInterestIncome: 0
+                            netNonOperatingInterestIncomeExpense: 0
+                            normalizedEBITDA: 0
+                            normalizedIncome: 0
+                            operatingExpense: 0
+                            operatingIncome: 0
+                            operatingRevenue: 0
+                            otherIncomeExpense: 0
+                            otherNonOperatingIncomeExpenses: 0
+                            pretaxIncome: 0
+                            reconciledCostOfRevenue: 0
+                            reconciledDepreciation: 0
+                            researchAndDevelopment: 0
+                            sellingGeneralAndAdministration: 0
+                            taxEffectOfUnusualItems: 0
+                            taxProvision: 0
+                            taxRateForCalcs: 0
+                            totalExpenses: 0
+                            totalOperatingIncomeAsReported: 0
+                            totalRevenue: 0
+                          period_end: example
+                        platform: example
+                        statement: example
+                        symbol: example
+                        trailing_twelve_months:
+                          basis: example
+                          metric_count: 0
+                          metrics:
+                            basicAverageShares: 0
+                            basicEPS: 0
+                            costOfRevenue: 0
+                            dilutedAverageShares: 0
+                            dilutedEPS: 0
+                            dilutedNIAvailtoComStockholders: 0
+                            eBIT: 0
+                            eBITDA: 0
+                            grossProfit: 0
+                            interestExpense: 0
+                            interestExpenseNonOperating: 0
+                            interestIncome: 0
+                            interestIncomeNonOperating: 0
+                            netIncome: 0
+                            netIncomeCommonStockholders: 0
+                            netIncomeContinuousOperations: 0
+                            netIncomeFromContinuingAndDiscontinuedOperation: 0
+                            netIncomeFromContinuingOperationNetMinorityInterest: 0
+                            netIncomeIncludingNoncontrollingInterests: 0
+                            netInterestIncome: 0
+                            netNonOperatingInterestIncomeExpense: 0
+                            normalizedEBITDA: 0
+                            normalizedIncome: 0
+                            operatingExpense: 0
+                            operatingIncome: 0
+                            operatingRevenue: 0
+                            otherIncomeExpense: 0
+                            otherNonOperatingIncomeExpenses: 0
+                            pretaxIncome: 0
+                            reconciledCostOfRevenue: 0
+                            reconciledDepreciation: 0
+                            researchAndDevelopment: 0
+                            sellingGeneralAndAdministration: 0
+                            taxEffectOfUnusualItems: 0
+                            taxProvision: 0
+                            taxRateForCalcs: 0
+                            totalExpenses: 0
+                            totalOperatingIncomeAsReported: 0
+                            totalRevenue: 0
+        default:
+          description: The error envelope — the same shape for every non-2xx status.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      x-credits: 3
+      x-production-available: true
+      x-capacity:
+        status: not_assessed
+        message: Capacity is workload-dependent; configured routes do not establish sustained throughput or an availability guarantee.
+      x-availability-scope: Structural check of the effective registered chain, production permission, adapter, configured cost and quality floor without request parameters. True is not a live-health, credential, quota, subscription-entitlement, complete-data or deployment-exposure guarantee. False means no structurally eligible candidate; null means metadata could not establish availability. Composite child capability still depends on its component routes.
+      x-live-proven: true
+components:
+  schemas:
+    Success:
+      type: object
+      required:
+      - success
+      - platform
+      - endpoint
+      - data
+      - credits_used
+      - credits_remaining
+      - request_id
+      properties:
+        _completeness:
+          type: object
+          description: Reported response completeness, not a guarantee of complete platform history. Missing source assertions remain unknown.
+          properties:
+            state:
+              type: string
+              enum:
+              - complete
+              - partial
+              - unknown
+            scope:
+              type: string
+            inspection_limited:
+              type: boolean
+        success:
+          const: true
+        platform:
+          type: string
+        endpoint:
+          type: string
+          description: The resolved path, e.g. `/v1/github/profile`.
+        data:
+          description: Amazon responses include marketplace.country and marketplace.domain (resolved request marketplace, UK by default). X profiles preserve location, bio_link and cover_url when supplied. TikTok profiles preserve commerce_user, seller, region, location and business_category when supplied; region identifies the account region rather than personal residence. TikTok comments use platform_default selection, which can change between fetches; keep the same video and options when following cursors. Amazon review variant is readable text. Facebook profiles preserve cover_url, following and created_at when supplied; likes_count and followers are distinct and follower totals may be rounded. Endpoint-specific normalized payload, not one universal post/profile schema. Many lists use items/count/cursor; a null cursor means no usable next cursor was supplied, not proof that all history was retrieved. Check has_more and warnings where present. Social full-profile bundles use posts_cursor and posts_pagination.next_params; retain all returned next parameters. YouTube channel bundles instead use recent_videos, cursor and recent_videos_pagination. Inspect complete/partial/legs where supplied for bounded or failed components. Optional model-derived fields are labelled, not source facts.
+        credits_used:
+          type: integer
+        credits_remaining:
+          type: integer
+        request_id:
+          type: string
+        cached:
+          type: boolean
+        stale:
+          type: boolean
+          description: True only for an explicitly labelled, zero-credit reference snapshot served after a temporary upstream failure.
+        age_seconds:
+          type: integer
+          minimum: 0
+          description: Age of a stale snapshot since its original retrieval; not reset by outage recovery.
+        fetched_at:
+          type: string
+          format: date-time
+          description: Original retrieval time of a stale snapshot, in UTC.
+        synthetic:
+          type: boolean
+          description: Present and true only on the explicitly requested /sandbox surface. Synthetic responses are representative and charged 0 credits; production /v1 never returns them.
+        degraded:
+          type: boolean
+          description: Reserved for sandbox compatibility. Production /v1 reports upstream failure as an error and never serves a representative fallback.
+    Error:
+      type: object
+      required:
+      - success
+      - error
+      - credits_used
+      - request_id
+      properties:
+        success:
+          const: false
+        error:
+          type: object
+          required:
+          - type
+          - message
+          - status
+          properties:
+            type:
+              type: string
+              enum:
+              - UNAUTHORIZED
+              - KEY_REVOKED
+              - KEY_LIMIT_EXCEEDED
+              - RATE_LIMITED
+              - INSUFFICIENT_CREDITS
+              - RESOURCE_NOT_FOUND
+              - INVALID_PARAMETERS
+              - TARGET_ACCESS_DENIED
+              - UPSTREAM_ERROR
+              - UPSTREAM_TIMEOUT
+              - FREE_CAPACITY_UNAVAILABLE
+              - CAPACITY_UNAVAILABLE
+              - ENDPOINT_NOT_FOUND
+              - ENDPOINT_NOT_AVAILABLE
+              - FAIR_USE_EXCEEDED
+              - INTERNAL_ERROR
+            message:
+              type: string
+            status:
+              type: integer
+            doc_url:
+              type: string
+              description: Deep link to the exact section of the errors guide for this type.
+            details:
+              type: object
+        credits_used:
+          type:
+          - integer
+          - 'null'
+          description: Confirmed net charge; null when billing is pending reconciliation. Inspect error.details.billing_status and retain request_id.
+        credits_remaining:
+          type: integer
+        request_id:
+          type: string
+  securitySchemes:
+    ApiKeyHeader:
+      type: apiKey
+      in: header
+      name: x-api-key
+      description: Your API key (`mn_…`), from the console. The recommended style.
+    BearerKey:
+      type: http
+      scheme: bearer
+      description: The same key as a Bearer token, for clients that only expose an Authorization field. Keys are never accepted in the query string — URLs leak into logs and referrers.

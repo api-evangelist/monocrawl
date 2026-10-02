@@ -1,0 +1,96 @@
+{
+  "@context": {
+    "@vocab": "https://monocrawl.com/schema#",
+    "schema": "https://schema.org/",
+    "xsd": "http://www.w3.org/2001/XMLSchema#",
+    "dcterms": "http://purl.org/dc/terms/",
+    "monocrawl": "https://monocrawl.com/schema#",
+    "Success": "monocrawl:Success",
+    "_completeness": {
+      "@id": "monocrawl:_completeness"
+    },
+    "success": {
+      "@id": "monocrawl:success"
+    },
+    "platform": {
+      "@id": "monocrawl:platform",
+      "@type": "xsd:string"
+    },
+    "endpoint": {
+      "@id": "monocrawl:endpoint",
+      "@type": "xsd:string"
+    },
+    "data": {
+      "@id": "monocrawl:data"
+    },
+    "credits_used": {
+      "@id": "monocrawl:credits_used",
+      "@type": "xsd:integer"
+    },
+    "credits_remaining": {
+      "@id": "monocrawl:credits_remaining",
+      "@type": "xsd:integer"
+    },
+    "request_id": {
+      "@id": "monocrawl:request_id",
+      "@type": "xsd:string"
+    },
+    "cached": {
+      "@id": "monocrawl:cached",
+      "@type": "xsd:boolean"
+    },
+    "stale": {
+      "@id": "monocrawl:stale",
+      "@type": "xsd:boolean"
+    },
+    "age_seconds": {
+      "@id": "monocrawl:age_seconds",
+      "@type": "xsd:integer"
+    },
+    "fetched_at": {
+      "@id": "monocrawl:fetched_at",
+      "@type": "xsd:dateTime"
+    },
+    "synthetic": {
+      "@id": "monocrawl:synthetic",
+      "@type": "xsd:boolean"
+    },
+    "degraded": {
+      "@id": "monocrawl:degraded",
+      "@type": "xsd:boolean"
+    },
+    "Error": "monocrawl:Error",
+    "error": {
+      "@id": "monocrawl:error"
+    },
+    "BatchRequest": "monocrawl:BatchRequest",
+    "requests": {
+      "@id": "monocrawl:requests",
+      "@container": "@list"
+    },
+    "BatchResponse": "monocrawl:BatchResponse",
+    "count": {
+      "@id": "monocrawl:count",
+      "@type": "xsd:integer"
+    },
+    "succeeded": {
+      "@id": "monocrawl:succeeded",
+      "@type": "xsd:integer"
+    },
+    "failed": {
+      "@id": "monocrawl:failed",
+      "@type": "xsd:integer"
+    },
+    "results": {
+      "@id": "monocrawl:results",
+      "@container": "@list"
+    }
+  },
+  "@type": "schema:Dataset",
+  "schema:name": "Monocrawl API JSON-LD context",
+  "schema:description": "A JSON-LD @context for the objects Monocrawl's own API contract declares: one class per component schema, one property per declared field, typed from the contract. Derived by script (derive-json-ld.py, 2026-10-02) from openapi/monocrawl-openapi.json.",
+  "dcterms:created": "2026-10-02",
+  "dcterms:source": [
+    "openapi/monocrawl-openapi.json"
+  ]
+}

@@ -1,0 +1,36 @@
+generated: '2026-10-02'
+method: searched
+generator: extract-docs-artifacts.py (local)
+source: https://www.monocrawl.com/pricing
+sources:
+- https://www.monocrawl.com/pricing
+- https://www.monocrawl.com/guides/x-api-pricing
+- https://www.monocrawl.com/guides/instagram-api-pricing
+- https://www.monocrawl.com/guides/tiktok-api-pricing
+name: Monocrawl pricing
+audience: business-product
+pricing_basis: per-seat
+plans:
+- name: Free
+  price_text: Start free
+  description: 150 free credits to start, no card required
+- name: Starter
+  price_text: $29 / month
+  price: 29
+  description: 10,000 credits / month
+- name: Pro
+  price_text: $99 / month
+  price: 99
+  description: 40,000 credits / month
+- name: Growth
+  price_text: $299 / month
+  price: 299
+  description: 135,000 credits / month
+- name: Business
+  price_text: $799 / month
+  price: 799
+  description: 400,000 credits / month
+- name: Custom
+  price_text: Custom volume pricing
+  description: Need more credits? Tell us your endpoints and expected volume. We'll build a quote around your workload.
+docs: https://www.monocrawl.com/pricing

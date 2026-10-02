@@ -1,0 +1,810 @@
+openapi: 3.2.0
+info:
+  title: Monocrawl Batch API
+  version: 0.1.0
+  description: One key, one envelope, one credit meter across social, search, commerce and web data.
+  contact:
+    name: Monocrawl support
+    url: https://www.monocrawl.com/contact
+  termsOfService: https://www.monocrawl.com/legal/terms-and-conditions
+servers:
+- url: https://www.monocrawl.com
+security:
+- ApiKeyHeader: []
+tags:
+- name: Batch
+  description: Run several requests in one HTTP call.
+paths:
+  /v1/youtube/channels:
+    post:
+      operationId: youtube_batch_channels
+      tags:
+      - Batch
+      summary: Read YouTube channels with per-item billing
+      description: 'Up to 20 independent reads, five at a time. Current single-item price: 1 credits. No wrapper fee; failed or empty items are uncharged. GET routes retain their existing behavior and price. A shared time budget leaves unstarted items uncharged. Pass Idempotency-Key for per-item replay protection.'
+      security:
+      - ApiKeyHeader: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                ids:
+                  type: array
+                  minItems: 1
+                  maxItems: 20
+                  items:
+                    type: string
+                  description: Channel IDs, handles or URLs.
+                urls:
+                  type: array
+                  minItems: 1
+                  maxItems: 20
+                  items:
+                    type: string
+                  description: Alternative to ids; supply one array only.
+                fresh:
+                  type: boolean
+                dry_run:
+                  type: boolean
+                  description: Quote each item without executing paid reads.
+                hl:
+                  type: string
+              oneOf:
+              - required:
+                - ids
+              - required:
+                - urls
+      responses:
+        '200':
+          description: Ordered per-item results. Inspect every status, success and credits_used. credits_used is null when billing_complete is false; credits_confirmed is the known subtotal. Replayed items have zero new credits and preserve original_credits_used.
+          content:
+            application/json:
+              schema:
+                $schema: https://json-schema.org/draft/2020-12/schema
+                $id: https://www.monocrawl.com/schemas/youtube/channels-batch.json
+                title: youtube/channels-batch data fields
+                description: Required core structure for successful data, with optional source fields. Additional fields are allowed. This is not a completeness guarantee.
+                type: object
+                properties:
+                  success:
+                    type:
+                    - boolean
+                    - 'null'
+                  count:
+                    type:
+                    - number
+                    - 'null'
+                  succeeded:
+                    type:
+                    - number
+                    - 'null'
+                  failed:
+                    type:
+                    - number
+                    - 'null'
+                  credits_used:
+                    type:
+                    - number
+                    - 'null'
+                  credits_confirmed:
+                    type:
+                    - number
+                    - 'null'
+                  billing_complete:
+                    type:
+                    - boolean
+                    - 'null'
+                  results:
+                    type:
+                    - array
+                    items:
+                      type: object
+                      properties:
+                        index:
+                          type:
+                          - number
+                          - 'null'
+                        status:
+                          type:
+                          - number
+                          - 'null'
+                        success:
+                          type:
+                          - boolean
+                          - 'null'
+                        data:
+                          description: Operation-specific JSON value; inspect the status and requested operation before reading it.
+                        error:
+                          type:
+                          - object
+                          - 'null'
+                          properties: {}
+                          additionalProperties: true
+                        credits_used:
+                          type:
+                          - number
+                          - 'null'
+                        request_id:
+                          type:
+                          - string
+                          - 'null'
+                      additionalProperties: true
+                      allOf:
+                      - anyOf:
+                        - required:
+                          - index
+                          properties:
+                            index:
+                              type:
+                              - number
+                        - required:
+                          - success
+                          properties:
+                            success:
+                              type:
+                              - boolean
+                        - required:
+                          - data
+                          properties:
+                            data:
+                              description: Operation-specific JSON value; inspect the status and requested operation before reading it.
+                        - required:
+                          - error
+                          properties:
+                            error:
+                              type:
+                              - object
+                              properties: {}
+                              additionalProperties: true
+                        - required:
+                          - credits_used
+                          properties:
+                            credits_used:
+                              type:
+                              - number
+                        - required:
+                          - request_id
+                          properties:
+                            request_id:
+                              type:
+                              - string
+                              minLength: 1
+                  dry_run:
+                    type:
+                    - boolean
+                    - 'null'
+                additionalProperties: true
+                required:
+                - results
+                x-contract-version: '2026-09-22'
+                x-validation-scope: Required success payload structure; optional fields and source completeness remain separate.
+                examples:
+                - success: false
+                  count: 0
+                  succeeded: 0
+                  failed: 0
+                  credits_used: 0
+                  credits_confirmed: 0
+                  billing_complete: false
+                  results: []
+                  dry_run: false
+        default:
+          description: Authentication or body validation failed before dispatch.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /v1/youtube/videos:
+    post:
+      operationId: youtube_batch_videos
+      tags:
+      - Batch
+      summary: Read YouTube videos with per-item billing
+      description: 'Up to 20 independent reads, five at a time. Current single-item price: 1 credits. No wrapper fee; failed or empty items are uncharged. GET routes retain their existing behavior and price. A shared time budget leaves unstarted items uncharged. Pass Idempotency-Key for per-item replay protection.'
+      security:
+      - ApiKeyHeader: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                ids:
+                  type: array
+                  minItems: 1
+                  maxItems: 20
+                  items:
+                    type: string
+                  description: Video IDs or URLs.
+                urls:
+                  type: array
+                  minItems: 1
+                  maxItems: 20
+                  items:
+                    type: string
+                  description: Alternative to ids; supply one array only.
+                fresh:
+                  type: boolean
+                dry_run:
+                  type: boolean
+                  description: Quote each item without executing paid reads.
+                hl:
+                  type: string
+              oneOf:
+              - required:
+                - ids
+              - required:
+                - urls
+      responses:
+        '200':
+          description: Ordered per-item results. Inspect every status, success and credits_used. credits_used is null when billing_complete is false; credits_confirmed is the known subtotal. Replayed items have zero new credits and preserve original_credits_used.
+          content:
+            application/json:
+              schema:
+                $schema: https://json-schema.org/draft/2020-12/schema
+                $id: https://www.monocrawl.com/schemas/youtube/videos-batch.json
+                title: youtube/videos-batch data fields
+                description: Required core structure for successful data, with optional source fields. Additional fields are allowed. This is not a completeness guarantee.
+                type: object
+                properties:
+                  success:
+                    type:
+                    - boolean
+                    - 'null'
+                  count:
+                    type:
+                    - number
+                    - 'null'
+                  succeeded:
+                    type:
+                    - number
+                    - 'null'
+                  failed:
+                    type:
+                    - number
+                    - 'null'
+                  credits_used:
+                    type:
+                    - number
+                    - 'null'
+                  credits_confirmed:
+                    type:
+                    - number
+                    - 'null'
+                  billing_complete:
+                    type:
+                    - boolean
+                    - 'null'
+                  results:
+                    type:
+                    - array
+                    items:
+                      type: object
+                      properties:
+                        index:
+                          type:
+                          - number
+                          - 'null'
+                        status:
+                          type:
+                          - number
+                          - 'null'
+                        success:
+                          type:
+                          - boolean
+                          - 'null'
+                        data:
+                          description: Operation-specific JSON value; inspect the status and requested operation before reading it.
+                        error:
+                          type:
+                          - object
+                          - 'null'
+                          properties: {}
+                          additionalProperties: true
+                        credits_used:
+                          type:
+                          - number
+                          - 'null'
+                        request_id:
+                          type:
+                          - string
+                          - 'null'
+                      additionalProperties: true
+                      allOf:
+                      - anyOf:
+                        - required:
+                          - index
+                          properties:
+                            index:
+                              type:
+                              - number
+                        - required:
+                          - success
+                          properties:
+                            success:
+                              type:
+                              - boolean
+                        - required:
+                          - data
+                          properties:
+                            data:
+                              description: Operation-specific JSON value; inspect the status and requested operation before reading it.
+                        - required:
+                          - error
+                          properties:
+                            error:
+                              type:
+                              - object
+                              properties: {}
+                              additionalProperties: true
+                        - required:
+                          - credits_used
+                          properties:
+                            credits_used:
+                              type:
+                              - number
+                        - required:
+                          - request_id
+                          properties:
+                            request_id:
+                              type:
+                              - string
+                              minLength: 1
+                  dry_run:
+                    type:
+                    - boolean
+                    - 'null'
+                additionalProperties: true
+                required:
+                - results
+                x-contract-version: '2026-09-22'
+                x-validation-scope: Required success payload structure; optional fields and source completeness remain separate.
+                examples:
+                - success: false
+                  count: 0
+                  succeeded: 0
+                  failed: 0
+                  credits_used: 0
+                  credits_confirmed: 0
+                  billing_complete: false
+                  results: []
+                  dry_run: false
+        default:
+          description: Authentication or body validation failed before dispatch.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /v1/batch:
+    post:
+      operationId: batch
+      tags:
+      - Batch
+      summary: Run up to 20 requests in one call
+      description: Each item runs through the full pipeline independently — items may target different platforms, and one item failing does not affect its siblings. The wrapper itself costs nothing; you pay only for the calls inside it. Auth is header-only (`x-api-key`).
+      security:
+      - ApiKeyHeader: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BatchRequest'
+      responses:
+        '200':
+          description: Per-item results in request order. Check each item's own `status` and `success`.
+          content:
+            application/json:
+              schema:
+                $schema: https://json-schema.org/draft/2020-12/schema
+                $id: https://www.monocrawl.com/schemas/batch/response.json
+                title: batch/response data fields
+                description: Required core structure for successful data, with optional source fields. Additional fields are allowed. This is not a completeness guarantee.
+                type: object
+                properties:
+                  success:
+                    type:
+                    - boolean
+                    - 'null'
+                  count:
+                    type:
+                    - number
+                    - 'null'
+                  succeeded:
+                    type:
+                    - number
+                    - 'null'
+                  failed:
+                    type:
+                    - number
+                    - 'null'
+                  credits_used:
+                    type:
+                    - number
+                    - 'null'
+                  credits_confirmed:
+                    type:
+                    - number
+                    - 'null'
+                  billing_complete:
+                    type:
+                    - boolean
+                    - 'null'
+                  results:
+                    type:
+                    - array
+                    items:
+                      type: object
+                      properties:
+                        index:
+                          type:
+                          - number
+                          - 'null'
+                        status:
+                          type:
+                          - number
+                          - 'null'
+                        success:
+                          type:
+                          - boolean
+                          - 'null'
+                        data:
+                          description: Operation-specific JSON value; inspect the status and requested operation before reading it.
+                        error:
+                          type:
+                          - object
+                          - 'null'
+                          properties: {}
+                          additionalProperties: true
+                        credits_used:
+                          type:
+                          - number
+                          - 'null'
+                        request_id:
+                          type:
+                          - string
+                          - 'null'
+                      additionalProperties: true
+                      allOf:
+                      - anyOf:
+                        - required:
+                          - index
+                          properties:
+                            index:
+                              type:
+                              - number
+                        - required:
+                          - success
+                          properties:
+                            success:
+                              type:
+                              - boolean
+                        - required:
+                          - data
+                          properties:
+                            data:
+                              description: Operation-specific JSON value; inspect the status and requested operation before reading it.
+                        - required:
+                          - error
+                          properties:
+                            error:
+                              type:
+                              - object
+                              properties: {}
+                              additionalProperties: true
+                        - required:
+                          - credits_used
+                          properties:
+                            credits_used:
+                              type:
+                              - number
+                        - required:
+                          - request_id
+                          properties:
+                            request_id:
+                              type:
+                              - string
+                              minLength: 1
+                  dry_run:
+                    type:
+                    - boolean
+                    - 'null'
+                additionalProperties: true
+                required:
+                - results
+                x-contract-version: '2026-09-22'
+                x-validation-scope: Required success payload structure; optional fields and source completeness remain separate.
+                examples:
+                - success: false
+                  count: 0
+                  succeeded: 0
+                  failed: 0
+                  credits_used: 0
+                  credits_confirmed: 0
+                  billing_complete: false
+                  results: []
+                  dry_run: false
+        default:
+          description: The error envelope (the batch itself was rejected — bad body, auth, or rate limit).
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      x-response-schema: https://www.monocrawl.com/schemas/batch/response.json
+  /v1/youtube/transcripts:
+    post:
+      operationId: youtube_batch_transcripts
+      tags:
+      - Batch
+      summary: Read YouTube transcripts with per-item billing
+      description: 'Up to 20 independent reads, five at a time. Current single-item price: 2 credits. No wrapper fee; failed or empty items are uncharged. GET routes retain their existing behavior and price. A shared time budget leaves unstarted items uncharged. Pass Idempotency-Key for per-item replay protection.'
+      security:
+      - ApiKeyHeader: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                ids:
+                  type: array
+                  minItems: 1
+                  maxItems: 20
+                  items:
+                    type: string
+                  description: Video IDs or URLs.
+                urls:
+                  type: array
+                  minItems: 1
+                  maxItems: 20
+                  items:
+                    type: string
+                  description: Alternative to ids; supply one array only.
+                fresh:
+                  type: boolean
+                dry_run:
+                  type: boolean
+                  description: Quote each item without executing paid reads.
+              oneOf:
+              - required:
+                - ids
+              - required:
+                - urls
+      responses:
+        '200':
+          description: Ordered per-item results. Inspect every status, success and credits_used. credits_used is null when billing_complete is false; credits_confirmed is the known subtotal. Replayed items have zero new credits and preserve original_credits_used.
+          content:
+            application/json:
+              schema:
+                $schema: https://json-schema.org/draft/2020-12/schema
+                $id: https://www.monocrawl.com/schemas/youtube/transcripts-batch.json
+                title: youtube/transcripts-batch data fields
+                description: Required core structure for successful data, with optional source fields. Additional fields are allowed. This is not a completeness guarantee.
+                type: object
+                properties:
+                  success:
+                    type:
+                    - boolean
+                    - 'null'
+                  count:
+                    type:
+                    - number
+                    - 'null'
+                  succeeded:
+                    type:
+                    - number
+                    - 'null'
+                  failed:
+                    type:
+                    - number
+                    - 'null'
+                  credits_used:
+                    type:
+                    - number
+                    - 'null'
+                  credits_confirmed:
+                    type:
+                    - number
+                    - 'null'
+                  billing_complete:
+                    type:
+                    - boolean
+                    - 'null'
+                  results:
+                    type:
+                    - array
+                    items:
+                      type: object
+                      properties:
+                        index:
+                          type:
+                          - number
+                          - 'null'
+                        status:
+                          type:
+                          - number
+                          - 'null'
+                        success:
+                          type:
+                          - boolean
+                          - 'null'
+                        data:
+                          description: Operation-specific JSON value; inspect the status and requested operation before reading it.
+                        error:
+                          type:
+                          - object
+                          - 'null'
+                          properties: {}
+                          additionalProperties: true
+                        credits_used:
+                          type:
+                          - number
+                          - 'null'
+                        request_id:
+                          type:
+                          - string
+                          - 'null'
+                      additionalProperties: true
+                      allOf:
+                      - anyOf:
+                        - required:
+                          - index
+                          properties:
+                            index:
+                              type:
+                              - number
+                        - required:
+                          - success
+                          properties:
+                            success:
+                              type:
+                              - boolean
+                        - required:
+                          - data
+                          properties:
+                            data:
+                              description: Operation-specific JSON value; inspect the status and requested operation before reading it.
+                        - required:
+                          - error
+                          properties:
+                            error:
+                              type:
+                              - object
+                              properties: {}
+                              additionalProperties: true
+                        - required:
+                          - credits_used
+                          properties:
+                            credits_used:
+                              type:
+                              - number
+                        - required:
+                          - request_id
+                          properties:
+                            request_id:
+                              type:
+                              - string
+                              minLength: 1
+                  dry_run:
+                    type:
+                    - boolean
+                    - 'null'
+                additionalProperties: true
+                required:
+                - results
+                x-contract-version: '2026-09-22'
+                x-validation-scope: Required success payload structure; optional fields and source completeness remain separate.
+                examples:
+                - success: false
+                  count: 0
+                  succeeded: 0
+                  failed: 0
+                  credits_used: 0
+                  credits_confirmed: 0
+                  billing_complete: false
+                  results: []
+                  dry_run: false
+        default:
+          description: Authentication or body validation failed before dispatch.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  schemas:
+    BatchRequest:
+      type: object
+      required:
+      - requests
+      properties:
+        requests:
+          type: array
+          maxItems: 20
+          items:
+            type: object
+            required:
+            - platform
+            - endpoint
+            properties:
+              platform:
+                type: string
+                example: github
+              endpoint:
+                type: string
+                example: profile
+              params:
+                type: object
+                additionalProperties:
+                  type: string
+    Error:
+      type: object
+      required:
+      - success
+      - error
+      - credits_used
+      - request_id
+      properties:
+        success:
+          const: false
+        error:
+          type: object
+          required:
+          - type
+          - message
+          - status
+          properties:
+            type:
+              type: string
+              enum:
+              - UNAUTHORIZED
+              - KEY_REVOKED
+              - KEY_LIMIT_EXCEEDED
+              - RATE_LIMITED
+              - INSUFFICIENT_CREDITS
+              - RESOURCE_NOT_FOUND
+              - INVALID_PARAMETERS
+              - TARGET_ACCESS_DENIED
+              - UPSTREAM_ERROR
+              - UPSTREAM_TIMEOUT
+              - FREE_CAPACITY_UNAVAILABLE
+              - CAPACITY_UNAVAILABLE
+              - ENDPOINT_NOT_FOUND
+              - ENDPOINT_NOT_AVAILABLE
+              - FAIR_USE_EXCEEDED
+              - INTERNAL_ERROR
+            message:
+              type: string
+            status:
+              type: integer
+            doc_url:
+              type: string
+              description: Deep link to the exact section of the errors guide for this type.
+            details:
+              type: object
+        credits_used:
+          type:
+          - integer
+          - 'null'
+          description: Confirmed net charge; null when billing is pending reconciliation. Inspect error.details.billing_status and retain request_id.
+        credits_remaining:
+          type: integer
+        request_id:
+          type: string
+  securitySchemes:
+    ApiKeyHeader:
+      type: apiKey
+      in: header
+      name: x-api-key
+      description: Your API key (`mn_…`), from the console. The recommended style.
+    BearerKey:
+      type: http
+      scheme: bearer
+      description: The same key as a Bearer token, for clients that only expose an Authorization field. Keys are never accepted in the query string — URLs leak into logs and referrers.

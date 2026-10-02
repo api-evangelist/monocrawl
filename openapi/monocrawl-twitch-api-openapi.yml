@@ -1,0 +1,1118 @@
+openapi: 3.2.0
+info:
+  title: Monocrawl Twitch API
+  version: 0.1.0
+  description: One key, one envelope, one credit meter across social, search, commerce and web data.
+  contact:
+    name: Monocrawl support
+    url: https://www.monocrawl.com/contact
+  termsOfService: https://www.monocrawl.com/legal/terms-and-conditions
+servers:
+- url: https://www.monocrawl.com
+security:
+- ApiKeyHeader: []
+tags:
+- name: Twitch
+paths:
+  /v1/twitch/clip:
+    get:
+      operationId: twitch_clip
+      tags:
+      - Twitch
+      summary: Twitch clip
+      description: 'Fetch a single Twitch clip from its URL: title, broadcaster, creator, game, duration, view count and thumbnail. Costs 2 credits per successful live response.'
+      parameters:
+      - name: url
+        in: query
+        required: true
+        schema:
+          type: string
+        example: https://clips.twitch.tv/CloudySavageMarjoramRuleFive--ErzsYbE7UWvgCMQ
+        description: Twitch clip URL (clips.twitch.tv/<slug>, twitch.tv/<channel>/clip/<slug>) or a bare clip slug
+      - name: dry_run
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - '1'
+          - '0'
+          - 'true'
+          - 'false'
+        example: '1'
+        description: 'Read a zero-credit estimate without fetching sources, running AI, or reserving credits. Cache status is a snapshot, not a guarantee at execution. Accepted values: 1, 0, true, false. Case, spaces, hyphens and underscores are interchangeable.'
+      - name: X-Max-Credits
+        in: header
+        required: false
+        schema:
+          type: integer
+          minimum: 0
+          maximum: 9007199254740991
+        example: 5
+        description: Optional credit reservation ceiling for this individual request. Send a non-negative integer in decimal digits. Live execution checks the required reservation after resolving free cache hits or buffered continuation, before charging or calling a supplier. A higher reservation returns HTTP 422 INVALID_PARAMETERS with reason max_credits_exceeded and charges nothing. Invalid header values also return 422. Zero permits only a zero-credit reservation; omitting the header uses normal pricing. dry_run remains a free preview. This does not cap later requests, batches or scheduled runs.
+      security:
+      - ApiKeyHeader: []
+      - BearerKey: []
+      responses:
+        '200':
+          description: 'The common success envelope; `data` is endpoint-specific. Many lists use items/count/cursor; bundles use named collections and their documented continuation metadata. HTTP 200 can contain a partial bundle: inspect complete, partial and legs where supplied.'
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/Success'
+                - type: object
+                  properties:
+                    data:
+                      $schema: https://json-schema.org/draft/2020-12/schema
+                      $id: https://www.monocrawl.com/schemas/twitch/clip.json
+                      title: twitch/clip data fields
+                      description: Optional data supplied by this operation. Null means unknown.
+                      type: object
+                      properties:
+                        broadcaster:
+                          description: Optional broadcaster supplied by this operation. Null means unknown.
+                          type:
+                          - object
+                          - 'null'
+                          properties:
+                            id:
+                              description: Source identifier. Preserve the supplied type and exact value.
+                              type:
+                              - string
+                              - 'null'
+                            name:
+                              description: Optional name supplied by this operation. Null means unknown.
+                              type:
+                              - string
+                              - 'null'
+                          additionalProperties: true
+                        created_at:
+                          description: Source creation time, not the API retrieval time.
+                          type:
+                          - string
+                          - 'null'
+                        creator:
+                          description: Optional creator supplied by this operation. Null means unknown.
+                          type:
+                          - object
+                          - 'null'
+                          properties:
+                            id:
+                              description: Source identifier. Preserve the supplied type and exact value.
+                              type:
+                              - string
+                              - 'null'
+                            name:
+                              description: Optional name supplied by this operation. Null means unknown.
+                              type:
+                              - string
+                              - 'null'
+                          additionalProperties: true
+                        duration_seconds:
+                          description: Optional duration seconds supplied by this operation. Null means unknown.
+                          type:
+                          - number
+                          - 'null'
+                        embed_url:
+                          description: Optional embed url supplied by this operation. Null means unknown.
+                          type:
+                          - string
+                          - 'null'
+                        game_id:
+                          description: Optional game id supplied by this operation. Null means unknown.
+                          type:
+                          - string
+                          - 'null'
+                        id:
+                          description: Source identifier. Preserve the supplied type and exact value.
+                          type:
+                          - string
+                          - 'null'
+                        is_featured:
+                          description: Optional is featured supplied by this operation. Null means unknown.
+                          type:
+                          - boolean
+                          - 'null'
+                        language:
+                          description: Optional language supplied by this operation. Null means unknown.
+                          type:
+                          - string
+                          - 'null'
+                        thumbnail_url:
+                          description: Optional thumbnail url supplied by this operation. Null means unknown.
+                          type:
+                          - string
+                          - 'null'
+                        title:
+                          description: Source title when supplied.
+                          type:
+                          - string
+                          - 'null'
+                        url:
+                          description: Original source URL when supplied.
+                          type:
+                          - string
+                          - 'null'
+                        view_count:
+                          description: Optional view count supplied by this operation. Null means unknown.
+                          type:
+                          - number
+                          - 'null'
+                      additionalProperties: true
+                      allOf:
+                      - anyOf:
+                        - required:
+                          - broadcaster
+                          properties:
+                            broadcaster:
+                              description: Optional broadcaster supplied by this operation. Null means unknown.
+                              type:
+                              - object
+                              properties:
+                                id:
+                                  description: Source identifier. Preserve the supplied type and exact value.
+                                  type:
+                                  - string
+                                  - 'null'
+                                name:
+                                  description: Optional name supplied by this operation. Null means unknown.
+                                  type:
+                                  - string
+                                  - 'null'
+                              additionalProperties: true
+                        - required:
+                          - created_at
+                          properties:
+                            created_at:
+                              description: Source creation time, not the API retrieval time.
+                              type:
+                              - string
+                              minLength: 1
+                        - required:
+                          - creator
+                          properties:
+                            creator:
+                              description: Optional creator supplied by this operation. Null means unknown.
+                              type:
+                              - object
+                              properties:
+                                id:
+                                  description: Source identifier. Preserve the supplied type and exact value.
+                                  type:
+                                  - string
+                                  - 'null'
+                                name:
+                                  description: Optional name supplied by this operation. Null means unknown.
+                                  type:
+                                  - string
+                                  - 'null'
+                              additionalProperties: true
+                        - required:
+                          - duration_seconds
+                          properties:
+                            duration_seconds:
+                              description: Optional duration seconds supplied by this operation. Null means unknown.
+                              type:
+                              - number
+                        - required:
+                          - embed_url
+                          properties:
+                            embed_url:
+                              description: Optional embed url supplied by this operation. Null means unknown.
+                              type:
+                              - string
+                              minLength: 1
+                        - required:
+                          - game_id
+                          properties:
+                            game_id:
+                              description: Optional game id supplied by this operation. Null means unknown.
+                              type:
+                              - string
+                              minLength: 1
+                        - required:
+                          - id
+                          properties:
+                            id:
+                              description: Source identifier. Preserve the supplied type and exact value.
+                              type:
+                              - string
+                              minLength: 1
+                        - required:
+                          - is_featured
+                          properties:
+                            is_featured:
+                              description: Optional is featured supplied by this operation. Null means unknown.
+                              type:
+                              - boolean
+                        - required:
+                          - language
+                          properties:
+                            language:
+                              description: Optional language supplied by this operation. Null means unknown.
+                              type:
+                              - string
+                              minLength: 1
+                        - required:
+                          - thumbnail_url
+                          properties:
+                            thumbnail_url:
+                              description: Optional thumbnail url supplied by this operation. Null means unknown.
+                              type:
+                              - string
+                              minLength: 1
+                        - required:
+                          - title
+                          properties:
+                            title:
+                              description: Source title when supplied.
+                              type:
+                              - string
+                              minLength: 1
+                        - required:
+                          - url
+                          properties:
+                            url:
+                              description: Original source URL when supplied.
+                              type:
+                              - string
+                              minLength: 1
+                        - required:
+                          - view_count
+                          properties:
+                            view_count:
+                              description: Optional view count supplied by this operation. Null means unknown.
+                              type:
+                              - number
+                      x-contract-version: '2026-09-22'
+                      x-validation-scope: Required success payload structure; optional fields and source completeness remain separate.
+                      examples:
+                      - broadcaster:
+                          id: example
+                          name: example
+                        created_at: '2026-09-01T12:00:00Z'
+                        creator:
+                          id: example
+                          name: example
+                        duration_seconds: 0
+                        embed_url: https://example.com/example
+                        game_id: example
+                        id: example
+                        is_featured: false
+                        language: example
+                        thumbnail_url: https://example.com/example
+                        title: example
+                        url: https://example.com/example
+                        view_count: 0
+        default:
+          description: The error envelope — the same shape for every non-2xx status.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      x-credits: 2
+      x-production-available: true
+      x-capacity:
+        status: not_assessed
+        message: Capacity is workload-dependent; configured routes do not establish sustained throughput or an availability guarantee.
+      x-availability-scope: Structural check of the effective registered chain, production permission, adapter, configured cost and quality floor without request parameters. True is not a live-health, credential, quota, subscription-entitlement, complete-data or deployment-exposure guarantee. False means no structurally eligible candidate; null means metadata could not establish availability. Composite child capability still depends on its component routes.
+      x-live-proven: true
+  /v1/twitch/profile:
+    get:
+      operationId: twitch_profile
+      tags:
+      - Twitch
+      summary: Channel profile
+      description: 'A Twitch channel: followers, partner status, live state and current viewers. Costs 2 credits per successful live response.'
+      parameters:
+      - name: handle
+        in: query
+        required: true
+        schema:
+          type: string
+        example: ishowspeed
+        description: Twitch login name.
+      - name: dry_run
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - '1'
+          - '0'
+          - 'true'
+          - 'false'
+        example: '1'
+        description: 'Read a zero-credit estimate without fetching sources, running AI, or reserving credits. Cache status is a snapshot, not a guarantee at execution. Accepted values: 1, 0, true, false. Case, spaces, hyphens and underscores are interchangeable.'
+      - name: X-Max-Credits
+        in: header
+        required: false
+        schema:
+          type: integer
+          minimum: 0
+          maximum: 9007199254740991
+        example: 5
+        description: Optional credit reservation ceiling for this individual request. Send a non-negative integer in decimal digits. Live execution checks the required reservation after resolving free cache hits or buffered continuation, before charging or calling a supplier. A higher reservation returns HTTP 422 INVALID_PARAMETERS with reason max_credits_exceeded and charges nothing. Invalid header values also return 422. Zero permits only a zero-credit reservation; omitting the header uses normal pricing. dry_run remains a free preview. This does not cap later requests, batches or scheduled runs.
+      security:
+      - ApiKeyHeader: []
+      - BearerKey: []
+      responses:
+        '200':
+          description: 'The common success envelope; `data` is endpoint-specific. Many lists use items/count/cursor; bundles use named collections and their documented continuation metadata. HTTP 200 can contain a partial bundle: inspect complete, partial and legs where supplied.'
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/Success'
+                - type: object
+                  properties:
+                    data:
+                      $schema: https://json-schema.org/draft/2020-12/schema
+                      $id: https://www.monocrawl.com/schemas/twitch/profile.json
+                      title: twitch/profile data fields
+                      description: Optional data supplied by this operation. Null means unknown.
+                      type: object
+                      properties:
+                        banner_image:
+                          description: Optional banner image supplied by this operation. Null means unknown.
+                          type:
+                          - string
+                          - 'null'
+                        description:
+                          description: Source description; null or absent means not supplied.
+                          type:
+                          - string
+                          - 'null'
+                        display_name:
+                          description: Optional display name supplied by this operation. Null means unknown.
+                          type:
+                          - string
+                          - 'null'
+                        followers:
+                          description: Optional followers supplied by this operation. Null means unknown.
+                          type:
+                          - number
+                          - 'null'
+                        handle:
+                          description: Optional handle supplied by this operation. Null means unknown.
+                          type:
+                          - string
+                          - 'null'
+                        id:
+                          description: Source identifier. Preserve the supplied type and exact value.
+                          type:
+                          - string
+                          - 'null'
+                        is_live:
+                          description: Optional is live supplied by this operation. Null means unknown.
+                          type:
+                          - boolean
+                          - 'null'
+                        is_partner:
+                          description: Optional is partner supplied by this operation. Null means unknown.
+                          type:
+                          - boolean
+                          - 'null'
+                        platform:
+                          description: Optional platform supplied by this operation. Null means unknown.
+                          type:
+                          - string
+                          - 'null'
+                        profile_image:
+                          description: Optional profile image supplied by this operation. Null means unknown.
+                          type:
+                          - string
+                          - 'null'
+                        url:
+                          description: Original source URL when supplied.
+                          type:
+                          - string
+                          - 'null'
+                      additionalProperties: true
+                      allOf:
+                      - anyOf:
+                        - required:
+                          - banner_image
+                          properties:
+                            banner_image:
+                              description: Optional banner image supplied by this operation. Null means unknown.
+                              type:
+                              - string
+                              minLength: 1
+                        - required:
+                          - description
+                          properties:
+                            description:
+                              description: Source description; null or absent means not supplied.
+                              type:
+                              - string
+                              minLength: 1
+                        - required:
+                          - display_name
+                          properties:
+                            display_name:
+                              description: Optional display name supplied by this operation. Null means unknown.
+                              type:
+                              - string
+                              minLength: 1
+                        - required:
+                          - followers
+                          properties:
+                            followers:
+                              description: Optional followers supplied by this operation. Null means unknown.
+                              type:
+                              - number
+                        - required:
+                          - handle
+                          properties:
+                            handle:
+                              description: Optional handle supplied by this operation. Null means unknown.
+                              type:
+                              - string
+                              minLength: 1
+                        - required:
+                          - id
+                          properties:
+                            id:
+                              description: Source identifier. Preserve the supplied type and exact value.
+                              type:
+                              - string
+                              minLength: 1
+                        - required:
+                          - is_live
+                          properties:
+                            is_live:
+                              description: Optional is live supplied by this operation. Null means unknown.
+                              type:
+                              - boolean
+                        - required:
+                          - is_partner
+                          properties:
+                            is_partner:
+                              description: Optional is partner supplied by this operation. Null means unknown.
+                              type:
+                              - boolean
+                        - required:
+                          - profile_image
+                          properties:
+                            profile_image:
+                              description: Optional profile image supplied by this operation. Null means unknown.
+                              type:
+                              - string
+                              minLength: 1
+                        - required:
+                          - url
+                          properties:
+                            url:
+                              description: Original source URL when supplied.
+                              type:
+                              - string
+                              minLength: 1
+                      x-contract-version: '2026-09-22'
+                      x-validation-scope: Required success payload structure; optional fields and source completeness remain separate.
+                      examples:
+                      - banner_image: https://example.com/example
+                        description: example
+                        display_name: example
+                        followers: 0
+                        handle: example
+                        id: example
+                        is_live: false
+                        is_partner: false
+                        platform: example
+                        profile_image: https://example.com/example
+                        url: https://example.com/example
+        default:
+          description: The error envelope — the same shape for every non-2xx status.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      x-credits: 2
+      x-production-available: true
+      x-capacity:
+        status: not_assessed
+        message: Capacity is workload-dependent; configured routes do not establish sustained throughput or an availability guarantee.
+      x-availability-scope: Structural check of the effective registered chain, production permission, adapter, configured cost and quality floor without request parameters. True is not a live-health, credential, quota, subscription-entitlement, complete-data or deployment-exposure guarantee. False means no structurally eligible candidate; null means metadata could not establish availability. Composite child capability still depends on its component routes.
+      x-live-proven: true
+  /v1/twitch/user/schedule:
+    get:
+      operationId: twitch_user_schedule
+      tags:
+      - Twitch
+      summary: Twitch stream schedule
+      description: A channel schedule snapshot with dated stream segments and any vacation window. Recurrence may be unavailable. Costs 2 credits per successful live response.
+      parameters:
+      - name: handle
+        in: query
+        required: true
+        schema:
+          type: string
+        example: emongg
+        description: Twitch login name (the channel username)
+      - name: dry_run
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - '1'
+          - '0'
+          - 'true'
+          - 'false'
+        example: '1'
+        description: 'Read a zero-credit estimate without fetching sources, running AI, or reserving credits. Cache status is a snapshot, not a guarantee at execution. Accepted values: 1, 0, true, false. Case, spaces, hyphens and underscores are interchangeable.'
+      - name: X-Max-Credits
+        in: header
+        required: false
+        schema:
+          type: integer
+          minimum: 0
+          maximum: 9007199254740991
+        example: 5
+        description: Optional credit reservation ceiling for this individual request. Send a non-negative integer in decimal digits. Live execution checks the required reservation after resolving free cache hits or buffered continuation, before charging or calling a supplier. A higher reservation returns HTTP 422 INVALID_PARAMETERS with reason max_credits_exceeded and charges nothing. Invalid header values also return 422. Zero permits only a zero-credit reservation; omitting the header uses normal pricing. dry_run remains a free preview. This does not cap later requests, batches or scheduled runs.
+      security:
+      - ApiKeyHeader: []
+      - BearerKey: []
+      responses:
+        '200':
+          description: 'The common success envelope; `data` is endpoint-specific. Many lists use items/count/cursor; bundles use named collections and their documented continuation metadata. HTTP 200 can contain a partial bundle: inspect complete, partial and legs where supplied.'
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/Success'
+                - type: object
+                  properties:
+                    data:
+                      $schema: https://json-schema.org/draft/2020-12/schema
+                      $id: https://www.monocrawl.com/schemas/twitch/user/schedule.json
+                      title: twitch/user/schedule data fields
+                      description: Optional data supplied by this operation. Null means unknown.
+                      type: object
+                      properties:
+                        _warnings:
+                          description: Source array was empty in the reviewed captures; item fields remain unspecified.
+                          type:
+                          - array
+                          - 'null'
+                          items: {}
+                        broadcaster:
+                          description: Optional broadcaster supplied by this operation. Null means unknown.
+                          type:
+                          - object
+                          - 'null'
+                          properties:
+                            handle:
+                              description: Optional handle supplied by this operation. Null means unknown.
+                              type:
+                              - string
+                              - 'null'
+                            id:
+                              description: Source identifier. Preserve the supplied type and exact value.
+                              type:
+                              - string
+                              - 'null'
+                          additionalProperties: true
+                        count:
+                          description: Number of records in this response, not lifetime or total matches.
+                          type:
+                          - number
+                          - 'null'
+                        segments:
+                          description: Source array was empty in the reviewed captures; item fields remain unspecified.
+                          type:
+                          - array
+                          - 'null'
+                          items: {}
+                      additionalProperties: true
+                      allOf:
+                      - anyOf:
+                        - required:
+                          - broadcaster
+                          properties:
+                            broadcaster:
+                              description: Optional broadcaster supplied by this operation. Null means unknown.
+                              type:
+                              - object
+                              properties:
+                                handle:
+                                  description: Optional handle supplied by this operation. Null means unknown.
+                                  type:
+                                  - string
+                                  - 'null'
+                                id:
+                                  description: Source identifier. Preserve the supplied type and exact value.
+                                  type:
+                                  - string
+                                  - 'null'
+                              additionalProperties: true
+                        - required:
+                          - segments
+                          properties:
+                            segments:
+                              description: Source array was empty in the reviewed captures; item fields remain unspecified.
+                              type:
+                              - array
+                              items: {}
+                      x-contract-version: '2026-09-22'
+                      x-validation-scope: Required success payload structure; optional fields and source completeness remain separate.
+                      examples:
+                      - _warnings: []
+                        broadcaster:
+                          handle: example
+                          id: example
+                        count: 0
+                        segments: []
+        default:
+          description: The error envelope — the same shape for every non-2xx status.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      x-credits: 2
+      x-production-available: true
+      x-capacity:
+        status: not_assessed
+        message: Capacity is workload-dependent; configured routes do not establish sustained throughput or an availability guarantee.
+      x-availability-scope: Structural check of the effective registered chain, production permission, adapter, configured cost and quality floor without request parameters. True is not a live-health, credential, quota, subscription-entitlement, complete-data or deployment-exposure guarantee. False means no structurally eligible candidate; null means metadata could not establish availability. Composite child capability still depends on its component routes.
+      x-live-proven: true
+  /v1/twitch/user/videos:
+    get:
+      operationId: twitch_user_videos
+      tags:
+      - Twitch
+      summary: Twitch user videos
+      description: A channel video snapshot with view counts and durations. The returned cursor continues within available source results; it does not promise an unlimited archive. Costs 2 credits per successful live response.
+      parameters:
+      - name: handle
+        in: query
+        required: true
+        schema:
+          type: string
+        example: ishowspeed
+        description: Twitch login name (the channel username)
+      - name: filter_by
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - all
+          - upload
+          - archive
+          - highlight
+        example: archive
+        description: 'Video type: all (default), upload, archive, highlight Accepted values: all, upload, archive, highlight. Case, spaces, hyphens and underscores are interchangeable.'
+      - name: sort_by
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - time
+          - views
+        example: time
+        description: 'Sort order: time (default) or views Accepted values: time, views. Case, spaces, hyphens and underscores are interchangeable.'
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: string
+        example: '25'
+        description: Videos per page, 1-100 (default 25)
+      - name: cursor
+        in: query
+        required: false
+        schema:
+          type: string
+        example: ''
+        description: Opaque pagination cursor from a previous page
+      - name: dry_run
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - '1'
+          - '0'
+          - 'true'
+          - 'false'
+        example: '1'
+        description: 'Read a zero-credit estimate without fetching sources, running AI, or reserving credits. Cache status is a snapshot, not a guarantee at execution. Accepted values: 1, 0, true, false. Case, spaces, hyphens and underscores are interchangeable.'
+      - name: X-Max-Credits
+        in: header
+        required: false
+        schema:
+          type: integer
+          minimum: 0
+          maximum: 9007199254740991
+        example: 5
+        description: Optional credit reservation ceiling for this individual request. Send a non-negative integer in decimal digits. Live execution checks the required reservation after resolving free cache hits or buffered continuation, before charging or calling a supplier. A higher reservation returns HTTP 422 INVALID_PARAMETERS with reason max_credits_exceeded and charges nothing. Invalid header values also return 422. Zero permits only a zero-credit reservation; omitting the header uses normal pricing. dry_run remains a free preview. This does not cap later requests, batches or scheduled runs.
+      security:
+      - ApiKeyHeader: []
+      - BearerKey: []
+      responses:
+        '200':
+          description: 'The common success envelope; `data` is endpoint-specific. Many lists use items/count/cursor; bundles use named collections and their documented continuation metadata. HTTP 200 can contain a partial bundle: inspect complete, partial and legs where supplied.'
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/Success'
+                - type: object
+                  properties:
+                    data:
+                      $schema: https://json-schema.org/draft/2020-12/schema
+                      $id: https://www.monocrawl.com/schemas/twitch/user/videos.json
+                      title: twitch/user/videos data fields
+                      description: Optional data supplied by this operation. Null means unknown.
+                      type: object
+                      properties:
+                        _warnings:
+                          description: Source array was empty in the reviewed captures; item fields remain unspecified.
+                          type:
+                          - array
+                          - 'null'
+                          items: {}
+                        count:
+                          description: Number of records in this response, not lifetime or total matches.
+                          type:
+                          - number
+                          - 'null'
+                        cursor:
+                          description: Opaque next-page token; pass it back unchanged. Null does not prove complete history.
+                          type:
+                          - string
+                          - 'null'
+                        dropped:
+                          description: Optional dropped supplied by this operation. Null means unknown.
+                          type:
+                          - number
+                          - 'null'
+                        items:
+                          description: Returned records. Source coverage and completeness vary.
+                          type:
+                          - array
+                          items:
+                            description: Optional record supplied by this operation. Null means unknown.
+                            type: object
+                            properties:
+                              duration:
+                                description: Optional duration supplied by this operation. Null means unknown.
+                                type:
+                                - string
+                                - 'null'
+                              duration_seconds:
+                                description: Optional duration seconds supplied by this operation. Null means unknown.
+                                type:
+                                - number
+                                - 'null'
+                              id:
+                                description: Source identifier. Preserve the supplied type and exact value.
+                                type:
+                                - string
+                                - 'null'
+                              muted_segments:
+                                description: Source array was empty in the reviewed captures; item fields remain unspecified.
+                                type:
+                                - array
+                                - 'null'
+                                items: {}
+                              published_at:
+                                description: Source publication time when available.
+                                type:
+                                - string
+                                - 'null'
+                              stream_id:
+                                description: Optional stream id supplied by this operation. Null means unknown.
+                                type:
+                                - string
+                                - 'null'
+                              thumbnail_url:
+                                description: Optional thumbnail url supplied by this operation. Null means unknown.
+                                type:
+                                - string
+                                - 'null'
+                              title:
+                                description: Source title when supplied.
+                                type:
+                                - string
+                                - 'null'
+                              url:
+                                description: Original source URL when supplied.
+                                type:
+                                - string
+                                - 'null'
+                              view_count:
+                                description: Optional view count supplied by this operation. Null means unknown.
+                                type:
+                                - number
+                                - 'null'
+                            additionalProperties: true
+                            allOf:
+                            - anyOf:
+                              - required:
+                                - duration
+                                properties:
+                                  duration:
+                                    description: Optional duration supplied by this operation. Null means unknown.
+                                    type:
+                                    - string
+                                    minLength: 1
+                              - required:
+                                - duration_seconds
+                                properties:
+                                  duration_seconds:
+                                    description: Optional duration seconds supplied by this operation. Null means unknown.
+                                    type:
+                                    - number
+                              - required:
+                                - id
+                                properties:
+                                  id:
+                                    description: Source identifier. Preserve the supplied type and exact value.
+                                    type:
+                                    - string
+                                    minLength: 1
+                              - required:
+                                - muted_segments
+                                properties:
+                                  muted_segments:
+                                    description: Source array was empty in the reviewed captures; item fields remain unspecified.
+                                    type:
+                                    - array
+                                    items: {}
+                              - required:
+                                - published_at
+                                properties:
+                                  published_at:
+                                    description: Source publication time when available.
+                                    type:
+                                    - string
+                                    minLength: 1
+                              - required:
+                                - stream_id
+                                properties:
+                                  stream_id:
+                                    description: Optional stream id supplied by this operation. Null means unknown.
+                                    type:
+                                    - string
+                                    minLength: 1
+                              - required:
+                                - thumbnail_url
+                                properties:
+                                  thumbnail_url:
+                                    description: Optional thumbnail url supplied by this operation. Null means unknown.
+                                    type:
+                                    - string
+                                    minLength: 1
+                              - required:
+                                - title
+                                properties:
+                                  title:
+                                    description: Source title when supplied.
+                                    type:
+                                    - string
+                                    minLength: 1
+                              - required:
+                                - url
+                                properties:
+                                  url:
+                                    description: Original source URL when supplied.
+                                    type:
+                                    - string
+                                    minLength: 1
+                              - required:
+                                - view_count
+                                properties:
+                                  view_count:
+                                    description: Optional view count supplied by this operation. Null means unknown.
+                                    type:
+                                    - number
+                        user:
+                          description: Optional user supplied by this operation. Null means unknown.
+                          type:
+                          - object
+                          - 'null'
+                          properties:
+                            handle:
+                              description: Optional handle supplied by this operation. Null means unknown.
+                              type:
+                              - string
+                              - 'null'
+                            id:
+                              description: Source identifier. Preserve the supplied type and exact value.
+                              type:
+                              - string
+                              - 'null'
+                            name:
+                              description: Optional name supplied by this operation. Null means unknown.
+                              type:
+                              - string
+                              - 'null'
+                          additionalProperties: true
+                      additionalProperties: true
+                      required:
+                      - items
+                      x-contract-version: '2026-09-22'
+                      x-validation-scope: Required success payload structure; optional fields and source completeness remain separate.
+                      examples:
+                      - _warnings: []
+                        count: 0
+                        cursor: null
+                        dropped: 0
+                        items:
+                        - duration: example
+                          duration_seconds: 0
+                          id: example
+                          muted_segments: []
+                          published_at: '2026-09-01T12:00:00Z'
+                          stream_id: example
+                          thumbnail_url: https://example.com/example
+                          title: example
+                          url: https://example.com/example
+                          view_count: 0
+                        user:
+                          handle: example
+                          id: example
+                          name: example
+        default:
+          description: The error envelope — the same shape for every non-2xx status.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      x-credits: 2
+      x-production-available: true
+      x-capacity:
+        status: not_assessed
+        message: Capacity is workload-dependent; configured routes do not establish sustained throughput or an availability guarantee.
+      x-availability-scope: Structural check of the effective registered chain, production permission, adapter, configured cost and quality floor without request parameters. True is not a live-health, credential, quota, subscription-entitlement, complete-data or deployment-exposure guarantee. False means no structurally eligible candidate; null means metadata could not establish availability. Composite child capability still depends on its component routes.
+      x-live-proven: true
+components:
+  schemas:
+    Success:
+      type: object
+      required:
+      - success
+      - platform
+      - endpoint
+      - data
+      - credits_used
+      - credits_remaining
+      - request_id
+      properties:
+        _completeness:
+          type: object
+          description: Reported response completeness, not a guarantee of complete platform history. Missing source assertions remain unknown.
+          properties:
+            state:
+              type: string
+              enum:
+              - complete
+              - partial
+              - unknown
+            scope:
+              type: string
+            inspection_limited:
+              type: boolean
+        success:
+          const: true
+        platform:
+          type: string
+        endpoint:
+          type: string
+          description: The resolved path, e.g. `/v1/github/profile`.
+        data:
+          description: Amazon responses include marketplace.country and marketplace.domain (resolved request marketplace, UK by default). X profiles preserve location, bio_link and cover_url when supplied. TikTok profiles preserve commerce_user, seller, region, location and business_category when supplied; region identifies the account region rather than personal residence. TikTok comments use platform_default selection, which can change between fetches; keep the same video and options when following cursors. Amazon review variant is readable text. Facebook profiles preserve cover_url, following and created_at when supplied; likes_count and followers are distinct and follower totals may be rounded. Endpoint-specific normalized payload, not one universal post/profile schema. Many lists use items/count/cursor; a null cursor means no usable next cursor was supplied, not proof that all history was retrieved. Check has_more and warnings where present. Social full-profile bundles use posts_cursor and posts_pagination.next_params; retain all returned next parameters. YouTube channel bundles instead use recent_videos, cursor and recent_videos_pagination. Inspect complete/partial/legs where supplied for bounded or failed components. Optional model-derived fields are labelled, not source facts.
+        credits_used:
+          type: integer
+        credits_remaining:
+          type: integer
+        request_id:
+          type: string
+        cached:
+          type: boolean
+        stale:
+          type: boolean
+          description: True only for an explicitly labelled, zero-credit reference snapshot served after a temporary upstream failure.
+        age_seconds:
+          type: integer
+          minimum: 0
+          description: Age of a stale snapshot since its original retrieval; not reset by outage recovery.
+        fetched_at:
+          type: string
+          format: date-time
+          description: Original retrieval time of a stale snapshot, in UTC.
+        synthetic:
+          type: boolean
+          description: Present and true only on the explicitly requested /sandbox surface. Synthetic responses are representative and charged 0 credits; production /v1 never returns them.
+        degraded:
+          type: boolean
+          description: Reserved for sandbox compatibility. Production /v1 reports upstream failure as an error and never serves a representative fallback.
+    Error:
+      type: object
+      required:
+      - success
+      - error
+      - credits_used
+      - request_id
+      properties:
+        success:
+          const: false
+        error:
+          type: object
+          required:
+          - type
+          - message
+          - status
+          properties:
+            type:
+              type: string
+              enum:
+              - UNAUTHORIZED
+              - KEY_REVOKED
+              - KEY_LIMIT_EXCEEDED
+              - RATE_LIMITED
+              - INSUFFICIENT_CREDITS
+              - RESOURCE_NOT_FOUND
+              - INVALID_PARAMETERS
+              - TARGET_ACCESS_DENIED
+              - UPSTREAM_ERROR
+              - UPSTREAM_TIMEOUT
+              - FREE_CAPACITY_UNAVAILABLE
+              - CAPACITY_UNAVAILABLE
+              - ENDPOINT_NOT_FOUND
+              - ENDPOINT_NOT_AVAILABLE
+              - FAIR_USE_EXCEEDED
+              - INTERNAL_ERROR
+            message:
+              type: string
+            status:
+              type: integer
+            doc_url:
+              type: string
+              description: Deep link to the exact section of the errors guide for this type.
+            details:
+              type: object
+        credits_used:
+          type:
+          - integer
+          - 'null'
+          description: Confirmed net charge; null when billing is pending reconciliation. Inspect error.details.billing_status and retain request_id.
+        credits_remaining:
+          type: integer
+        request_id:
+          type: string
+  securitySchemes:
+    ApiKeyHeader:
+      type: apiKey
+      in: header
+      name: x-api-key
+      description: Your API key (`mn_…`), from the console. The recommended style.
+    BearerKey:
+      type: http
+      scheme: bearer
+      description: The same key as a Bearer token, for clients that only expose an Authorization field. Keys are never accepted in the query string — URLs leak into logs and referrers.

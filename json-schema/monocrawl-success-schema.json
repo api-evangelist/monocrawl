@@ -1,0 +1,88 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/api-evangelist/monocrawl/main/json-schema/monocrawl-success-schema.json",
+  "title": "Success",
+  "x-generated": "2026-10-02",
+  "x-method": "derived",
+  "x-generator": "derive-json-schema.py",
+  "x-source": "openapi/monocrawl-openapi.json#/components/schemas/Success",
+  "type": "object",
+  "required": [
+    "success",
+    "platform",
+    "endpoint",
+    "data",
+    "credits_used",
+    "credits_remaining",
+    "request_id"
+  ],
+  "properties": {
+    "_completeness": {
+      "type": "object",
+      "description": "Reported response completeness, not a guarantee of complete platform history. Missing source assertions remain unknown.",
+      "properties": {
+        "state": {
+          "type": "string",
+          "enum": [
+            "complete",
+            "partial",
+            "unknown"
+          ]
+        },
+        "scope": {
+          "type": "string"
+        },
+        "inspection_limited": {
+          "type": "boolean"
+        }
+      }
+    },
+    "success": {
+      "const": true
+    },
+    "platform": {
+      "type": "string"
+    },
+    "endpoint": {
+      "type": "string",
+      "description": "The resolved path, e.g. `/v1/github/profile`."
+    },
+    "data": {
+      "description": "Amazon responses include marketplace.country and marketplace.domain (resolved request marketplace, UK by default). X profiles preserve location, bio_link and cover_url when supplied. TikTok profiles preserve commerce_user, seller, region, location and business_category when supplied; region identifies the account region rather than personal residence. TikTok comments use platform_default selection, which can change between fetches; keep the same video and options when following cursors. Amazon review variant is readable text. Facebook profiles preserve cover_url, following and created_at when supplied; likes_count and followers are distinct and follower totals may be rounded. Endpoint-specific normalized payload, not one universal post/profile schema. Many lists use items/count/cursor; a null cursor means no usable next cursor was supplied, not proof that all history was retrieved. Check has_more and warnings where present. Social full-profile bundles use posts_cursor and posts_pagination.next_params; retain all returned next parameters. YouTube channel bundles instead use recent_videos, cursor and recent_videos_pagination. Inspect complete/partial/legs where supplied for bounded or failed components. Optional model-derived fields are labelled, not source facts."
+    },
+    "credits_used": {
+      "type": "integer"
+    },
+    "credits_remaining": {
+      "type": "integer"
+    },
+    "request_id": {
+      "type": "string"
+    },
+    "cached": {
+      "type": "boolean"
+    },
+    "stale": {
+      "type": "boolean",
+      "description": "True only for an explicitly labelled, zero-credit reference snapshot served after a temporary upstream failure."
+    },
+    "age_seconds": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Age of a stale snapshot since its original retrieval; not reset by outage recovery."
+    },
+    "fetched_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Original retrieval time of a stale snapshot, in UTC."
+    },
+    "synthetic": {
+      "type": "boolean",
+      "description": "Present and true only on the explicitly requested /sandbox surface. Synthetic responses are representative and charged 0 credits; production /v1 never returns them."
+    },
+    "degraded": {
+      "type": "boolean",
+      "description": "Reserved for sandbox compatibility. Production /v1 reports upstream failure as an error and never serves a representative fallback."
+    }
+  }
+}

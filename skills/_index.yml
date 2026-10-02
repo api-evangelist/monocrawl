@@ -1,0 +1,10 @@
+generated: '2026-10-02'
+method: generated
+generator: finish-artifacts.py (index from skill frontmatter)
+source: skills/*.md frontmatter; every operationId checked against openapi/
+skills:
+- file: skills/monocrawl-search-airbnb.md
+  name: search-airbnb
+  api: https://www.monocrawl.com/openapi.json
+  operations:
+  - airbnb_search_stays

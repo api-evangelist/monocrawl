@@ -1,29 +1,1126 @@
 aid: monocrawl
 name: Monocrawl
-description: 'Monocrawl is a company surfaced via the API Evangelist harvest backlog (source: new-submission)
-  and added to the network as a stub for full-pipeline profiling.'
+image: https://www.monocrawl.com/images/brand/monocrawl-social-v2.png
+description: Monocrawl provides a unified REST API that aggregates public social, search and e-commerce data from over 70 platforms, including
+  TikTok, Reddit, YouTube, Instagram, X, LinkedIn, Google, Amazon, eBay, Airbnb and more. It enables developers and AI agents to retrieve posts,
+  products, reviews, profiles, and other public content through a single key and unified schema, supporting use cases like brand monitoring, competitor
+  tracking, review analysis, and AI-driven insights. The service offers free starter credits and tiered pricing for scaling usage.
 url: https://raw.githubusercontent.com/api-evangelist/monocrawl/refs/heads/main/apis.yml
 x-type: company
 x-source: harvest:new-submission
-x-tier: stub
-x-tier-reason: harvest
+x-tier: profiled
+x-tier-reason: enrichment pass 2026-10-02 (modular-v1; was harvest)
 specificationVersion: '0.20'
 created: '2026-10-02'
 modified: '2026-10-02'
 tags:
 - Company
-apis: []
+- API
+- Data
+- Social Media
+- E-commerce
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
 - FN: APIs.json
   email: info@apis.io
 common:
+- type: AgenticAccess
+  url: agentic-access/monocrawl-agentic-access.yml
+- type: Plans
+  url: plans/monocrawl-plans-pricing.yml
+- type: Spectral
+  url: rules/monocrawl-rules.yml
+- type: JSONLD
+  url: json-ld/monocrawl-context.jsonld
+- type: Vocabulary
+  url: vocabulary/monocrawl-vocabulary.yml
+- type: AgentSkill
+  url: skills/_index.yml
+- type: Webhooks
+  url: asyncapi/monocrawl-webhooks.yml
+- type: DataModel
+  url: data-model/monocrawl-data-model.yml
+- type: Conventions
+  url: conventions/monocrawl-conventions.yml
+- type: Authentication
+  url: authentication/monocrawl-authentication.yml
+- type: Deprecation
+  url: https://www.monocrawl.com/docs/versioning.md
+- type: Lifecycle
+  url: lifecycle/monocrawl-lifecycle.yml
+- type: ErrorCatalog
+  url: errors/monocrawl-problem-types.yml
+- type: Conformance
+  url: conformance/monocrawl-conformance.yml
+- type: LLMsTxt
+  url: llms/monocrawl-llms.txt
+- type: WellKnown
+  url: well-known/monocrawl-well-known.yml
+- type: Hosts
+  url: hosts/monocrawl-hosts.yml
+- type: Vendors
+  url: vendors/monocrawl-vendors.yml
+- type: TermsOfService
+  url: https://www.monocrawl.com/legal/terms-and-conditions
+- type: Support
+  url: https://www.monocrawl.com/dashboard/support
+- type: StatusPage
+  url: https://www.monocrawl.com/docs/platforms/status
+- type: PrivacyPolicy
+  url: https://www.monocrawl.com/legal/privacy-policy
+- type: Pricing
+  url: https://www.monocrawl.com/pricing
+- type: Login
+  url: https://www.monocrawl.com/auth/login
+- type: ChangeLog
+  url: https://www.monocrawl.com/changelog
+- type: GettingStarted
+  url: https://www.monocrawl.com/docs/quickstart
+- type: APIReference
+  url: https://www.monocrawl.com/docs/api-reference
+- type: DomainSecurity
+  url: security/monocrawl-domain-security.yml
 - type: Website
   url: https://www.monocrawl.com
 - type: Documentation
   url: https://www.monocrawl.com/docs
+apis:
+- aid: monocrawl:monocrawl-airbnb-api
+  name: Monocrawl Airbnb API
+  description: The Airbnb API from Monocrawl — 7 operation(s) for airbnb.
+  humanURL: https://www.monocrawl.com/docs/api-reference
+  tags:
+  - Airbnb
+  properties:
+  - type: OpenAPI
+    url: openapi/monocrawl-airbnb-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/monocrawl-success-schema.json
+  - type: JSONSchema
+    url: json-schema/monocrawl-batch-request-schema.json
+- aid: monocrawl:monocrawl-aliexpress-api
+  name: Monocrawl Ali Express API
+  description: The AliExpress API from Monocrawl — 12 operation(s) for aliexpress.
+  humanURL: https://www.monocrawl.com/docs/api-reference
+  tags:
+  - AliExpress
+  properties:
+  - type: OpenAPI
+    url: openapi/monocrawl-aliexpress-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/monocrawl-success-schema.json
+  - type: JSONSchema
+    url: json-schema/monocrawl-batch-request-schema.json
+- aid: monocrawl:monocrawl-amazon-api
+  name: Monocrawl Amazon API
+  description: The Amazon API from Monocrawl — 11 operation(s) for amazon.
+  humanURL: https://www.monocrawl.com/docs/api-reference
+  tags:
+  - Amazon
+  properties:
+  - type: OpenAPI
+    url: openapi/monocrawl-amazon-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/monocrawl-success-schema.json
+  - type: JSONSchema
+    url: json-schema/monocrawl-batch-request-schema.json
+- aid: monocrawl:monocrawl-app-store-api
+  name: Monocrawl App Store API
+  description: The App Store API from Monocrawl — 8 operation(s) for app store.
+  humanURL: https://www.monocrawl.com/docs/api-reference
+  tags:
+  - App Store
+  properties:
+  - type: OpenAPI
+    url: openapi/monocrawl-app-store-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/monocrawl-success-schema.json
+  - type: JSONSchema
+    url: json-schema/monocrawl-batch-request-schema.json
+- aid: monocrawl:monocrawl-apple-music-api
+  name: Monocrawl Apple Music API
+  description: The Apple Music API from Monocrawl — 4 operation(s) for apple music.
+  humanURL: https://www.monocrawl.com/docs/api-reference
+  tags:
+  - Apple Music
+  properties:
+  - type: OpenAPI
+    url: openapi/monocrawl-apple-music-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/monocrawl-success-schema.json
+  - type: JSONSchema
+    url: json-schema/monocrawl-batch-request-schema.json
+- aid: monocrawl:monocrawl-batch-api
+  name: Monocrawl Batch API
+  description: Run several requests in one HTTP call.
+  humanURL: https://www.monocrawl.com/docs/api-reference
+  tags:
+  - Batch
+  properties:
+  - type: OpenAPI
+    url: openapi/monocrawl-batch-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/monocrawl-success-schema.json
+  - type: JSONSchema
+    url: json-schema/monocrawl-batch-request-schema.json
+- aid: monocrawl:monocrawl-bluesky-api
+  name: Monocrawl Bluesky API
+  description: The Bluesky API from Monocrawl — 4 operation(s) for bluesky.
+  humanURL: https://www.monocrawl.com/docs/api-reference
+  tags:
+  - Bluesky
+  properties:
+  - type: OpenAPI
+    url: openapi/monocrawl-bluesky-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/monocrawl-success-schema.json
+  - type: JSONSchema
+    url: json-schema/monocrawl-batch-request-schema.json
+- aid: monocrawl:monocrawl-booking-com-api
+  name: Monocrawl Booking.com API
+  description: The Booking.com API from Monocrawl — 12 operation(s) for booking.com.
+  humanURL: https://www.monocrawl.com/docs/api-reference
+  tags:
+  - Booking.com
+  properties:
+  - type: OpenAPI
+    url: openapi/monocrawl-booking-com-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/monocrawl-success-schema.json
+  - type: JSONSchema
+    url: json-schema/monocrawl-batch-request-schema.json
+- aid: monocrawl:monocrawl-cohort-queries-api
+  name: Monocrawl Cohort Queries API
+  description: The Cohort Queries API from Monocrawl — 3 operation(s) for cohort queries.
+  humanURL: https://www.monocrawl.com/docs/api-reference
+  tags:
+  - Cohort Queries
+  properties:
+  - type: OpenAPI
+    url: openapi/monocrawl-cohort-queries-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/monocrawl-success-schema.json
+  - type: JSONSchema
+    url: json-schema/monocrawl-batch-request-schema.json
+- aid: monocrawl:monocrawl-cohorts-api
+  name: Monocrawl Cohorts API
+  description: The Cohorts API from Monocrawl — 5 operation(s) for cohorts.
+  humanURL: https://www.monocrawl.com/docs/api-reference
+  tags:
+  - Cohorts
+  properties:
+  - type: OpenAPI
+    url: openapi/monocrawl-cohorts-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/monocrawl-success-schema.json
+  - type: JSONSchema
+    url: json-schema/monocrawl-batch-request-schema.json
+- aid: monocrawl:monocrawl-content-analysis-api
+  name: Monocrawl Content Analysis API
+  description: The Content Analysis API from Monocrawl — 9 operation(s) for content analysis.
+  humanURL: https://www.monocrawl.com/docs/api-reference
+  tags:
+  - Content Analysis
+  properties:
+  - type: OpenAPI
+    url: openapi/monocrawl-content-analysis-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/monocrawl-success-schema.json
+  - type: JSONSchema
+    url: json-schema/monocrawl-batch-request-schema.json
+- aid: monocrawl:monocrawl-credits-api
+  name: Monocrawl Credits API
+  description: The Credits API from Monocrawl — 2 operation(s) for credits.
+  humanURL: https://www.monocrawl.com/docs/api-reference
+  tags:
+  - Credits
+  properties:
+  - type: OpenAPI
+    url: openapi/monocrawl-credits-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/monocrawl-success-schema.json
+  - type: JSONSchema
+    url: json-schema/monocrawl-batch-request-schema.json
+- aid: monocrawl:monocrawl-ebay-api
+  name: Monocrawl eBay API
+  description: The eBay API from Monocrawl — 2 operation(s) for ebay.
+  humanURL: https://www.monocrawl.com/docs/api-reference
+  tags:
+  - eBay
+  properties:
+  - type: OpenAPI
+    url: openapi/monocrawl-ebay-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/monocrawl-success-schema.json
+  - type: JSONSchema
+    url: json-schema/monocrawl-batch-request-schema.json
+- aid: monocrawl:monocrawl-etsy-api
+  name: Monocrawl Etsy API
+  description: The Etsy API from Monocrawl — 11 operation(s) for etsy.
+  humanURL: https://www.monocrawl.com/docs/api-reference
+  tags:
+  - Etsy
+  properties:
+  - type: OpenAPI
+    url: openapi/monocrawl-etsy-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/monocrawl-success-schema.json
+  - type: JSONSchema
+    url: json-schema/monocrawl-batch-request-schema.json
+- aid: monocrawl:monocrawl-facebook-api
+  name: Monocrawl Facebook API
+  description: The Facebook API from Monocrawl — 23 operation(s) for facebook.
+  humanURL: https://www.monocrawl.com/docs/api-reference
+  tags:
+  - Facebook
+  properties:
+  - type: OpenAPI
+    url: openapi/monocrawl-facebook-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/monocrawl-success-schema.json
+  - type: JSONSchema
+    url: json-schema/monocrawl-batch-request-schema.json
+- aid: monocrawl:monocrawl-g2-api
+  name: Monocrawl G2 API
+  description: The G2 API from Monocrawl — 7 operation(s) for g2.
+  humanURL: https://www.monocrawl.com/docs/api-reference
+  tags:
+  - G2
+  properties:
+  - type: OpenAPI
+    url: openapi/monocrawl-g2-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/monocrawl-success-schema.json
+  - type: JSONSchema
+    url: json-schema/monocrawl-batch-request-schema.json
+- aid: monocrawl:monocrawl-github-api
+  name: Monocrawl GitHub API
+  description: The GitHub API from Monocrawl — 12 operation(s) for github.
+  humanURL: https://www.monocrawl.com/docs/api-reference
+  tags:
+  - GitHub
+  properties:
+  - type: OpenAPI
+    url: openapi/monocrawl-github-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/monocrawl-success-schema.json
+  - type: JSONSchema
+    url: json-schema/monocrawl-batch-request-schema.json
+- aid: monocrawl:monocrawl-google-ads-transparency-api
+  name: Monocrawl Google Ads Transparency API
+  description: >-
+    The Google Ads Transparency API from Monocrawl — 3 operation(s) for google ads transparency.
+  humanURL: https://www.monocrawl.com/docs/api-reference
+  tags:
+  - Google Ads Transparency
+  properties:
+  - type: OpenAPI
+    url: openapi/monocrawl-google-ads-transparency-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/monocrawl-success-schema.json
+  - type: JSONSchema
+    url: json-schema/monocrawl-batch-request-schema.json
+- aid: monocrawl:monocrawl-google-finance-api
+  name: Monocrawl Google Finance API
+  description: The Google Finance API from Monocrawl — 4 operation(s) for google finance.
+  humanURL: https://www.monocrawl.com/docs/api-reference
+  tags:
+  - Google Finance
+  properties:
+  - type: OpenAPI
+    url: openapi/monocrawl-google-finance-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/monocrawl-success-schema.json
+  - type: JSONSchema
+    url: json-schema/monocrawl-batch-request-schema.json
+- aid: monocrawl:monocrawl-google-news-api
+  name: Monocrawl Google News API
+  description: The Google News API from Monocrawl — 1 operation(s) for google news.
+  humanURL: https://www.monocrawl.com/docs/api-reference
+  tags:
+  - Google News
+  properties:
+  - type: OpenAPI
+    url: openapi/monocrawl-google-news-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/monocrawl-success-schema.json
+  - type: JSONSchema
+    url: json-schema/monocrawl-batch-request-schema.json
+- aid: monocrawl:monocrawl-google-places-api
+  name: Monocrawl Google Places API
+  description: The Google Places API from Monocrawl — 8 operation(s) for google places.
+  humanURL: https://www.monocrawl.com/docs/api-reference
+  tags:
+  - Google Places
+  properties:
+  - type: OpenAPI
+    url: openapi/monocrawl-google-places-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/monocrawl-success-schema.json
+  - type: JSONSchema
+    url: json-schema/monocrawl-batch-request-schema.json
+- aid: monocrawl:monocrawl-google-play-api
+  name: Monocrawl Google Play API
+  description: The Google Play API from Monocrawl — 8 operation(s) for google play.
+  humanURL: https://www.monocrawl.com/docs/api-reference
+  tags:
+  - Google Play
+  properties:
+  - type: OpenAPI
+    url: openapi/monocrawl-google-play-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/monocrawl-success-schema.json
+  - type: JSONSchema
+    url: json-schema/monocrawl-batch-request-schema.json
+- aid: monocrawl:monocrawl-google-quick-search-api
+  name: Monocrawl Google Quick Search API
+  description: The Google Quick Search API from Monocrawl — 1 operation(s) for google quick search.
+  humanURL: https://www.monocrawl.com/docs/api-reference
+  tags:
+  - Google Quick Search
+  properties:
+  - type: OpenAPI
+    url: openapi/monocrawl-google-quick-search-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/monocrawl-success-schema.json
+  - type: JSONSchema
+    url: json-schema/monocrawl-batch-request-schema.json
+- aid: monocrawl:monocrawl-google-search-api
+  name: Monocrawl Google Search API
+  description: The Google Search API from Monocrawl — 4 operation(s) for google search.
+  humanURL: https://www.monocrawl.com/docs/api-reference
+  tags:
+  - Google Search
+  properties:
+  - type: OpenAPI
+    url: openapi/monocrawl-google-search-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/monocrawl-success-schema.json
+  - type: JSONSchema
+    url: json-schema/monocrawl-batch-request-schema.json
+- aid: monocrawl:monocrawl-google-shopping-api
+  name: Monocrawl Google Shopping API
+  description: The Google Shopping API from Monocrawl — 7 operation(s) for google shopping.
+  humanURL: https://www.monocrawl.com/docs/api-reference
+  tags:
+  - Google Shopping
+  properties:
+  - type: OpenAPI
+    url: openapi/monocrawl-google-shopping-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/monocrawl-success-schema.json
+  - type: JSONSchema
+    url: json-schema/monocrawl-batch-request-schema.json
+- aid: monocrawl:monocrawl-google-trends-api
+  name: Monocrawl Google Trends API
+  description: The Google Trends API from Monocrawl — 3 operation(s) for google trends.
+  humanURL: https://www.monocrawl.com/docs/api-reference
+  tags:
+  - Google Trends
+  properties:
+  - type: OpenAPI
+    url: openapi/monocrawl-google-trends-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/monocrawl-success-schema.json
+  - type: JSONSchema
+    url: json-schema/monocrawl-batch-request-schema.json
+- aid: monocrawl:monocrawl-gumtree-api
+  name: Monocrawl Gumtree API
+  description: The Gumtree API from Monocrawl — 9 operation(s) for gumtree.
+  humanURL: https://www.monocrawl.com/docs/api-reference
+  tags:
+  - Gumtree
+  properties:
+  - type: OpenAPI
+    url: openapi/monocrawl-gumtree-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/monocrawl-success-schema.json
+  - type: JSONSchema
+    url: json-schema/monocrawl-batch-request-schema.json
+- aid: monocrawl:monocrawl-h-m-api
+  name: Monocrawl H&M API
+  description: The H&M API from Monocrawl — 9 operation(s) for h&m.
+  humanURL: https://www.monocrawl.com/docs/api-reference
+  tags:
+  - H&M
+  properties:
+  - type: OpenAPI
+    url: openapi/monocrawl-h-m-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/monocrawl-success-schema.json
+  - type: JSONSchema
+    url: json-schema/monocrawl-batch-request-schema.json
+- aid: monocrawl:monocrawl-hacker-news-api
+  name: Monocrawl Hacker News API
+  description: The Hacker News API from Monocrawl — 4 operation(s) for hacker news.
+  humanURL: https://www.monocrawl.com/docs/api-reference
+  tags:
+  - Hacker News
+  properties:
+  - type: OpenAPI
+    url: openapi/monocrawl-hacker-news-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/monocrawl-success-schema.json
+  - type: JSONSchema
+    url: json-schema/monocrawl-batch-request-schema.json
+- aid: monocrawl:monocrawl-home-depot-api
+  name: Monocrawl Home Depot API
+  description: The Home Depot API from Monocrawl — 3 operation(s) for home depot.
+  humanURL: https://www.monocrawl.com/docs/api-reference
+  tags:
+  - Home Depot
+  properties:
+  - type: OpenAPI
+    url: openapi/monocrawl-home-depot-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/monocrawl-success-schema.json
+  - type: JSONSchema
+    url: json-schema/monocrawl-batch-request-schema.json
+- aid: monocrawl:monocrawl-instagram-api
+  name: Monocrawl Instagram API
+  description: The Instagram API from Monocrawl — 38 operation(s) for instagram.
+  humanURL: https://www.monocrawl.com/docs/api-reference
+  tags:
+  - Instagram
+  properties:
+  - type: OpenAPI
+    url: openapi/monocrawl-instagram-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/monocrawl-success-schema.json
+  - type: JSONSchema
+    url: json-schema/monocrawl-batch-request-schema.json
+- aid: monocrawl:monocrawl-job-boards-api
+  name: Monocrawl Job boards API
+  description: The Job boards API from Monocrawl — 11 operation(s) for job boards.
+  humanURL: https://www.monocrawl.com/docs/api-reference
+  tags:
+  - Job boards
+  properties:
+  - type: OpenAPI
+    url: openapi/monocrawl-job-boards-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/monocrawl-success-schema.json
+  - type: JSONSchema
+    url: json-schema/monocrawl-batch-request-schema.json
+- aid: monocrawl:monocrawl-kick-api
+  name: Monocrawl Kick API
+  description: The Kick API from Monocrawl — 1 operation(s) for kick.
+  humanURL: https://www.monocrawl.com/docs/api-reference
+  tags:
+  - Kick
+  properties:
+  - type: OpenAPI
+    url: openapi/monocrawl-kick-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/monocrawl-success-schema.json
+  - type: JSONSchema
+    url: json-schema/monocrawl-batch-request-schema.json
+- aid: monocrawl:monocrawl-klarna-api
+  name: Monocrawl Klarna API
+  description: The Klarna API from Monocrawl — 18 operation(s) for klarna.
+  humanURL: https://www.monocrawl.com/docs/api-reference
+  tags:
+  - Klarna
+  properties:
+  - type: OpenAPI
+    url: openapi/monocrawl-klarna-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/monocrawl-success-schema.json
+  - type: JSONSchema
+    url: json-schema/monocrawl-batch-request-schema.json
+- aid: monocrawl:monocrawl-kohl-s-api
+  name: Monocrawl Kohl's API
+  description: The Kohl's API from Monocrawl — 5 operation(s) for kohl's.
+  humanURL: https://www.monocrawl.com/docs/api-reference
+  tags:
+  - Kohl's
+  properties:
+  - type: OpenAPI
+    url: openapi/monocrawl-kohl-s-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/monocrawl-success-schema.json
+  - type: JSONSchema
+    url: json-schema/monocrawl-batch-request-schema.json
+- aid: monocrawl:monocrawl-komi-api
+  name: Monocrawl Komi API
+  description: The Komi API from Monocrawl — 1 operation(s) for komi.
+  humanURL: https://www.monocrawl.com/docs/api-reference
+  tags:
+  - Komi
+  properties:
+  - type: OpenAPI
+    url: openapi/monocrawl-komi-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/monocrawl-success-schema.json
+  - type: JSONSchema
+    url: json-schema/monocrawl-batch-request-schema.json
+- aid: monocrawl:monocrawl-kwai-api
+  name: Monocrawl Kwai API
+  description: The Kwai API from Monocrawl — 3 operation(s) for kwai.
+  humanURL: https://www.monocrawl.com/docs/api-reference
+  tags:
+  - Kwai
+  properties:
+  - type: OpenAPI
+    url: openapi/monocrawl-kwai-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/monocrawl-success-schema.json
+  - type: JSONSchema
+    url: json-schema/monocrawl-batch-request-schema.json
+- aid: monocrawl:monocrawl-linkbio-api
+  name: Monocrawl Linkbio API
+  description: The Linkbio API from Monocrawl — 1 operation(s) for linkbio.
+  humanURL: https://www.monocrawl.com/docs/api-reference
+  tags:
+  - Linkbio
+  properties:
+  - type: OpenAPI
+    url: openapi/monocrawl-linkbio-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/monocrawl-success-schema.json
+  - type: JSONSchema
+    url: json-schema/monocrawl-batch-request-schema.json
+- aid: monocrawl:monocrawl-linkedin-ads-api
+  name: Monocrawl LinkedIn Ads API
+  description: The LinkedIn Ads API from Monocrawl — 2 operation(s) for linkedin ads.
+  humanURL: https://www.monocrawl.com/docs/api-reference
+  tags:
+  - LinkedIn Ads
+  properties:
+  - type: OpenAPI
+    url: openapi/monocrawl-linkedin-ads-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/monocrawl-success-schema.json
+  - type: JSONSchema
+    url: json-schema/monocrawl-batch-request-schema.json
+- aid: monocrawl:monocrawl-linkme-api
+  name: Monocrawl Link Me API
+  description: The LinkMe API from Monocrawl — 1 operation(s) for linkme.
+  humanURL: https://www.monocrawl.com/docs/api-reference
+  tags:
+  - LinkMe
+  properties:
+  - type: OpenAPI
+    url: openapi/monocrawl-linkme-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/monocrawl-success-schema.json
+  - type: JSONSchema
+    url: json-schema/monocrawl-batch-request-schema.json
+- aid: monocrawl:monocrawl-linktree-api
+  name: Monocrawl Linktree API
+  description: The Linktree API from Monocrawl — 1 operation(s) for linktree.
+  humanURL: https://www.monocrawl.com/docs/api-reference
+  tags:
+  - Linktree
+  properties:
+  - type: OpenAPI
+    url: openapi/monocrawl-linktree-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/monocrawl-success-schema.json
+  - type: JSONSchema
+    url: json-schema/monocrawl-batch-request-schema.json
+- aid: monocrawl:monocrawl-markets-api
+  name: Monocrawl Markets API
+  description: The Markets API from Monocrawl — 4 operation(s) for markets.
+  humanURL: https://www.monocrawl.com/docs/api-reference
+  tags:
+  - Markets
+  properties:
+  - type: OpenAPI
+    url: openapi/monocrawl-markets-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/monocrawl-success-schema.json
+  - type: JSONSchema
+    url: json-schema/monocrawl-batch-request-schema.json
+- aid: monocrawl:monocrawl-meta-ad-library-api
+  name: Monocrawl Meta Ad Library API
+  description: The Meta Ad Library API from Monocrawl — 5 operation(s) for meta ad library.
+  humanURL: https://www.monocrawl.com/docs/api-reference
+  tags:
+  - Meta Ad Library
+  properties:
+  - type: OpenAPI
+    url: openapi/monocrawl-meta-ad-library-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/monocrawl-success-schema.json
+  - type: JSONSchema
+    url: json-schema/monocrawl-batch-request-schema.json
+- aid: monocrawl:monocrawl-monitors-api
+  name: Monocrawl Monitors API
+  description: The Monitors API from Monocrawl — 22 operation(s) for monitors.
+  humanURL: https://www.monocrawl.com/docs/api-reference
+  tags:
+  - Monitors
+  properties:
+  - type: OpenAPI
+    url: openapi/monocrawl-monitors-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/monocrawl-success-schema.json
+  - type: JSONSchema
+    url: json-schema/monocrawl-batch-request-schema.json
+- aid: monocrawl:monocrawl-mosaic-api
+  name: Monocrawl Mosaic API
+  description: The Mosaic API from Monocrawl — 3 operation(s) for mosaic.
+  humanURL: https://www.monocrawl.com/docs/api-reference
+  tags:
+  - Mosaic
+  properties:
+  - type: OpenAPI
+    url: openapi/monocrawl-mosaic-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/monocrawl-success-schema.json
+  - type: JSONSchema
+    url: json-schema/monocrawl-batch-request-schema.json
+- aid: monocrawl:monocrawl-on-page-api
+  name: Monocrawl On Page API
+  description: The On-Page API from Monocrawl — 1 operation(s) for on-page.
+  humanURL: https://www.monocrawl.com/docs/api-reference
+  tags:
+  - On-Page
+  properties:
+  - type: OpenAPI
+    url: openapi/monocrawl-on-page-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/monocrawl-success-schema.json
+  - type: JSONSchema
+    url: json-schema/monocrawl-batch-request-schema.json
+- aid: monocrawl:monocrawl-pillar-api
+  name: Monocrawl Pillar API
+  description: The Pillar API from Monocrawl — 1 operation(s) for pillar.
+  humanURL: https://www.monocrawl.com/docs/api-reference
+  tags:
+  - Pillar
+  properties:
+  - type: OpenAPI
+    url: openapi/monocrawl-pillar-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/monocrawl-success-schema.json
+  - type: JSONSchema
+    url: json-schema/monocrawl-batch-request-schema.json
+- aid: monocrawl:monocrawl-pinterest-api
+  name: Monocrawl Pinterest API
+  description: The Pinterest API from Monocrawl — 4 operation(s) for pinterest.
+  humanURL: https://www.monocrawl.com/docs/api-reference
+  tags:
+  - Pinterest
+  properties:
+  - type: OpenAPI
+    url: openapi/monocrawl-pinterest-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/monocrawl-success-schema.json
+  - type: JSONSchema
+    url: json-schema/monocrawl-batch-request-schema.json
+- aid: monocrawl:monocrawl-polymarket-api
+  name: Monocrawl Polymarket API
+  description: The Polymarket API from Monocrawl — 1 operation(s) for polymarket.
+  humanURL: https://www.monocrawl.com/docs/api-reference
+  tags:
+  - Polymarket
+  properties:
+  - type: OpenAPI
+    url: openapi/monocrawl-polymarket-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/monocrawl-success-schema.json
+  - type: JSONSchema
+    url: json-schema/monocrawl-batch-request-schema.json
+- aid: monocrawl:monocrawl-quora-api
+  name: Monocrawl Quora API
+  description: The Quora API from Monocrawl — 7 operation(s) for quora.
+  humanURL: https://www.monocrawl.com/docs/api-reference
+  tags:
+  - Quora
+  properties:
+  - type: OpenAPI
+    url: openapi/monocrawl-quora-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/monocrawl-success-schema.json
+  - type: JSONSchema
+    url: json-schema/monocrawl-batch-request-schema.json
+- aid: monocrawl:monocrawl-reddit-api
+  name: Monocrawl Reddit API
+  description: The Reddit API from Monocrawl — 13 operation(s) for reddit.
+  humanURL: https://www.monocrawl.com/docs/api-reference
+  tags:
+  - Reddit
+  properties:
+  - type: OpenAPI
+    url: openapi/monocrawl-reddit-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/monocrawl-success-schema.json
+  - type: JSONSchema
+    url: json-schema/monocrawl-batch-request-schema.json
+- aid: monocrawl:monocrawl-rightmove-api
+  name: Monocrawl Rightmove API
+  description: The Rightmove API from Monocrawl — 9 operation(s) for rightmove.
+  humanURL: https://www.monocrawl.com/docs/api-reference
+  tags:
+  - Rightmove
+  properties:
+  - type: OpenAPI
+    url: openapi/monocrawl-rightmove-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/monocrawl-success-schema.json
+  - type: JSONSchema
+    url: json-schema/monocrawl-batch-request-schema.json
+- aid: monocrawl:monocrawl-rumble-api
+  name: Monocrawl Rumble API
+  description: The Rumble API from Monocrawl — 5 operation(s) for rumble.
+  humanURL: https://www.monocrawl.com/docs/api-reference
+  tags:
+  - Rumble
+  properties:
+  - type: OpenAPI
+    url: openapi/monocrawl-rumble-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/monocrawl-success-schema.json
+  - type: JSONSchema
+    url: json-schema/monocrawl-batch-request-schema.json
+- aid: monocrawl:monocrawl-sephora-api
+  name: Monocrawl Sephora API
+  description: The Sephora API from Monocrawl — 12 operation(s) for sephora.
+  humanURL: https://www.monocrawl.com/docs/api-reference
+  tags:
+  - Sephora
+  properties:
+  - type: OpenAPI
+    url: openapi/monocrawl-sephora-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/monocrawl-success-schema.json
+  - type: JSONSchema
+    url: json-schema/monocrawl-batch-request-schema.json
+- aid: monocrawl:monocrawl-snapchat-api
+  name: Monocrawl Snapchat API
+  description: The Snapchat API from Monocrawl — 3 operation(s) for snapchat.
+  humanURL: https://www.monocrawl.com/docs/api-reference
+  tags:
+  - Snapchat
+  properties:
+  - type: OpenAPI
+    url: openapi/monocrawl-snapchat-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/monocrawl-success-schema.json
+  - type: JSONSchema
+    url: json-schema/monocrawl-batch-request-schema.json
+- aid: monocrawl:monocrawl-soundcloud-api
+  name: Monocrawl Sound Cloud API
+  description: The SoundCloud API from Monocrawl — 3 operation(s) for soundcloud.
+  humanURL: https://www.monocrawl.com/docs/api-reference
+  tags:
+  - SoundCloud
+  properties:
+  - type: OpenAPI
+    url: openapi/monocrawl-soundcloud-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/monocrawl-success-schema.json
+  - type: JSONSchema
+    url: json-schema/monocrawl-batch-request-schema.json
+- aid: monocrawl:monocrawl-spotify-api
+  name: Monocrawl Spotify API
+  description: The Spotify API from Monocrawl — 7 operation(s) for spotify.
+  humanURL: https://www.monocrawl.com/docs/api-reference
+  tags:
+  - Spotify
+  properties:
+  - type: OpenAPI
+    url: openapi/monocrawl-spotify-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/monocrawl-success-schema.json
+  - type: JSONSchema
+    url: json-schema/monocrawl-batch-request-schema.json
+- aid: monocrawl:monocrawl-status-api
+  name: Monocrawl Status API
+  description: The Status API from Monocrawl — 1 operation(s) for status.
+  humanURL: https://www.monocrawl.com/docs/api-reference
+  tags:
+  - Status
+  properties:
+  - type: OpenAPI
+    url: openapi/monocrawl-status-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/monocrawl-success-schema.json
+  - type: JSONSchema
+    url: json-schema/monocrawl-batch-request-schema.json
+- aid: monocrawl:monocrawl-target-api
+  name: Monocrawl Target API
+  description: The Target API from Monocrawl — 6 operation(s) for target.
+  humanURL: https://www.monocrawl.com/docs/api-reference
+  tags:
+  - Target
+  properties:
+  - type: OpenAPI
+    url: openapi/monocrawl-target-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/monocrawl-success-schema.json
+  - type: JSONSchema
+    url: json-schema/monocrawl-batch-request-schema.json
+- aid: monocrawl:monocrawl-telegram-api
+  name: Monocrawl Telegram API
+  description: The Telegram API from Monocrawl — 3 operation(s) for telegram.
+  humanURL: https://www.monocrawl.com/docs/api-reference
+  tags:
+  - Telegram
+  properties:
+  - type: OpenAPI
+    url: openapi/monocrawl-telegram-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/monocrawl-success-schema.json
+  - type: JSONSchema
+    url: json-schema/monocrawl-batch-request-schema.json
+- aid: monocrawl:monocrawl-threads-api
+  name: Monocrawl Threads API
+  description: The Threads API from Monocrawl — 6 operation(s) for threads.
+  humanURL: https://www.monocrawl.com/docs/api-reference
+  tags:
+  - Threads
+  properties:
+  - type: OpenAPI
+    url: openapi/monocrawl-threads-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/monocrawl-success-schema.json
+  - type: JSONSchema
+    url: json-schema/monocrawl-batch-request-schema.json
+- aid: monocrawl:monocrawl-tiktok-ads-api
+  name: Monocrawl TikTok Ads API
+  description: The TikTok Ads API from Monocrawl — 2 operation(s) for tiktok ads.
+  humanURL: https://www.monocrawl.com/docs/api-reference
+  tags:
+  - TikTok Ads
+  properties:
+  - type: OpenAPI
+    url: openapi/monocrawl-tiktok-ads-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/monocrawl-success-schema.json
+  - type: JSONSchema
+    url: json-schema/monocrawl-batch-request-schema.json
+- aid: monocrawl:monocrawl-tiktok-api
+  name: Monocrawl Tik Tok API
+  description: The TikTok API from Monocrawl — 35 operation(s) for tiktok.
+  humanURL: https://www.monocrawl.com/docs/api-reference
+  tags:
+  - TikTok
+  properties:
+  - type: OpenAPI
+    url: openapi/monocrawl-tiktok-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/monocrawl-success-schema.json
+  - type: JSONSchema
+    url: json-schema/monocrawl-batch-request-schema.json
+- aid: monocrawl:monocrawl-tiktok-shop-api
+  name: Monocrawl TikTok Shop API
+  description: The TikTok Shop API from Monocrawl — 5 operation(s) for tiktok shop.
+  humanURL: https://www.monocrawl.com/docs/api-reference
+  tags:
+  - TikTok Shop
+  properties:
+  - type: OpenAPI
+    url: openapi/monocrawl-tiktok-shop-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/monocrawl-success-schema.json
+  - type: JSONSchema
+    url: json-schema/monocrawl-batch-request-schema.json
+- aid: monocrawl:monocrawl-tripadvisor-api
+  name: Monocrawl Trip Advisor API
+  description: The TripAdvisor API from Monocrawl — 17 operation(s) for tripadvisor.
+  humanURL: https://www.monocrawl.com/docs/api-reference
+  tags:
+  - TripAdvisor
+  properties:
+  - type: OpenAPI
+    url: openapi/monocrawl-tripadvisor-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/monocrawl-success-schema.json
+  - type: JSONSchema
+    url: json-schema/monocrawl-batch-request-schema.json
+- aid: monocrawl:monocrawl-trustpilot-api
+  name: Monocrawl Trustpilot API
+  description: The Trustpilot API from Monocrawl — 8 operation(s) for trustpilot.
+  humanURL: https://www.monocrawl.com/docs/api-reference
+  tags:
+  - Trustpilot
+  properties:
+  - type: OpenAPI
+    url: openapi/monocrawl-trustpilot-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/monocrawl-success-schema.json
+  - type: JSONSchema
+    url: json-schema/monocrawl-batch-request-schema.json
+- aid: monocrawl:monocrawl-twitch-api
+  name: Monocrawl Twitch API
+  description: The Twitch API from Monocrawl — 4 operation(s) for twitch.
+  humanURL: https://www.monocrawl.com/docs/api-reference
+  tags:
+  - Twitch
+  properties:
+  - type: OpenAPI
+    url: openapi/monocrawl-twitch-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/monocrawl-success-schema.json
+  - type: JSONSchema
+    url: json-schema/monocrawl-batch-request-schema.json
+- aid: monocrawl:monocrawl-utility-api
+  name: Monocrawl Utility API
+  description: The Utility API from Monocrawl — 5 operation(s) for utility.
+  humanURL: https://www.monocrawl.com/docs/api-reference
+  tags:
+  - Utility
+  properties:
+  - type: OpenAPI
+    url: openapi/monocrawl-utility-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/monocrawl-success-schema.json
+  - type: JSONSchema
+    url: json-schema/monocrawl-batch-request-schema.json
+- aid: monocrawl:monocrawl-vinted-api
+  name: Monocrawl Vinted API
+  description: The Vinted API from Monocrawl — 8 operation(s) for vinted.
+  humanURL: https://www.monocrawl.com/docs/api-reference
+  tags:
+  - Vinted
+  properties:
+  - type: OpenAPI
+    url: openapi/monocrawl-vinted-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/monocrawl-success-schema.json
+  - type: JSONSchema
+    url: json-schema/monocrawl-batch-request-schema.json
+- aid: monocrawl:monocrawl-walmart-api
+  name: Monocrawl Walmart API
+  description: The Walmart API from Monocrawl — 8 operation(s) for walmart.
+  humanURL: https://www.monocrawl.com/docs/api-reference
+  tags:
+  - Walmart
+  properties:
+  - type: OpenAPI
+    url: openapi/monocrawl-walmart-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/monocrawl-success-schema.json
+  - type: JSONSchema
+    url: json-schema/monocrawl-batch-request-schema.json
+- aid: monocrawl:monocrawl-wayfair-api
+  name: Monocrawl Wayfair API
+  description: The Wayfair API from Monocrawl — 1 operation(s) for wayfair.
+  humanURL: https://www.monocrawl.com/docs/api-reference
+  tags:
+  - Wayfair
+  properties:
+  - type: OpenAPI
+    url: openapi/monocrawl-wayfair-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/monocrawl-success-schema.json
+  - type: JSONSchema
+    url: json-schema/monocrawl-batch-request-schema.json
+- aid: monocrawl:monocrawl-web-scraping-api
+  name: Monocrawl Web Scraping API
+  description: The Web Scraping API from Monocrawl — 16 operation(s) for web scraping.
+  humanURL: https://www.monocrawl.com/docs/api-reference
+  tags:
+  - Web Scraping
+  properties:
+  - type: OpenAPI
+    url: openapi/monocrawl-web-scraping-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/monocrawl-success-schema.json
+  - type: JSONSchema
+    url: json-schema/monocrawl-batch-request-schema.json
+- aid: monocrawl:monocrawl-x-api
+  name: Monocrawl X API
+  description: The X API from Monocrawl — 16 operation(s) for x.
+  humanURL: https://www.monocrawl.com/docs/api-reference
+  tags:
+  - X
+  properties:
+  - type: OpenAPI
+    url: openapi/monocrawl-x-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/monocrawl-success-schema.json
+  - type: JSONSchema
+    url: json-schema/monocrawl-batch-request-schema.json
+- aid: monocrawl:monocrawl-yelp-api
+  name: Monocrawl Yelp API
+  description: The Yelp API from Monocrawl — 7 operation(s) for yelp.
+  humanURL: https://www.monocrawl.com/docs/api-reference
+  tags:
+  - Yelp
+  properties:
+  - type: OpenAPI
+    url: openapi/monocrawl-yelp-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/monocrawl-success-schema.json
+  - type: JSONSchema
+    url: json-schema/monocrawl-batch-request-schema.json
+- aid: monocrawl:monocrawl-youtube-api
+  name: Monocrawl YouTube API
+  description: The YouTube API from Monocrawl — 28 operation(s) for youtube.
+  humanURL: https://www.monocrawl.com/docs/api-reference
+  tags:
+  - YouTube
+  properties:
+  - type: OpenAPI
+    url: openapi/monocrawl-youtube-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/monocrawl-success-schema.json
+  - type: JSONSchema
+    url: json-schema/monocrawl-batch-request-schema.json
+- aid: monocrawl:monocrawl-zillow-api
+  name: Monocrawl Zillow API
+  description: The Zillow API from Monocrawl — 5 operation(s) for zillow.
+  humanURL: https://www.monocrawl.com/docs/api-reference
+  tags:
+  - Zillow
+  properties:
+  - type: OpenAPI
+    url: openapi/monocrawl-zillow-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/monocrawl-success-schema.json
+  - type: JSONSchema
+    url: json-schema/monocrawl-batch-request-schema.json
+- aid: monocrawl:monocrawl-zoopla-api
+  name: Monocrawl Zoopla API
+  description: The Zoopla API from Monocrawl — 12 operation(s) for zoopla.
+  humanURL: https://www.monocrawl.com/docs/api-reference
+  tags:
+  - Zoopla
+  properties:
+  - type: OpenAPI
+    url: openapi/monocrawl-zoopla-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/monocrawl-success-schema.json
+  - type: JSONSchema
+    url: json-schema/monocrawl-batch-request-schema.json
+- aid: monocrawl:monocrawl-linked-in-api
+  name: Monocrawl Linked In API
+  description: The Linked In API from Monocrawl — 44 operation(s) for linked in.
+  humanURL: https://www.monocrawl.com/docs/api-reference
+  tags:
+  - Linked In
+  properties:
+  - type: OpenAPI
+    url: openapi/monocrawl-linked-in-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/monocrawl-success-schema.json
+  - type: JSONSchema
+    url: json-schema/monocrawl-batch-request-schema.json
+- aid: monocrawl:monocrawl-truthsocial-api
+  name: Monocrawl Truthsocial API
+  description: The truthsocial API from Monocrawl — 3 operation(s) for truthsocial.
+  humanURL: https://www.monocrawl.com/docs/api-reference
+  tags:
+  - truthsocial
+  properties:
+  - type: OpenAPI
+    url: openapi/monocrawl-truthsocial-api-openapi.yml
+  - type: JSONSchema
+    url: json-schema/monocrawl-success-schema.json
+  - type: JSONSchema
+    url: json-schema/monocrawl-batch-request-schema.json
 x-submission-notes: One REST API for public social, search and e-commerce data across 70+ platforms.
-x-submission-probe: root 200; docs 200; OpenAPI 3.1.0 620 paths; llms.txt 200; MCP /mcp initialize 200
-  (serverInfo monocrawl 0.1.0); 404 probe 404
+x-submission-probe: root 200; docs 200; OpenAPI 3.1.0 620 paths; llms.txt 200; MCP /mcp initialize 200 (serverInfo monocrawl 0.1.0); 404 probe
+  404
 x-submitted-by: support@monocrawl.com (apis.io/add, 2026-09-29)
+x-enrichment:
+  date: '2026-10-02'
+  status: enriched
+  artifacts_added: 25
+  pass: modular-v1
+  engine: identity=local,contract=local,surfaces=local,docs=local,regulatory=local

@@ -1,0 +1,3012 @@
+openapi: 3.2.0
+info:
+  title: Monocrawl Trustpilot API
+  version: 0.1.0
+  description: One key, one envelope, one credit meter across social, search, commerce and web data.
+  contact:
+    name: Monocrawl support
+    url: https://www.monocrawl.com/contact
+  termsOfService: https://www.monocrawl.com/legal/terms-and-conditions
+servers:
+- url: https://www.monocrawl.com
+security:
+- ApiKeyHeader: []
+tags:
+- name: Trustpilot
+paths:
+  /v1/trustpilot/categories:
+    get:
+      operationId: trustpilot_categories
+      tags:
+      - Trustpilot
+      summary: Trustpilot category search
+      description: Trustpilot categories matching a keyword, with the ids the category routes take. Costs 3 credits per successful live response.
+      parameters:
+      - name: query
+        in: query
+        required: true
+        schema:
+          type: string
+        example: bank
+        description: Category name or keyword
+      - name: locale
+        in: query
+        required: false
+        schema:
+          type: string
+        example: en-GB
+        description: Site locale
+      - name: dry_run
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - '1'
+          - '0'
+          - 'true'
+          - 'false'
+        example: '1'
+        description: 'Read a zero-credit estimate without fetching sources, running AI, or reserving credits. Cache status is a snapshot, not a guarantee at execution. Accepted values: 1, 0, true, false. Case, spaces, hyphens and underscores are interchangeable.'
+      - name: X-Max-Credits
+        in: header
+        required: false
+        schema:
+          type: integer
+          minimum: 0
+          maximum: 9007199254740991
+        example: 5
+        description: Optional credit reservation ceiling for this individual request. Send a non-negative integer in decimal digits. Live execution checks the required reservation after resolving free cache hits or buffered continuation, before charging or calling a supplier. A higher reservation returns HTTP 422 INVALID_PARAMETERS with reason max_credits_exceeded and charges nothing. Invalid header values also return 422. Zero permits only a zero-credit reservation; omitting the header uses normal pricing. dry_run remains a free preview. This does not cap later requests, batches or scheduled runs.
+      security:
+      - ApiKeyHeader: []
+      - BearerKey: []
+      responses:
+        '200':
+          description: 'The common success envelope; `data` is endpoint-specific. Many lists use items/count/cursor; bundles use named collections and their documented continuation metadata. HTTP 200 can contain a partial bundle: inspect complete, partial and legs where supplied.'
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/Success'
+                - type: object
+                  properties:
+                    data:
+                      $schema: https://json-schema.org/draft/2020-12/schema
+                      $id: https://www.monocrawl.com/schemas/trustpilot/categories.json
+                      title: trustpilot/categories data fields
+                      description: Optional data supplied by this operation. Null means unknown.
+                      type: object
+                      properties:
+                        count:
+                          description: Number of records in this response, not lifetime or total matches.
+                          type:
+                          - number
+                          - 'null'
+                        has_more:
+                          description: Source continuation indicator; null means unknown.
+                          type:
+                          - boolean
+                          - 'null'
+                        items:
+                          description: Returned records. Source coverage and completeness vary.
+                          type:
+                          - array
+                          items:
+                            description: Optional record supplied by this operation. Null means unknown.
+                            type: object
+                            properties:
+                              id:
+                                description: Source identifier. Preserve the supplied type and exact value.
+                                type:
+                                - string
+                                - 'null'
+                              name:
+                                description: Optional name supplied by this operation. Null means unknown.
+                                type:
+                                - string
+                                - 'null'
+                            additionalProperties: true
+                            allOf:
+                            - anyOf:
+                              - required:
+                                - id
+                                properties:
+                                  id:
+                                    description: Source identifier. Preserve the supplied type and exact value.
+                                    type:
+                                    - string
+                                    minLength: 1
+                              - required:
+                                - name
+                                properties:
+                                  name:
+                                    description: Optional name supplied by this operation. Null means unknown.
+                                    type:
+                                    - string
+                                    minLength: 1
+                        query:
+                          description: Optional query supplied by this operation. Null means unknown.
+                          type:
+                          - string
+                          - 'null'
+                      additionalProperties: true
+                      required:
+                      - items
+                      x-contract-version: '2026-09-22'
+                      x-validation-scope: Required success payload structure; optional fields and source completeness remain separate.
+                      examples:
+                      - count: 0
+                        has_more: false
+                        items:
+                        - id: example
+                          name: example
+                        query: example
+        default:
+          description: The error envelope — the same shape for every non-2xx status.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      x-credits: 3
+      x-production-available: true
+      x-capacity:
+        status: not_assessed
+        message: Capacity is workload-dependent; configured routes do not establish sustained throughput or an availability guarantee.
+      x-availability-scope: Structural check of the effective registered chain, production permission, adapter, configured cost and quality floor without request parameters. True is not a live-health, credential, quota, subscription-entitlement, complete-data or deployment-exposure guarantee. False means no structurally eligible candidate; null means metadata could not establish availability. Composite child capability still depends on its component routes.
+      x-live-proven: true
+  /v1/trustpilot/category:
+    get:
+      operationId: trustpilot_category
+      tags:
+      - Trustpilot
+      summary: Trustpilot category
+      description: One Trustpilot category with its company count, parent, subcategories and siblings. Costs 3 credits per successful live response.
+      parameters:
+      - name: id
+        in: query
+        required: true
+        schema:
+          type: string
+        example: bank
+        description: Category id from trustpilot/categories
+      - name: locale
+        in: query
+        required: false
+        schema:
+          type: string
+        example: en-GB
+        description: Site locale
+      - name: dry_run
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - '1'
+          - '0'
+          - 'true'
+          - 'false'
+        example: '1'
+        description: 'Read a zero-credit estimate without fetching sources, running AI, or reserving credits. Cache status is a snapshot, not a guarantee at execution. Accepted values: 1, 0, true, false. Case, spaces, hyphens and underscores are interchangeable.'
+      - name: X-Max-Credits
+        in: header
+        required: false
+        schema:
+          type: integer
+          minimum: 0
+          maximum: 9007199254740991
+        example: 5
+        description: Optional credit reservation ceiling for this individual request. Send a non-negative integer in decimal digits. Live execution checks the required reservation after resolving free cache hits or buffered continuation, before charging or calling a supplier. A higher reservation returns HTTP 422 INVALID_PARAMETERS with reason max_credits_exceeded and charges nothing. Invalid header values also return 422. Zero permits only a zero-credit reservation; omitting the header uses normal pricing. dry_run remains a free preview. This does not cap later requests, batches or scheduled runs.
+      security:
+      - ApiKeyHeader: []
+      - BearerKey: []
+      responses:
+        '200':
+          description: 'The common success envelope; `data` is endpoint-specific. Many lists use items/count/cursor; bundles use named collections and their documented continuation metadata. HTTP 200 can contain a partial bundle: inspect complete, partial and legs where supplied.'
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/Success'
+                - type: object
+                  properties:
+                    data:
+                      $schema: https://json-schema.org/draft/2020-12/schema
+                      $id: https://www.monocrawl.com/schemas/trustpilot/category.json
+                      title: trustpilot/category data fields
+                      description: Optional data supplied by this operation. Null means unknown.
+                      type: object
+                      properties:
+                        company_count:
+                          description: Optional company count supplied by this operation. Null means unknown.
+                          type:
+                          - number
+                          - 'null'
+                        id:
+                          description: Source identifier. Preserve the supplied type and exact value.
+                          type:
+                          - string
+                          - 'null'
+                        name:
+                          description: Optional name supplied by this operation. Null means unknown.
+                          type:
+                          - string
+                          - 'null'
+                        parent:
+                          description: Optional parent supplied by this operation. Null means unknown.
+                          type:
+                          - object
+                          - 'null'
+                          properties:
+                            company_count:
+                              description: Optional company count supplied by this operation. Null means unknown.
+                              type:
+                              - number
+                              - 'null'
+                            id:
+                              description: Source identifier. Preserve the supplied type and exact value.
+                              type:
+                              - string
+                              - 'null'
+                            name:
+                              description: Optional name supplied by this operation. Null means unknown.
+                              type:
+                              - string
+                              - 'null'
+                            parent_id:
+                              description: Optional parent id supplied by this operation. Null means unknown.
+                              type:
+                              - string
+                              - 'null'
+                            subcategory_ids:
+                              description: Optional subcategory ids supplied by this operation. Null means unknown.
+                              type:
+                              - array
+                              - 'null'
+                              items:
+                                description: Optional record supplied by this operation. Null means unknown.
+                                type:
+                                - string
+                                - 'null'
+                          additionalProperties: true
+                        parent_id:
+                          description: Optional parent id supplied by this operation. Null means unknown.
+                          type:
+                          - string
+                          - 'null'
+                        platform:
+                          description: Optional platform supplied by this operation. Null means unknown.
+                          type:
+                          - string
+                          - 'null'
+                        siblings:
+                          description: Optional siblings supplied by this operation. Null means unknown.
+                          type:
+                          - array
+                          - 'null'
+                          items:
+                            description: Optional record supplied by this operation. Null means unknown.
+                            type:
+                            - object
+                            - 'null'
+                            properties:
+                              company_count:
+                                description: Optional company count supplied by this operation. Null means unknown.
+                                type:
+                                - number
+                                - 'null'
+                              id:
+                                description: Source identifier. Preserve the supplied type and exact value.
+                                type:
+                                - string
+                                - 'null'
+                              name:
+                                description: Optional name supplied by this operation. Null means unknown.
+                                type:
+                                - string
+                                - 'null'
+                              parent_id:
+                                description: Optional parent id supplied by this operation. Null means unknown.
+                                type:
+                                - string
+                                - 'null'
+                            additionalProperties: true
+                        subcategories:
+                          description: Source array was empty in the reviewed captures; item fields remain unspecified.
+                          type:
+                          - array
+                          - 'null'
+                          items: {}
+                        top:
+                          description: Optional top supplied by this operation. Null means unknown.
+                          type:
+                          - object
+                          - 'null'
+                          properties:
+                            company_count:
+                              description: Optional company count supplied by this operation. Null means unknown.
+                              type:
+                              - number
+                              - 'null'
+                            id:
+                              description: Source identifier. Preserve the supplied type and exact value.
+                              type:
+                              - string
+                              - 'null'
+                            name:
+                              description: Optional name supplied by this operation. Null means unknown.
+                              type:
+                              - string
+                              - 'null'
+                            subcategory_ids:
+                              description: Optional subcategory ids supplied by this operation. Null means unknown.
+                              type:
+                              - array
+                              - 'null'
+                              items:
+                                description: Optional record supplied by this operation. Null means unknown.
+                                type:
+                                - string
+                                - 'null'
+                          additionalProperties: true
+                        url:
+                          description: Original source URL when supplied.
+                          type:
+                          - string
+                          - 'null'
+                      additionalProperties: true
+                      allOf:
+                      - anyOf:
+                        - required:
+                          - company_count
+                          properties:
+                            company_count:
+                              description: Optional company count supplied by this operation. Null means unknown.
+                              type:
+                              - number
+                        - required:
+                          - id
+                          properties:
+                            id:
+                              description: Source identifier. Preserve the supplied type and exact value.
+                              type:
+                              - string
+                              minLength: 1
+                        - required:
+                          - name
+                          properties:
+                            name:
+                              description: Optional name supplied by this operation. Null means unknown.
+                              type:
+                              - string
+                              minLength: 1
+                        - required:
+                          - parent
+                          properties:
+                            parent:
+                              description: Optional parent supplied by this operation. Null means unknown.
+                              type:
+                              - object
+                              properties:
+                                company_count:
+                                  description: Optional company count supplied by this operation. Null means unknown.
+                                  type:
+                                  - number
+                                  - 'null'
+                                id:
+                                  description: Source identifier. Preserve the supplied type and exact value.
+                                  type:
+                                  - string
+                                  - 'null'
+                                name:
+                                  description: Optional name supplied by this operation. Null means unknown.
+                                  type:
+                                  - string
+                                  - 'null'
+                                parent_id:
+                                  description: Optional parent id supplied by this operation. Null means unknown.
+                                  type:
+                                  - string
+                                  - 'null'
+                                subcategory_ids:
+                                  description: Optional subcategory ids supplied by this operation. Null means unknown.
+                                  type:
+                                  - array
+                                  - 'null'
+                                  items:
+                                    description: Optional record supplied by this operation. Null means unknown.
+                                    type:
+                                    - string
+                                    - 'null'
+                              additionalProperties: true
+                        - required:
+                          - parent_id
+                          properties:
+                            parent_id:
+                              description: Optional parent id supplied by this operation. Null means unknown.
+                              type:
+                              - string
+                              minLength: 1
+                        - required:
+                          - siblings
+                          properties:
+                            siblings:
+                              description: Optional siblings supplied by this operation. Null means unknown.
+                              type:
+                              - array
+                              items:
+                                description: Optional record supplied by this operation. Null means unknown.
+                                type:
+                                - object
+                                - 'null'
+                                properties:
+                                  company_count:
+                                    description: Optional company count supplied by this operation. Null means unknown.
+                                    type:
+                                    - number
+                                    - 'null'
+                                  id:
+                                    description: Source identifier. Preserve the supplied type and exact value.
+                                    type:
+                                    - string
+                                    - 'null'
+                                  name:
+                                    description: Optional name supplied by this operation. Null means unknown.
+                                    type:
+                                    - string
+                                    - 'null'
+                                  parent_id:
+                                    description: Optional parent id supplied by this operation. Null means unknown.
+                                    type:
+                                    - string
+                                    - 'null'
+                                additionalProperties: true
+                        - required:
+                          - subcategories
+                          properties:
+                            subcategories:
+                              description: Source array was empty in the reviewed captures; item fields remain unspecified.
+                              type:
+                              - array
+                              items: {}
+                        - required:
+                          - top
+                          properties:
+                            top:
+                              description: Optional top supplied by this operation. Null means unknown.
+                              type:
+                              - object
+                              properties:
+                                company_count:
+                                  description: Optional company count supplied by this operation. Null means unknown.
+                                  type:
+                                  - number
+                                  - 'null'
+                                id:
+                                  description: Source identifier. Preserve the supplied type and exact value.
+                                  type:
+                                  - string
+                                  - 'null'
+                                name:
+                                  description: Optional name supplied by this operation. Null means unknown.
+                                  type:
+                                  - string
+                                  - 'null'
+                                subcategory_ids:
+                                  description: Optional subcategory ids supplied by this operation. Null means unknown.
+                                  type:
+                                  - array
+                                  - 'null'
+                                  items:
+                                    description: Optional record supplied by this operation. Null means unknown.
+                                    type:
+                                    - string
+                                    - 'null'
+                              additionalProperties: true
+                        - required:
+                          - url
+                          properties:
+                            url:
+                              description: Original source URL when supplied.
+                              type:
+                              - string
+                              minLength: 1
+                      x-contract-version: '2026-09-22'
+                      x-validation-scope: Required success payload structure; optional fields and source completeness remain separate.
+                      examples:
+                      - company_count: 0
+                        id: example
+                        name: example
+                        parent:
+                          company_count: 0
+                          id: example
+                          name: example
+                          parent_id: example
+                          subcategory_ids:
+                          - example
+                        parent_id: example
+                        platform: example
+                        siblings:
+                        - company_count: 0
+                          id: example
+                          name: example
+                          parent_id: example
+                        subcategories: []
+                        top:
+                          company_count: 0
+                          id: example
+                          name: example
+                          subcategory_ids:
+                          - example
+                        url: https://example.com/example
+        default:
+          description: The error envelope — the same shape for every non-2xx status.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      x-credits: 3
+      x-production-available: true
+      x-capacity:
+        status: not_assessed
+        message: Capacity is workload-dependent; configured routes do not establish sustained throughput or an availability guarantee.
+      x-availability-scope: Structural check of the effective registered chain, production permission, adapter, configured cost and quality floor without request parameters. True is not a live-health, credential, quota, subscription-entitlement, complete-data or deployment-exposure guarantee. False means no structurally eligible candidate; null means metadata could not establish availability. Composite child capability still depends on its component routes.
+      x-live-proven: true
+  /v1/trustpilot/category-companies:
+    get:
+      operationId: trustpilot_category_companies
+      tags:
+      - Trustpilot
+      summary: Trustpilot companies in a category
+      description: The companies in a Trustpilot category — ranked, recently reviewed or newest — with rating, review count and location. Costs 3 credits per successful live response.
+      parameters:
+      - name: id
+        in: query
+        required: true
+        schema:
+          type: string
+        example: bank
+        description: Category id from trustpilot/categories
+      - name: sort
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - default
+          - recent
+          - newest
+        x-value-aliases:
+          recently-reviewed: recent
+        example: recent
+        description: 'default (ranked), recent (recently reviewed) or newest Accepted values: default, recent, newest. Case, spaces, hyphens and underscores are interchangeable.'
+      - name: min_rating
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - any
+          - '3'
+          - '4'
+          - '4.5'
+        example: '4'
+        description: 'any, 3, 4 or 4.5 Accepted values: any, 3, 4, 4.5. Case, spaces, hyphens and underscores are interchangeable.'
+      - name: country
+        in: query
+        required: false
+        schema:
+          type: string
+        example: GB
+        description: Two-letter country code
+      - name: city
+        in: query
+        required: false
+        schema:
+          type: string
+        example: London
+        description: City or postcode
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: string
+        example: '1'
+        description: Page of 20 (ranked list only)
+      - name: locale
+        in: query
+        required: false
+        schema:
+          type: string
+        example: en-GB
+        description: Site locale
+      - name: dry_run
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - '1'
+          - '0'
+          - 'true'
+          - 'false'
+        example: '1'
+        description: 'Read a zero-credit estimate without fetching sources, running AI, or reserving credits. Cache status is a snapshot, not a guarantee at execution. Accepted values: 1, 0, true, false. Case, spaces, hyphens and underscores are interchangeable.'
+      - name: X-Max-Credits
+        in: header
+        required: false
+        schema:
+          type: integer
+          minimum: 0
+          maximum: 9007199254740991
+        example: 5
+        description: Optional credit reservation ceiling for this individual request. Send a non-negative integer in decimal digits. Live execution checks the required reservation after resolving free cache hits or buffered continuation, before charging or calling a supplier. A higher reservation returns HTTP 422 INVALID_PARAMETERS with reason max_credits_exceeded and charges nothing. Invalid header values also return 422. Zero permits only a zero-credit reservation; omitting the header uses normal pricing. dry_run remains a free preview. This does not cap later requests, batches or scheduled runs.
+      security:
+      - ApiKeyHeader: []
+      - BearerKey: []
+      responses:
+        '200':
+          description: 'The common success envelope; `data` is endpoint-specific. Many lists use items/count/cursor; bundles use named collections and their documented continuation metadata. HTTP 200 can contain a partial bundle: inspect complete, partial and legs where supplied.'
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/Success'
+                - type: object
+                  properties:
+                    data:
+                      $schema: https://json-schema.org/draft/2020-12/schema
+                      $id: https://www.monocrawl.com/schemas/trustpilot/category-companies.json
+                      title: trustpilot/category-companies data fields
+                      description: Optional data supplied by this operation. Null means unknown.
+                      type: object
+                      properties:
+                        category:
+                          description: Optional category supplied by this operation. Null means unknown.
+                          type:
+                          - object
+                          - 'null'
+                          properties:
+                            company_count:
+                              description: Optional company count supplied by this operation. Null means unknown.
+                              type:
+                              - number
+                              - 'null'
+                            id:
+                              description: Source identifier. Preserve the supplied type and exact value.
+                              type:
+                              - string
+                              - 'null'
+                            name:
+                              description: Optional name supplied by this operation. Null means unknown.
+                              type:
+                              - string
+                              - 'null'
+                            parent_id:
+                              description: Optional parent id supplied by this operation. Null means unknown.
+                              type:
+                              - string
+                              - 'null'
+                          additionalProperties: true
+                        count:
+                          description: Number of records in this response, not lifetime or total matches.
+                          type:
+                          - number
+                          - 'null'
+                        cursor:
+                          description: Opaque next-page token; pass it back unchanged. Null does not prove complete history.
+                          type:
+                          - string
+                          - 'null'
+                        has_more:
+                          description: Source continuation indicator; null means unknown.
+                          type:
+                          - boolean
+                          - 'null'
+                        items:
+                          description: Returned records. Source coverage and completeness vary.
+                          type:
+                          - array
+                          items:
+                            description: Optional record supplied by this operation. Null means unknown.
+                            type: object
+                            properties:
+                              categories:
+                                description: Optional categories supplied by this operation. Null means unknown.
+                                type:
+                                - array
+                                - 'null'
+                                items:
+                                  description: Optional record supplied by this operation. Null means unknown.
+                                  type:
+                                  - string
+                                  - 'null'
+                              domain:
+                                description: Optional domain supplied by this operation. Null means unknown.
+                                type:
+                                - string
+                                - 'null'
+                              id:
+                                description: Source identifier. Preserve the supplied type and exact value.
+                                type:
+                                - string
+                                - 'null'
+                              location:
+                                description: Optional location supplied by this operation. Null means unknown.
+                                type:
+                                - string
+                                - 'null'
+                              logo:
+                                description: Optional logo supplied by this operation. Null means unknown.
+                                type:
+                                - string
+                                - 'null'
+                              name:
+                                description: Optional name supplied by this operation. Null means unknown.
+                                type:
+                                - string
+                                - 'null'
+                              phone:
+                                description: Optional phone supplied by this operation. Null means unknown.
+                                type:
+                                - string
+                                - 'null'
+                              platform:
+                                description: Optional platform supplied by this operation. Null means unknown.
+                                type:
+                                - string
+                                - 'null'
+                              rank:
+                                description: Optional rank supplied by this operation. Null means unknown.
+                                type:
+                                - number
+                                - 'null'
+                              rating:
+                                description: Source rating; read its accompanying scale and vote count.
+                                type:
+                                - object
+                                - 'null'
+                                properties:
+                                  max:
+                                    description: Optional max supplied by this operation. Null means unknown.
+                                    type:
+                                    - number
+                                    - 'null'
+                                  value:
+                                    description: Optional value supplied by this operation. Null means unknown.
+                                    type:
+                                    - number
+                                    - 'null'
+                                  votes:
+                                    description: Optional votes supplied by this operation. Null means unknown.
+                                    type:
+                                    - number
+                                    - 'null'
+                                additionalProperties: true
+                              reviews_count:
+                                description: Optional reviews count supplied by this operation. Null means unknown.
+                                type:
+                                - number
+                                - 'null'
+                              trust_score:
+                                description: Optional trust score supplied by this operation. Null means unknown.
+                                type:
+                                - number
+                                - 'null'
+                              url:
+                                description: Original source URL when supplied.
+                                type:
+                                - string
+                                - 'null'
+                              website:
+                                description: Optional website supplied by this operation. Null means unknown.
+                                type:
+                                - string
+                                - 'null'
+                            additionalProperties: true
+                            allOf:
+                            - anyOf:
+                              - required:
+                                - categories
+                                properties:
+                                  categories:
+                                    description: Optional categories supplied by this operation. Null means unknown.
+                                    type:
+                                    - array
+                                    items:
+                                      description: Optional record supplied by this operation. Null means unknown.
+                                      type:
+                                      - string
+                                      - 'null'
+                              - required:
+                                - domain
+                                properties:
+                                  domain:
+                                    description: Optional domain supplied by this operation. Null means unknown.
+                                    type:
+                                    - string
+                                    minLength: 1
+                              - required:
+                                - id
+                                properties:
+                                  id:
+                                    description: Source identifier. Preserve the supplied type and exact value.
+                                    type:
+                                    - string
+                                    minLength: 1
+                              - required:
+                                - location
+                                properties:
+                                  location:
+                                    description: Optional location supplied by this operation. Null means unknown.
+                                    type:
+                                    - string
+                                    minLength: 1
+                              - required:
+                                - logo
+                                properties:
+                                  logo:
+                                    description: Optional logo supplied by this operation. Null means unknown.
+                                    type:
+                                    - string
+                                    minLength: 1
+                              - required:
+                                - name
+                                properties:
+                                  name:
+                                    description: Optional name supplied by this operation. Null means unknown.
+                                    type:
+                                    - string
+                                    minLength: 1
+                              - required:
+                                - phone
+                                properties:
+                                  phone:
+                                    description: Optional phone supplied by this operation. Null means unknown.
+                                    type:
+                                    - string
+                                    minLength: 1
+                              - required:
+                                - rank
+                                properties:
+                                  rank:
+                                    description: Optional rank supplied by this operation. Null means unknown.
+                                    type:
+                                    - number
+                              - required:
+                                - rating
+                                properties:
+                                  rating:
+                                    description: Source rating; read its accompanying scale and vote count.
+                                    type:
+                                    - object
+                                    properties:
+                                      max:
+                                        description: Optional max supplied by this operation. Null means unknown.
+                                        type:
+                                        - number
+                                        - 'null'
+                                      value:
+                                        description: Optional value supplied by this operation. Null means unknown.
+                                        type:
+                                        - number
+                                        - 'null'
+                                      votes:
+                                        description: Optional votes supplied by this operation. Null means unknown.
+                                        type:
+                                        - number
+                                        - 'null'
+                                    additionalProperties: true
+                              - required:
+                                - reviews_count
+                                properties:
+                                  reviews_count:
+                                    description: Optional reviews count supplied by this operation. Null means unknown.
+                                    type:
+                                    - number
+                              - required:
+                                - trust_score
+                                properties:
+                                  trust_score:
+                                    description: Optional trust score supplied by this operation. Null means unknown.
+                                    type:
+                                    - number
+                              - required:
+                                - url
+                                properties:
+                                  url:
+                                    description: Original source URL when supplied.
+                                    type:
+                                    - string
+                                    minLength: 1
+                              - required:
+                                - website
+                                properties:
+                                  website:
+                                    description: Optional website supplied by this operation. Null means unknown.
+                                    type:
+                                    - string
+                                    minLength: 1
+                        page:
+                          description: Optional page supplied by this operation. Null means unknown.
+                          type:
+                          - number
+                          - 'null'
+                        sort:
+                          description: Optional sort supplied by this operation. Null means unknown.
+                          type:
+                          - string
+                          - 'null'
+                        total:
+                          description: Source-reported total; null is unknown.
+                          type:
+                          - number
+                          - 'null'
+                      additionalProperties: true
+                      required:
+                      - items
+                      x-contract-version: '2026-09-22'
+                      x-validation-scope: Required success payload structure; optional fields and source completeness remain separate.
+                      examples:
+                      - category:
+                          company_count: 0
+                          id: example
+                          name: example
+                          parent_id: example
+                        count: 0
+                        cursor: null
+                        has_more: false
+                        items:
+                        - categories:
+                          - example
+                          domain: example
+                          id: example
+                          location: example
+                          logo: example
+                          name: example
+                          phone: example
+                          platform: example
+                          rank: 0
+                          rating:
+                            max: 0
+                            value: 0
+                            votes: 0
+                          reviews_count: 0
+                          trust_score: 0
+                          url: https://example.com/example
+                          website: example
+                        page: 0
+                        sort: example
+                        total: 0
+        default:
+          description: The error envelope — the same shape for every non-2xx status.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      x-credits: 3
+      x-production-available: true
+      x-capacity:
+        status: not_assessed
+        message: Capacity is workload-dependent; configured routes do not establish sustained throughput or an availability guarantee.
+      x-availability-scope: Structural check of the effective registered chain, production permission, adapter, configured cost and quality floor without request parameters. True is not a live-health, credential, quota, subscription-entitlement, complete-data or deployment-exposure guarantee. False means no structurally eligible candidate; null means metadata could not establish availability. Composite child capability still depends on its component routes.
+      x-live-proven: true
+  /v1/trustpilot/company:
+    get:
+      operationId: trustpilot_company
+      tags:
+      - Trustpilot
+      summary: Trustpilot company
+      description: 'A company''s Trustpilot profile by domain: rating, review count, categories and claimed status. Queued task. Costs 7 credits per successful live response.'
+      parameters:
+      - name: domain
+        in: query
+        required: true
+        schema:
+          type: string
+        example: monzo.com
+        description: The company's domain
+      - name: dry_run
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - '1'
+          - '0'
+          - 'true'
+          - 'false'
+        example: '1'
+        description: 'Read a zero-credit estimate without fetching sources, running AI, or reserving credits. Cache status is a snapshot, not a guarantee at execution. Accepted values: 1, 0, true, false. Case, spaces, hyphens and underscores are interchangeable.'
+      - name: X-Max-Credits
+        in: header
+        required: false
+        schema:
+          type: integer
+          minimum: 0
+          maximum: 9007199254740991
+        example: 5
+        description: Optional credit reservation ceiling for this individual request. Send a non-negative integer in decimal digits. Live execution checks the required reservation after resolving free cache hits or buffered continuation, before charging or calling a supplier. A higher reservation returns HTTP 422 INVALID_PARAMETERS with reason max_credits_exceeded and charges nothing. Invalid header values also return 422. Zero permits only a zero-credit reservation; omitting the header uses normal pricing. dry_run remains a free preview. This does not cap later requests, batches or scheduled runs.
+      security:
+      - ApiKeyHeader: []
+      - BearerKey: []
+      responses:
+        '200':
+          description: 'The common success envelope; `data` is endpoint-specific. Many lists use items/count/cursor; bundles use named collections and their documented continuation metadata. HTTP 200 can contain a partial bundle: inspect complete, partial and legs where supplied.'
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/Success'
+                - type: object
+                  properties:
+                    data:
+                      $schema: https://json-schema.org/draft/2020-12/schema
+                      $id: https://www.monocrawl.com/schemas/trustpilot/company.json
+                      title: trustpilot/company data fields
+                      description: Optional data supplied by this operation. Null means unknown.
+                      type: object
+                      properties:
+                        about:
+                          description: Optional about supplied by this operation. Null means unknown.
+                          type:
+                          - string
+                          - 'null'
+                        address:
+                          description: Optional address supplied by this operation. Null means unknown.
+                          type:
+                          - string
+                          - 'null'
+                        asking_for_reviews:
+                          description: Optional asking for reviews supplied by this operation. Null means unknown.
+                          type:
+                          - boolean
+                          - 'null'
+                        average_days_to_reply:
+                          description: Optional average days to reply supplied by this operation. Null means unknown.
+                          type:
+                          - number
+                          - 'null'
+                        categories:
+                          description: Optional categories supplied by this operation. Null means unknown.
+                          type:
+                          - array
+                          - 'null'
+                          items:
+                            description: Optional record supplied by this operation. Null means unknown.
+                            type:
+                            - string
+                            - 'null'
+                        category_ranks:
+                          description: Optional category ranks supplied by this operation. Null means unknown.
+                          type:
+                          - array
+                          - 'null'
+                          items:
+                            description: Optional record supplied by this operation. Null means unknown.
+                            type:
+                            - object
+                            - 'null'
+                            properties:
+                              id:
+                                description: Source identifier. Preserve the supplied type and exact value.
+                                type:
+                                - string
+                                - 'null'
+                              name:
+                                description: Optional name supplied by this operation. Null means unknown.
+                                type:
+                                - string
+                                - 'null'
+                              of:
+                                description: Optional of supplied by this operation. Null means unknown.
+                                type:
+                                - number
+                                - 'null'
+                              rank:
+                                description: Optional rank supplied by this operation. Null means unknown.
+                                type:
+                                - number
+                                - 'null'
+                            additionalProperties: true
+                        claimed:
+                          description: Optional claimed supplied by this operation. Null means unknown.
+                          type:
+                          - boolean
+                          - 'null'
+                        closed:
+                          description: Optional closed supplied by this operation. Null means unknown.
+                          type:
+                          - boolean
+                          - 'null'
+                        domain:
+                          description: Optional domain supplied by this operation. Null means unknown.
+                          type:
+                          - string
+                          - 'null'
+                        id:
+                          description: Source identifier. Preserve the supplied type and exact value.
+                          type:
+                          - string
+                          - 'null'
+                        location:
+                          description: Optional location supplied by this operation. Null means unknown.
+                          type:
+                          - string
+                          - 'null'
+                        logo:
+                          description: Optional logo supplied by this operation. Null means unknown.
+                          type:
+                          - string
+                          - 'null'
+                        name:
+                          description: Optional name supplied by this operation. Null means unknown.
+                          type:
+                          - string
+                          - 'null'
+                        negative_review_count:
+                          description: Optional negative review count supplied by this operation. Null means unknown.
+                          type:
+                          - number
+                          - 'null'
+                        platform:
+                          description: Optional platform supplied by this operation. Null means unknown.
+                          type:
+                          - string
+                          - 'null'
+                        rating:
+                          description: Source rating; read its accompanying scale and vote count.
+                          type:
+                          - object
+                          - 'null'
+                          properties:
+                            max:
+                              description: Optional max supplied by this operation. Null means unknown.
+                              type:
+                              - number
+                              - 'null'
+                            value:
+                              description: Optional value supplied by this operation. Null means unknown.
+                              type:
+                              - number
+                              - 'null'
+                            votes:
+                              description: Optional votes supplied by this operation. Null means unknown.
+                              type:
+                              - number
+                              - 'null'
+                          additionalProperties: true
+                        rating_distribution:
+                          description: Optional rating distribution supplied by this operation. Null means unknown.
+                          type:
+                          - object
+                          - 'null'
+                          properties: {}
+                          additionalProperties: true
+                        reply_to_negative_review_percent:
+                          description: Optional reply to negative review percent supplied by this operation. Null means unknown.
+                          type:
+                          - number
+                          - 'null'
+                        reviews_count:
+                          description: Optional reviews count supplied by this operation. Null means unknown.
+                          type:
+                          - number
+                          - 'null'
+                        trust_score:
+                          description: Optional trust score supplied by this operation. Null means unknown.
+                          type:
+                          - number
+                          - 'null'
+                        url:
+                          description: Original source URL when supplied.
+                          type:
+                          - string
+                          - 'null'
+                        verified:
+                          description: Optional verified supplied by this operation. Null means unknown.
+                          type:
+                          - boolean
+                          - 'null'
+                        website:
+                          description: Optional website supplied by this operation. Null means unknown.
+                          type:
+                          - string
+                          - 'null'
+                      additionalProperties: true
+                      allOf:
+                      - anyOf:
+                        - required:
+                          - about
+                          properties:
+                            about:
+                              description: Optional about supplied by this operation. Null means unknown.
+                              type:
+                              - string
+                              minLength: 1
+                        - required:
+                          - address
+                          properties:
+                            address:
+                              description: Optional address supplied by this operation. Null means unknown.
+                              type:
+                              - string
+                              minLength: 1
+                        - required:
+                          - asking_for_reviews
+                          properties:
+                            asking_for_reviews:
+                              description: Optional asking for reviews supplied by this operation. Null means unknown.
+                              type:
+                              - boolean
+                        - required:
+                          - average_days_to_reply
+                          properties:
+                            average_days_to_reply:
+                              description: Optional average days to reply supplied by this operation. Null means unknown.
+                              type:
+                              - number
+                        - required:
+                          - categories
+                          properties:
+                            categories:
+                              description: Optional categories supplied by this operation. Null means unknown.
+                              type:
+                              - array
+                              items:
+                                description: Optional record supplied by this operation. Null means unknown.
+                                type:
+                                - string
+                                - 'null'
+                        - required:
+                          - category_ranks
+                          properties:
+                            category_ranks:
+                              description: Optional category ranks supplied by this operation. Null means unknown.
+                              type:
+                              - array
+                              items:
+                                description: Optional record supplied by this operation. Null means unknown.
+                                type:
+                                - object
+                                - 'null'
+                                properties:
+                                  id:
+                                    description: Source identifier. Preserve the supplied type and exact value.
+                                    type:
+                                    - string
+                                    - 'null'
+                                  name:
+                                    description: Optional name supplied by this operation. Null means unknown.
+                                    type:
+                                    - string
+                                    - 'null'
+                                  of:
+                                    description: Optional of supplied by this operation. Null means unknown.
+                                    type:
+                                    - number
+                                    - 'null'
+                                  rank:
+                                    description: Optional rank supplied by this operation. Null means unknown.
+                                    type:
+                                    - number
+                                    - 'null'
+                                additionalProperties: true
+                        - required:
+                          - claimed
+                          properties:
+                            claimed:
+                              description: Optional claimed supplied by this operation. Null means unknown.
+                              type:
+                              - boolean
+                        - required:
+                          - closed
+                          properties:
+                            closed:
+                              description: Optional closed supplied by this operation. Null means unknown.
+                              type:
+                              - boolean
+                        - required:
+                          - domain
+                          properties:
+                            domain:
+                              description: Optional domain supplied by this operation. Null means unknown.
+                              type:
+                              - string
+                              minLength: 1
+                        - required:
+                          - id
+                          properties:
+                            id:
+                              description: Source identifier. Preserve the supplied type and exact value.
+                              type:
+                              - string
+                              minLength: 1
+                        - required:
+                          - location
+                          properties:
+                            location:
+                              description: Optional location supplied by this operation. Null means unknown.
+                              type:
+                              - string
+                              minLength: 1
+                        - required:
+                          - logo
+                          properties:
+                            logo:
+                              description: Optional logo supplied by this operation. Null means unknown.
+                              type:
+                              - string
+                              minLength: 1
+                        - required:
+                          - name
+                          properties:
+                            name:
+                              description: Optional name supplied by this operation. Null means unknown.
+                              type:
+                              - string
+                              minLength: 1
+                        - required:
+                          - negative_review_count
+                          properties:
+                            negative_review_count:
+                              description: Optional negative review count supplied by this operation. Null means unknown.
+                              type:
+                              - number
+                        - required:
+                          - rating
+                          properties:
+                            rating:
+                              description: Source rating; read its accompanying scale and vote count.
+                              type:
+                              - object
+                              properties:
+                                max:
+                                  description: Optional max supplied by this operation. Null means unknown.
+                                  type:
+                                  - number
+                                  - 'null'
+                                value:
+                                  description: Optional value supplied by this operation. Null means unknown.
+                                  type:
+                                  - number
+                                  - 'null'
+                                votes:
+                                  description: Optional votes supplied by this operation. Null means unknown.
+                                  type:
+                                  - number
+                                  - 'null'
+                              additionalProperties: true
+                        - required:
+                          - rating_distribution
+                          properties:
+                            rating_distribution:
+                              description: Optional rating distribution supplied by this operation. Null means unknown.
+                              type:
+                              - object
+                              properties: {}
+                              additionalProperties: true
+                        - required:
+                          - reply_to_negative_review_percent
+                          properties:
+                            reply_to_negative_review_percent:
+                              description: Optional reply to negative review percent supplied by this operation. Null means unknown.
+                              type:
+                              - number
+                        - required:
+                          - reviews_count
+                          properties:
+                            reviews_count:
+                              description: Optional reviews count supplied by this operation. Null means unknown.
+                              type:
+                              - number
+                        - required:
+                          - trust_score
+                          properties:
+                            trust_score:
+                              description: Optional trust score supplied by this operation. Null means unknown.
+                              type:
+                              - number
+                        - required:
+                          - url
+                          properties:
+                            url:
+                              description: Original source URL when supplied.
+                              type:
+                              - string
+                              minLength: 1
+                        - required:
+                          - verified
+                          properties:
+                            verified:
+                              description: Optional verified supplied by this operation. Null means unknown.
+                              type:
+                              - boolean
+                        - required:
+                          - website
+                          properties:
+                            website:
+                              description: Optional website supplied by this operation. Null means unknown.
+                              type:
+                              - string
+                              minLength: 1
+                      x-contract-version: '2026-09-22'
+                      x-validation-scope: Required success payload structure; optional fields and source completeness remain separate.
+                      examples:
+                      - about: example
+                        address: example
+                        asking_for_reviews: false
+                        average_days_to_reply: 0
+                        categories:
+                        - example
+                        category_ranks:
+                        - id: example
+                          name: example
+                          of: 0
+                          rank: 0
+                        claimed: false
+                        closed: false
+                        domain: example
+                        id: example
+                        location: example
+                        logo: example
+                        name: example
+                        negative_review_count: 0
+                        platform: example
+                        rating:
+                          max: 0
+                          value: 0
+                          votes: 0
+                        rating_distribution: {}
+                        reply_to_negative_review_percent: 0
+                        reviews_count: 0
+                        trust_score: 0
+                        url: https://example.com/example
+                        verified: false
+                        website: example
+        default:
+          description: The error envelope — the same shape for every non-2xx status.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      x-credits: 7
+      x-production-available: true
+      x-capacity:
+        status: not_assessed
+        message: Capacity is workload-dependent; configured routes do not establish sustained throughput or an availability guarantee.
+      x-availability-scope: Structural check of the effective registered chain, production permission, adapter, configured cost and quality floor without request parameters. True is not a live-health, credential, quota, subscription-entitlement, complete-data or deployment-exposure guarantee. False means no structurally eligible candidate; null means metadata could not establish availability. Composite child capability still depends on its component routes.
+      x-live-proven: true
+  /v1/trustpilot/consumer:
+    get:
+      operationId: trustpilot_consumer
+      tags:
+      - Trustpilot
+      summary: Trustpilot reviewer
+      description: 'A Trustpilot reviewer''s public profile: country, verification, review, like and read counts. Costs 3 credits per successful live response.'
+      parameters:
+      - name: id
+        in: query
+        required: true
+        schema:
+          type: string
+        example: 57320f590000ff000a1ee003
+        description: Reviewer id from a review
+      - name: locale
+        in: query
+        required: false
+        schema:
+          type: string
+        example: en-GB
+        description: Site locale
+      - name: dry_run
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - '1'
+          - '0'
+          - 'true'
+          - 'false'
+        example: '1'
+        description: 'Read a zero-credit estimate without fetching sources, running AI, or reserving credits. Cache status is a snapshot, not a guarantee at execution. Accepted values: 1, 0, true, false. Case, spaces, hyphens and underscores are interchangeable.'
+      - name: X-Max-Credits
+        in: header
+        required: false
+        schema:
+          type: integer
+          minimum: 0
+          maximum: 9007199254740991
+        example: 5
+        description: Optional credit reservation ceiling for this individual request. Send a non-negative integer in decimal digits. Live execution checks the required reservation after resolving free cache hits or buffered continuation, before charging or calling a supplier. A higher reservation returns HTTP 422 INVALID_PARAMETERS with reason max_credits_exceeded and charges nothing. Invalid header values also return 422. Zero permits only a zero-credit reservation; omitting the header uses normal pricing. dry_run remains a free preview. This does not cap later requests, batches or scheduled runs.
+      security:
+      - ApiKeyHeader: []
+      - BearerKey: []
+      responses:
+        '200':
+          description: 'The common success envelope; `data` is endpoint-specific. Many lists use items/count/cursor; bundles use named collections and their documented continuation metadata. HTTP 200 can contain a partial bundle: inspect complete, partial and legs where supplied.'
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/Success'
+                - type: object
+                  properties:
+                    data:
+                      $schema: https://json-schema.org/draft/2020-12/schema
+                      $id: https://www.monocrawl.com/schemas/trustpilot/consumer.json
+                      title: trustpilot/consumer data fields
+                      description: Optional data supplied by this operation. Null means unknown.
+                      type: object
+                      properties:
+                        country:
+                          description: Optional country supplied by this operation. Null means unknown.
+                          type:
+                          - string
+                          - 'null'
+                        id:
+                          description: Source identifier. Preserve the supplied type and exact value.
+                          type:
+                          - string
+                          - 'null'
+                        like_count:
+                          description: Optional like count supplied by this operation. Null means unknown.
+                          type:
+                          - number
+                          - 'null'
+                        name:
+                          description: Optional name supplied by this operation. Null means unknown.
+                          type:
+                          - string
+                          - 'null'
+                        photo:
+                          description: Optional photo supplied by this operation. Null means unknown.
+                          type:
+                          - string
+                          - 'null'
+                        platform:
+                          description: Optional platform supplied by this operation. Null means unknown.
+                          type:
+                          - string
+                          - 'null'
+                        read_count:
+                          description: Optional read count supplied by this operation. Null means unknown.
+                          type:
+                          - number
+                          - 'null'
+                        review_count:
+                          description: Optional review count supplied by this operation. Null means unknown.
+                          type:
+                          - number
+                          - 'null'
+                        url:
+                          description: Original source URL when supplied.
+                          type:
+                          - string
+                          - 'null'
+                        verified:
+                          description: Optional verified supplied by this operation. Null means unknown.
+                          type:
+                          - boolean
+                          - 'null'
+                      additionalProperties: true
+                      allOf:
+                      - anyOf:
+                        - required:
+                          - country
+                          properties:
+                            country:
+                              description: Optional country supplied by this operation. Null means unknown.
+                              type:
+                              - string
+                              minLength: 1
+                        - required:
+                          - id
+                          properties:
+                            id:
+                              description: Source identifier. Preserve the supplied type and exact value.
+                              type:
+                              - string
+                              minLength: 1
+                        - required:
+                          - like_count
+                          properties:
+                            like_count:
+                              description: Optional like count supplied by this operation. Null means unknown.
+                              type:
+                              - number
+                        - required:
+                          - name
+                          properties:
+                            name:
+                              description: Optional name supplied by this operation. Null means unknown.
+                              type:
+                              - string
+                              minLength: 1
+                        - required:
+                          - photo
+                          properties:
+                            photo:
+                              description: Optional photo supplied by this operation. Null means unknown.
+                              type:
+                              - string
+                              minLength: 1
+                        - required:
+                          - read_count
+                          properties:
+                            read_count:
+                              description: Optional read count supplied by this operation. Null means unknown.
+                              type:
+                              - number
+                        - required:
+                          - review_count
+                          properties:
+                            review_count:
+                              description: Optional review count supplied by this operation. Null means unknown.
+                              type:
+                              - number
+                        - required:
+                          - url
+                          properties:
+                            url:
+                              description: Original source URL when supplied.
+                              type:
+                              - string
+                              minLength: 1
+                        - required:
+                          - verified
+                          properties:
+                            verified:
+                              description: Optional verified supplied by this operation. Null means unknown.
+                              type:
+                              - boolean
+                      x-contract-version: '2026-09-22'
+                      x-validation-scope: Required success payload structure; optional fields and source completeness remain separate.
+                      examples:
+                      - country: example
+                        id: example
+                        like_count: 0
+                        name: example
+                        photo: example
+                        platform: example
+                        read_count: 0
+                        review_count: 0
+                        url: https://example.com/example
+                        verified: false
+        default:
+          description: The error envelope — the same shape for every non-2xx status.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      x-credits: 3
+      x-production-available: true
+      x-capacity:
+        status: not_assessed
+        message: Capacity is workload-dependent; configured routes do not establish sustained throughput or an availability guarantee.
+      x-availability-scope: Structural check of the effective registered chain, production permission, adapter, configured cost and quality floor without request parameters. True is not a live-health, credential, quota, subscription-entitlement, complete-data or deployment-exposure guarantee. False means no structurally eligible candidate; null means metadata could not establish availability. Composite child capability still depends on its component routes.
+      x-live-proven: true
+  /v1/trustpilot/consumer-reviews:
+    get:
+      operationId: trustpilot_consumer_reviews
+      tags:
+      - Trustpilot
+      summary: Trustpilot reviewer reviews
+      description: Every review one Trustpilot reviewer has written, with the company each one is about. Costs 3 credits per successful live response.
+      parameters:
+      - name: id
+        in: query
+        required: true
+        schema:
+          type: string
+        example: 57320f590000ff000a1ee003
+        description: Reviewer id from a review
+      - name: page
+        in: query
+        required: false
+        schema:
+          type: string
+        example: '1'
+        description: Page of 20
+      - name: locale
+        in: query
+        required: false
+        schema:
+          type: string
+        example: en-GB
+        description: Site locale
+      - name: dry_run
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - '1'
+          - '0'
+          - 'true'
+          - 'false'
+        example: '1'
+        description: 'Read a zero-credit estimate without fetching sources, running AI, or reserving credits. Cache status is a snapshot, not a guarantee at execution. Accepted values: 1, 0, true, false. Case, spaces, hyphens and underscores are interchangeable.'
+      - name: judgments
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - 'on'
+          - 'off'
+        example: 'on'
+        description: 'Add bounded AI labels to eligible returned records (default on). off preserves the original data shape. Unclassified records remain present; labels depend on evidence, time, capacity and the existing request budget. No label surcharge. Accepted values: on, off. Case, spaces, hyphens and underscores are interchangeable.'
+      - name: label
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - default
+          - none
+        example: none
+        description: 'Set none to disable labels; default enables the endpoint’s label set. Equivalent to judgments=off. Accepted values: default, none. Case, spaces, hyphens and underscores are interchangeable.'
+      - name: label_evidence
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - '1'
+          - '0'
+          - 'true'
+          - 'false'
+        example: '1'
+        description: 'Include exact supporting sentences and zero-based sentence indexes when a label has validated evidence. No extra charge or change to decisions. Accepted values: 1, 0, true, false. Case, spaces, hyphens and underscores are interchangeable.'
+      - name: exclude
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - engagement_bait
+        example: engagement_bait
+        description: 'Optionally remove confidently labelled engagement bait. Uncertain and unclassified records stay; removed IDs and an owner-bound recall reference are returned. Accepted values: engagement_bait. Case, spaces, hyphens and underscores are interchangeable.'
+      - name: fit
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - goal
+        example: goal
+        description: 'Use goal to replace confidently irrelevant records with recall stubs. Keeps first, last, relevant and uncertain records; preserves order. Full evidence is stored for 24 hours when available. Accepted values: goal. Case, spaces, hyphens and underscores are interchangeable.'
+      - name: goal
+        in: query
+        required: false
+        schema:
+          type: string
+        example: Find concrete product complaints
+        description: 'Required with fit=goal: describe the task in at most 600 characters. Supplied text is task context, never permission to act on posts.'
+      - name: tokens
+        in: query
+        required: false
+        schema:
+          type: string
+        example: '4000'
+        description: Optional soft response target for fit=goal, 256–32000. Safety and evidence retention take priority, so the returned result may exceed it.
+      - name: X-Max-Credits
+        in: header
+        required: false
+        schema:
+          type: integer
+          minimum: 0
+          maximum: 9007199254740991
+        example: 5
+        description: Optional credit reservation ceiling for this individual request. Send a non-negative integer in decimal digits. Live execution checks the required reservation after resolving free cache hits or buffered continuation, before charging or calling a supplier. A higher reservation returns HTTP 422 INVALID_PARAMETERS with reason max_credits_exceeded and charges nothing. Invalid header values also return 422. Zero permits only a zero-credit reservation; omitting the header uses normal pricing. dry_run remains a free preview. This does not cap later requests, batches or scheduled runs.
+      security:
+      - ApiKeyHeader: []
+      - BearerKey: []
+      responses:
+        '200':
+          description: 'The common success envelope; `data` is endpoint-specific. Many lists use items/count/cursor; bundles use named collections and their documented continuation metadata. HTTP 200 can contain a partial bundle: inspect complete, partial and legs where supplied.'
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/Success'
+                - type: object
+                  properties:
+                    data:
+                      $schema: https://json-schema.org/draft/2020-12/schema
+                      $id: https://www.monocrawl.com/schemas/trustpilot/consumer-reviews.json
+                      title: trustpilot/consumer-reviews data fields
+                      description: Optional data supplied by this operation. Null means unknown.
+                      type: object
+                      properties:
+                        consumer:
+                          description: Optional consumer supplied by this operation. Null means unknown.
+                          type:
+                          - object
+                          - 'null'
+                          properties:
+                            country:
+                              description: Optional country supplied by this operation. Null means unknown.
+                              type:
+                              - string
+                              - 'null'
+                            id:
+                              description: Source identifier. Preserve the supplied type and exact value.
+                              type:
+                              - string
+                              - 'null'
+                            like_count:
+                              description: Optional like count supplied by this operation. Null means unknown.
+                              type:
+                              - number
+                              - 'null'
+                            name:
+                              description: Optional name supplied by this operation. Null means unknown.
+                              type:
+                              - string
+                              - 'null'
+                            photo:
+                              description: Optional photo supplied by this operation. Null means unknown.
+                              type:
+                              - string
+                              - 'null'
+                            platform:
+                              description: Optional platform supplied by this operation. Null means unknown.
+                              type:
+                              - string
+                              - 'null'
+                            read_count:
+                              description: Optional read count supplied by this operation. Null means unknown.
+                              type:
+                              - number
+                              - 'null'
+                            review_count:
+                              description: Optional review count supplied by this operation. Null means unknown.
+                              type:
+                              - number
+                              - 'null'
+                            url:
+                              description: Original source URL when supplied.
+                              type:
+                              - string
+                              - 'null'
+                            verified:
+                              description: Optional verified supplied by this operation. Null means unknown.
+                              type:
+                              - boolean
+                              - 'null'
+                          additionalProperties: true
+                        count:
+                          description: Number of records in this response, not lifetime or total matches.
+                          type:
+                          - number
+                          - 'null'
+                        has_more:
+                          description: Source continuation indicator; null means unknown.
+                          type:
+                          - boolean
+                          - 'null'
+                        items:
+                          description: Returned records. Source coverage and completeness vary.
+                          type:
+                          - array
+                          items:
+                            description: Optional record supplied by this operation. Null means unknown.
+                            type: object
+                            properties:
+                              company:
+                                description: Optional company supplied by this operation. Null means unknown.
+                                type:
+                                - object
+                                - 'null'
+                                properties:
+                                  domain:
+                                    description: Optional domain supplied by this operation. Null means unknown.
+                                    type:
+                                    - string
+                                    - 'null'
+                                  id:
+                                    description: Source identifier. Preserve the supplied type and exact value.
+                                    type:
+                                    - string
+                                    - 'null'
+                                  name:
+                                    description: Optional name supplied by this operation. Null means unknown.
+                                    type:
+                                    - string
+                                    - 'null'
+                                additionalProperties: true
+                              consumer_id:
+                                description: Optional consumer id supplied by this operation. Null means unknown.
+                                type:
+                                - string
+                                - 'null'
+                              consumer_review_count:
+                                description: Optional consumer review count supplied by this operation. Null means unknown.
+                                type:
+                                - number
+                                - 'null'
+                              experienced_at:
+                                description: Optional experienced at supplied by this operation. Null means unknown.
+                                type:
+                                - string
+                                - 'null'
+                              helpful_votes:
+                                description: Optional helpful votes supplied by this operation. Null means unknown.
+                                type:
+                                - number
+                                - 'null'
+                              id:
+                                description: Source identifier. Preserve the supplied type and exact value.
+                                type:
+                                - string
+                                - 'null'
+                              images:
+                                description: Source array was empty in the reviewed captures; item fields remain unspecified.
+                                type:
+                                - array
+                                - 'null'
+                                items: {}
+                              language:
+                                description: Optional language supplied by this operation. Null means unknown.
+                                type:
+                                - string
+                                - 'null'
+                              platform:
+                                description: Optional platform supplied by this operation. Null means unknown.
+                                type:
+                                - string
+                                - 'null'
+                              posted_at:
+                                description: Optional posted at supplied by this operation. Null means unknown.
+                                type:
+                                - string
+                                - 'null'
+                              rating:
+                                description: Source rating; read its accompanying scale and vote count.
+                                type:
+                                - object
+                                - 'null'
+                                properties:
+                                  max:
+                                    description: Optional max supplied by this operation. Null means unknown.
+                                    type:
+                                    - number
+                                    - 'null'
+                                  value:
+                                    description: Optional value supplied by this operation. Null means unknown.
+                                    type:
+                                    - number
+                                    - 'null'
+                                additionalProperties: true
+                              reviewer:
+                                description: Optional reviewer supplied by this operation. Null means unknown.
+                                type:
+                                - object
+                                - 'null'
+                                properties:
+                                  location:
+                                    description: Optional location supplied by this operation. Null means unknown.
+                                    type:
+                                    - string
+                                    - 'null'
+                                  name:
+                                    description: Optional name supplied by this operation. Null means unknown.
+                                    type:
+                                    - string
+                                    - 'null'
+                                  url:
+                                    description: Original source URL when supplied.
+                                    type:
+                                    - string
+                                    - 'null'
+                                additionalProperties: true
+                              source:
+                                description: Optional source supplied by this operation. Null means unknown.
+                                type:
+                                - string
+                                - 'null'
+                              text:
+                                description: Source text when supplied.
+                                type:
+                                - string
+                                - 'null'
+                              title:
+                                description: Source title when supplied.
+                                type:
+                                - string
+                                - 'null'
+                              url:
+                                description: Original source URL when supplied.
+                                type:
+                                - string
+                                - 'null'
+                              verified:
+                                description: Optional verified supplied by this operation. Null means unknown.
+                                type:
+                                - boolean
+                                - 'null'
+                            additionalProperties: true
+                            allOf:
+                            - anyOf:
+                              - required:
+                                - company
+                                properties:
+                                  company:
+                                    description: Optional company supplied by this operation. Null means unknown.
+                                    type:
+                                    - object
+                                    properties:
+                                      domain:
+                                        description: Optional domain supplied by this operation. Null means unknown.
+                                        type:
+                                        - string
+                                        - 'null'
+                                      id:
+                                        description: Source identifier. Preserve the supplied type and exact value.
+                                        type:
+                                        - string
+                                        - 'null'
+                                      name:
+                                        description: Optional name supplied by this operation. Null means unknown.
+                                        type:
+                                        - string
+                                        - 'null'
+                                    additionalProperties: true
+                              - required:
+                                - consumer_id
+                                properties:
+                                  consumer_id:
+                                    description: Optional consumer id supplied by this operation. Null means unknown.
+                                    type:
+                                    - string
+                                    minLength: 1
+                              - required:
+                                - consumer_review_count
+                                properties:
+                                  consumer_review_count:
+                                    description: Optional consumer review count supplied by this operation. Null means unknown.
+                                    type:
+                                    - number
+                              - required:
+                                - experienced_at
+                                properties:
+                                  experienced_at:
+                                    description: Optional experienced at supplied by this operation. Null means unknown.
+                                    type:
+                                    - string
+                                    minLength: 1
+                              - required:
+                                - helpful_votes
+                                properties:
+                                  helpful_votes:
+                                    description: Optional helpful votes supplied by this operation. Null means unknown.
+                                    type:
+                                    - number
+                              - required:
+                                - id
+                                properties:
+                                  id:
+                                    description: Source identifier. Preserve the supplied type and exact value.
+                                    type:
+                                    - string
+                                    minLength: 1
+                              - required:
+                                - images
+                                properties:
+                                  images:
+                                    description: Source array was empty in the reviewed captures; item fields remain unspecified.
+                                    type:
+                                    - array
+                                    items: {}
+                              - required:
+                                - language
+                                properties:
+                                  language:
+                                    description: Optional language supplied by this operation. Null means unknown.
+                                    type:
+                                    - string
+                                    minLength: 1
+                              - required:
+                                - posted_at
+                                properties:
+                                  posted_at:
+                                    description: Optional posted at supplied by this operation. Null means unknown.
+                                    type:
+                                    - string
+                                    minLength: 1
+                              - required:
+                                - rating
+                                properties:
+                                  rating:
+                                    description: Source rating; read its accompanying scale and vote count.
+                                    type:
+                                    - object
+                                    properties:
+                                      max:
+                                        description: Optional max supplied by this operation. Null means unknown.
+                                        type:
+                                        - number
+                                        - 'null'
+                                      value:
+                                        description: Optional value supplied by this operation. Null means unknown.
+                                        type:
+                                        - number
+                                        - 'null'
+                                    additionalProperties: true
+                              - required:
+                                - reviewer
+                                properties:
+                                  reviewer:
+                                    description: Optional reviewer supplied by this operation. Null means unknown.
+                                    type:
+                                    - object
+                                    properties:
+                                      location:
+                                        description: Optional location supplied by this operation. Null means unknown.
+                                        type:
+                                        - string
+                                        - 'null'
+                                      name:
+                                        description: Optional name supplied by this operation. Null means unknown.
+                                        type:
+                                        - string
+                                        - 'null'
+                                      url:
+                                        description: Original source URL when supplied.
+                                        type:
+                                        - string
+                                        - 'null'
+                                    additionalProperties: true
+                              - required:
+                                - source
+                                properties:
+                                  source:
+                                    description: Optional source supplied by this operation. Null means unknown.
+                                    type:
+                                    - string
+                                    minLength: 1
+                              - required:
+                                - text
+                                properties:
+                                  text:
+                                    description: Source text when supplied.
+                                    type:
+                                    - string
+                                    minLength: 1
+                              - required:
+                                - title
+                                properties:
+                                  title:
+                                    description: Source title when supplied.
+                                    type:
+                                    - string
+                                    minLength: 1
+                              - required:
+                                - url
+                                properties:
+                                  url:
+                                    description: Original source URL when supplied.
+                                    type:
+                                    - string
+                                    minLength: 1
+                              - required:
+                                - verified
+                                properties:
+                                  verified:
+                                    description: Optional verified supplied by this operation. Null means unknown.
+                                    type:
+                                    - boolean
+                        page:
+                          description: Optional page supplied by this operation. Null means unknown.
+                          type:
+                          - number
+                          - 'null'
+                      additionalProperties: true
+                      required:
+                      - items
+                      x-contract-version: '2026-09-22'
+                      x-validation-scope: Required success payload structure; optional fields and source completeness remain separate.
+                      examples:
+                      - consumer:
+                          country: example
+                          id: example
+                          like_count: 0
+                          name: example
+                          photo: example
+                          platform: example
+                          read_count: 0
+                          review_count: 0
+                          url: https://example.com/example
+                          verified: false
+                        count: 0
+                        has_more: false
+                        items:
+                        - company:
+                            domain: example
+                            id: example
+                            name: example
+                          consumer_id: example
+                          consumer_review_count: 0
+                          experienced_at: '2026-09-01T12:00:00Z'
+                          helpful_votes: 0
+                          id: example
+                          images: []
+                          language: example
+                          platform: example
+                          posted_at: '2026-09-01T12:00:00Z'
+                          rating:
+                            max: 0
+                            value: 0
+                          reviewer:
+                            location: example
+                            name: example
+                            url: https://example.com/example
+                          source: example
+                          text: example
+                          title: example
+                          url: https://example.com/example
+                          verified: false
+                        page: 0
+        default:
+          description: The error envelope — the same shape for every non-2xx status.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      x-credits: 3
+      x-production-available: true
+      x-capacity:
+        status: not_assessed
+        message: Capacity is workload-dependent; configured routes do not establish sustained throughput or an availability guarantee.
+      x-availability-scope: Structural check of the effective registered chain, production permission, adapter, configured cost and quality floor without request parameters. True is not a live-health, credential, quota, subscription-entitlement, complete-data or deployment-exposure guarantee. False means no structurally eligible candidate; null means metadata could not establish availability. Composite child capability still depends on its component routes.
+      x-live-proven: true
+  /v1/trustpilot/reviews:
+    get:
+      operationId: trustpilot_reviews
+      tags:
+      - Trustpilot
+      summary: Trustpilot reviews
+      description: Reviews of a company on Trustpilot with rating, title, text, date, reviewer location and any company reply. Queued task. Costs 5 credits per successful live response.
+      parameters:
+      - name: domain
+        in: query
+        required: true
+        schema:
+          type: string
+        example: monzo.com
+        description: The company's domain
+      - name: sort
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - recency
+          - relevance
+        example: recency
+        description: 'recency or relevance Accepted values: recency, relevance. Case, spaces, hyphens and underscores are interchangeable.'
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: string
+        example: '20'
+        description: Reviews, up to 100
+      - name: dry_run
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - '1'
+          - '0'
+          - 'true'
+          - 'false'
+        example: '1'
+        description: 'Read a zero-credit estimate without fetching sources, running AI, or reserving credits. Cache status is a snapshot, not a guarantee at execution. Accepted values: 1, 0, true, false. Case, spaces, hyphens and underscores are interchangeable.'
+      - name: judgments
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - 'on'
+          - 'off'
+        example: 'on'
+        description: 'Add bounded AI labels to eligible returned records (default on). off preserves the original data shape. Unclassified records remain present; labels depend on evidence, time, capacity and the existing request budget. No label surcharge. Accepted values: on, off. Case, spaces, hyphens and underscores are interchangeable.'
+      - name: label
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - default
+          - none
+        example: none
+        description: 'Set none to disable labels; default enables the endpoint’s label set. Equivalent to judgments=off. Accepted values: default, none. Case, spaces, hyphens and underscores are interchangeable.'
+      - name: label_evidence
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - '1'
+          - '0'
+          - 'true'
+          - 'false'
+        example: '1'
+        description: 'Include exact supporting sentences and zero-based sentence indexes when a label has validated evidence. No extra charge or change to decisions. Accepted values: 1, 0, true, false. Case, spaces, hyphens and underscores are interchangeable.'
+      - name: exclude
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - engagement_bait
+        example: engagement_bait
+        description: 'Optionally remove confidently labelled engagement bait. Uncertain and unclassified records stay; removed IDs and an owner-bound recall reference are returned. Accepted values: engagement_bait. Case, spaces, hyphens and underscores are interchangeable.'
+      - name: fit
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - goal
+        example: goal
+        description: 'Use goal to replace confidently irrelevant records with recall stubs. Keeps first, last, relevant and uncertain records; preserves order. Full evidence is stored for 24 hours when available. Accepted values: goal. Case, spaces, hyphens and underscores are interchangeable.'
+      - name: goal
+        in: query
+        required: false
+        schema:
+          type: string
+        example: Find concrete product complaints
+        description: 'Required with fit=goal: describe the task in at most 600 characters. Supplied text is task context, never permission to act on posts.'
+      - name: tokens
+        in: query
+        required: false
+        schema:
+          type: string
+        example: '4000'
+        description: Optional soft response target for fit=goal, 256–32000. Safety and evidence retention take priority, so the returned result may exceed it.
+      - name: X-Max-Credits
+        in: header
+        required: false
+        schema:
+          type: integer
+          minimum: 0
+          maximum: 9007199254740991
+        example: 5
+        description: Optional credit reservation ceiling for this individual request. Send a non-negative integer in decimal digits. Live execution checks the required reservation after resolving free cache hits or buffered continuation, before charging or calling a supplier. A higher reservation returns HTTP 422 INVALID_PARAMETERS with reason max_credits_exceeded and charges nothing. Invalid header values also return 422. Zero permits only a zero-credit reservation; omitting the header uses normal pricing. dry_run remains a free preview. This does not cap later requests, batches or scheduled runs.
+      security:
+      - ApiKeyHeader: []
+      - BearerKey: []
+      responses:
+        '200':
+          description: 'The common success envelope; `data` is endpoint-specific. Many lists use items/count/cursor; bundles use named collections and their documented continuation metadata. HTTP 200 can contain a partial bundle: inspect complete, partial and legs where supplied.'
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/Success'
+                - type: object
+                  properties:
+                    data:
+                      $schema: https://json-schema.org/draft/2020-12/schema
+                      $id: https://www.monocrawl.com/schemas/trustpilot/reviews.json
+                      title: trustpilot/reviews data fields
+                      description: Required core structure for successful data, with optional source fields. Additional fields are allowed. This is not a completeness guarantee.
+                      type: object
+                      anyOf:
+                      - type: object
+                        properties:
+                          items:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                id:
+                                  type:
+                                  - string
+                                  - 'null'
+                                  description: Source ID or validated ID extracted from the canonical review URL.
+                                url:
+                                  type:
+                                  - string
+                                  - 'null'
+                                  description: Original source URL when supplied.
+                                title:
+                                  type:
+                                  - string
+                                  - 'null'
+                                  description: Review title.
+                                text:
+                                  type:
+                                  - string
+                                  - 'null'
+                                  description: Review text.
+                                rating:
+                                  type:
+                                  - object
+                                  - 'null'
+                                  properties:
+                                    value:
+                                      type:
+                                      - number
+                                      - 'null'
+                                      description: Source star-rating value.
+                                    votes:
+                                      type:
+                                      - number
+                                      - 'null'
+                                      description: Ratings reported by the source; null or absent is unknown, not zero.
+                                    max:
+                                      type:
+                                      - number
+                                      - 'null'
+                                      description: Maximum of the rating scale, normally 5.
+                                  additionalProperties: true
+                                posted_at:
+                                  type:
+                                  - string
+                                  - 'null'
+                                  description: Source review timestamp, publication date or relative age text; not the API retrieval time.
+                              additionalProperties: true
+                              allOf:
+                              - anyOf:
+                                - required:
+                                  - id
+                                  properties:
+                                    id:
+                                      type:
+                                      - string
+                                      description: Source ID or validated ID extracted from the canonical review URL.
+                                      minLength: 1
+                                - required:
+                                  - url
+                                  properties:
+                                    url:
+                                      type:
+                                      - string
+                                      description: Original source URL when supplied.
+                                      minLength: 1
+                                - required:
+                                  - title
+                                  properties:
+                                    title:
+                                      type:
+                                      - string
+                                      description: Review title.
+                                      minLength: 1
+                                - required:
+                                  - text
+                                  properties:
+                                    text:
+                                      type:
+                                      - string
+                                      description: Review text.
+                                      minLength: 1
+                                - required:
+                                  - rating
+                                  properties:
+                                    rating:
+                                      type:
+                                      - object
+                                      properties:
+                                        value:
+                                          type:
+                                          - number
+                                          - 'null'
+                                          description: Source star-rating value.
+                                        votes:
+                                          type:
+                                          - number
+                                          - 'null'
+                                          description: Ratings reported by the source; null or absent is unknown, not zero.
+                                        max:
+                                          type:
+                                          - number
+                                          - 'null'
+                                          description: Maximum of the rating scale, normally 5.
+                                      additionalProperties: true
+                                - required:
+                                  - posted_at
+                                  properties:
+                                    posted_at:
+                                      type:
+                                      - string
+                                      description: Source review timestamp, publication date or relative age text; not the API retrieval time.
+                                      minLength: 1
+                            description: Records in this response page.
+                          count:
+                            type:
+                            - number
+                            - 'null'
+                            description: Returned row count when supplied; not the full source total.
+                          cursor:
+                            type:
+                            - string
+                            - 'null'
+                            description: Opaque next-page token. A missing token does not prove full history was retrieved.
+                          has_more:
+                            type:
+                            - boolean
+                            - 'null'
+                            description: Source continuation indicator; null means unknown.
+                          _warnings:
+                            type: array
+                            items:
+                              type: string
+                            description: Collection limitations or component warnings. Read before interpreting coverage.
+                        additionalProperties: true
+                        required:
+                        - items
+                        x-contract-version: '2026-09-22'
+                        x-validation-scope: Required success payload structure; optional fields and source completeness remain separate.
+                      - type: object
+                        required:
+                        - task_id
+                        - status
+                        - status_url
+                        - retrieval_credits
+                        properties:
+                          task_id:
+                            type: string
+                            minLength: 1
+                          status:
+                            enum:
+                            - queued
+                            - running
+                            - completed
+                            - failed
+                            - cancelled
+                          status_url:
+                            type: string
+                            pattern: ^/v1/web/jobs/job_
+                          result_url:
+                            type: string
+                            pattern: ^/v1/web/jobs/job_
+                          retrieval_credits:
+                            const: 0
+                      examples:
+                      - items:
+                        - id: 68a1b2c3d4e5f67890123456
+                          url: https://www.trustpilot.com/reviews/68a1b2c3d4e5f67890123456
+                          text: Illustrative review.
+                        cursor: null
+                        has_more: null
+        '202':
+          description: Accepted durable task. Poll the owner-scoped data.status_url for status and the completed result at zero retrieval credits. The task is charged once; terminal failures are refunded.
+          headers:
+            Location:
+              schema:
+                type: string
+              description: The owner-scoped status/result URL.
+            Retry-After:
+              schema:
+                type: integer
+              description: Suggested seconds before polling.
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/Success'
+                - type: object
+                  properties:
+                    data:
+                      type: object
+                      required:
+                      - task_id
+                      - status
+                      - status_url
+                      - retrieval_credits
+                      properties:
+                        task_id:
+                          type: string
+                          minLength: 1
+                        status:
+                          enum:
+                          - queued
+                          - running
+                          - completed
+                          - failed
+                          - cancelled
+                        status_url:
+                          type: string
+                          pattern: ^/v1/web/jobs/job_
+                        result_url:
+                          type: string
+                          pattern: ^/v1/web/jobs/job_
+                        retrieval_credits:
+                          const: 0
+        default:
+          description: The error envelope — the same shape for every non-2xx status.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      x-credits: 5
+      x-production-available: true
+      x-capacity:
+        status: not_assessed
+        message: Capacity is workload-dependent; configured routes do not establish sustained throughput or an availability guarantee.
+      x-availability-scope: Structural check of the effective registered chain, production permission, adapter, configured cost and quality floor without request parameters. True is not a live-health, credential, quota, subscription-entitlement, complete-data or deployment-exposure guarantee. False means no structurally eligible candidate; null means metadata could not establish availability. Composite child capability still depends on its component routes.
+      x-live-proven: true
+  /v1/trustpilot/search:
+    get:
+      operationId: trustpilot_search
+      tags:
+      - Trustpilot
+      summary: Trustpilot business search
+      description: Businesses on Trustpilot matching a query with domain, rating, review count and categories. Queued task. Costs 5 credits per successful live response.
+      parameters:
+      - name: query
+        in: query
+        required: true
+        schema:
+          type: string
+        example: monzo
+        description: Business name or keywords
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: string
+        example: '20'
+        description: Results, up to 100
+      - name: dry_run
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - '1'
+          - '0'
+          - 'true'
+          - 'false'
+        example: '1'
+        description: 'Read a zero-credit estimate without fetching sources, running AI, or reserving credits. Cache status is a snapshot, not a guarantee at execution. Accepted values: 1, 0, true, false. Case, spaces, hyphens and underscores are interchangeable.'
+      - name: X-Max-Credits
+        in: header
+        required: false
+        schema:
+          type: integer
+          minimum: 0
+          maximum: 9007199254740991
+        example: 5
+        description: Optional credit reservation ceiling for this individual request. Send a non-negative integer in decimal digits. Live execution checks the required reservation after resolving free cache hits or buffered continuation, before charging or calling a supplier. A higher reservation returns HTTP 422 INVALID_PARAMETERS with reason max_credits_exceeded and charges nothing. Invalid header values also return 422. Zero permits only a zero-credit reservation; omitting the header uses normal pricing. dry_run remains a free preview. This does not cap later requests, batches or scheduled runs.
+      security:
+      - ApiKeyHeader: []
+      - BearerKey: []
+      responses:
+        '200':
+          description: 'The common success envelope; `data` is endpoint-specific. Many lists use items/count/cursor; bundles use named collections and their documented continuation metadata. HTTP 200 can contain a partial bundle: inspect complete, partial and legs where supplied.'
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/Success'
+                - type: object
+                  properties:
+                    data:
+                      $schema: https://json-schema.org/draft/2020-12/schema
+                      $id: https://www.monocrawl.com/schemas/trustpilot/search.json
+                      title: trustpilot/search data fields
+                      description: Optional data supplied by this operation. Null means unknown.
+                      type: object
+                      properties:
+                        count:
+                          description: Number of records in this response, not lifetime or total matches.
+                          type:
+                          - number
+                          - 'null'
+                        has_more:
+                          description: Source continuation indicator; null means unknown.
+                          type:
+                          - boolean
+                          - 'null'
+                        items:
+                          description: Returned records. Source coverage and completeness vary.
+                          type:
+                          - array
+                          items:
+                            description: Optional record supplied by this operation. Null means unknown.
+                            type: object
+                            properties:
+                              categories:
+                                description: Source array was empty in the reviewed captures; item fields remain unspecified.
+                                type:
+                                - array
+                                - 'null'
+                                items: {}
+                              domain:
+                                description: Optional domain supplied by this operation. Null means unknown.
+                                type:
+                                - string
+                                - 'null'
+                              name:
+                                description: Optional name supplied by this operation. Null means unknown.
+                                type:
+                                - string
+                                - 'null'
+                              platform:
+                                description: Optional platform supplied by this operation. Null means unknown.
+                                type:
+                                - string
+                                - 'null'
+                              rank:
+                                description: Optional rank supplied by this operation. Null means unknown.
+                                type:
+                                - number
+                                - 'null'
+                              rating:
+                                description: Source rating; read its accompanying scale and vote count.
+                                type:
+                                - object
+                                - 'null'
+                                properties:
+                                  max:
+                                    description: Optional max supplied by this operation. Null means unknown.
+                                    type:
+                                    - number
+                                    - 'null'
+                                  value:
+                                    description: Optional value supplied by this operation. Null means unknown.
+                                    type:
+                                    - number
+                                    - 'null'
+                                  votes:
+                                    description: Optional votes supplied by this operation. Null means unknown.
+                                    type:
+                                    - number
+                                    - 'null'
+                                additionalProperties: true
+                              reviews_count:
+                                description: Optional reviews count supplied by this operation. Null means unknown.
+                                type:
+                                - number
+                                - 'null'
+                              url:
+                                description: Original source URL when supplied.
+                                type:
+                                - string
+                                - 'null'
+                            additionalProperties: true
+                            allOf:
+                            - anyOf:
+                              - required:
+                                - categories
+                                properties:
+                                  categories:
+                                    description: Source array was empty in the reviewed captures; item fields remain unspecified.
+                                    type:
+                                    - array
+                                    items: {}
+                              - required:
+                                - domain
+                                properties:
+                                  domain:
+                                    description: Optional domain supplied by this operation. Null means unknown.
+                                    type:
+                                    - string
+                                    minLength: 1
+                              - required:
+                                - name
+                                properties:
+                                  name:
+                                    description: Optional name supplied by this operation. Null means unknown.
+                                    type:
+                                    - string
+                                    minLength: 1
+                              - required:
+                                - rank
+                                properties:
+                                  rank:
+                                    description: Optional rank supplied by this operation. Null means unknown.
+                                    type:
+                                    - number
+                              - required:
+                                - rating
+                                properties:
+                                  rating:
+                                    description: Source rating; read its accompanying scale and vote count.
+                                    type:
+                                    - object
+                                    properties:
+                                      max:
+                                        description: Optional max supplied by this operation. Null means unknown.
+                                        type:
+                                        - number
+                                        - 'null'
+                                      value:
+                                        description: Optional value supplied by this operation. Null means unknown.
+                                        type:
+                                        - number
+                                        - 'null'
+                                      votes:
+                                        description: Optional votes supplied by this operation. Null means unknown.
+                                        type:
+                                        - number
+                                        - 'null'
+                                    additionalProperties: true
+                              - required:
+                                - reviews_count
+                                properties:
+                                  reviews_count:
+                                    description: Optional reviews count supplied by this operation. Null means unknown.
+                                    type:
+                                    - number
+                              - required:
+                                - url
+                                properties:
+                                  url:
+                                    description: Original source URL when supplied.
+                                    type:
+                                    - string
+                                    minLength: 1
+                        query:
+                          description: Optional query supplied by this operation. Null means unknown.
+                          type:
+                          - string
+                          - 'null'
+                      additionalProperties: true
+                      required:
+                      - items
+                      x-contract-version: '2026-09-22'
+                      x-validation-scope: Required success payload structure; optional fields and source completeness remain separate.
+                      examples:
+                      - count: 0
+                        has_more: false
+                        items:
+                        - categories: []
+                          domain: example
+                          name: example
+                          platform: example
+                          rank: 0
+                          rating:
+                            max: 0
+                            value: 0
+                            votes: 0
+                          reviews_count: 0
+                          url: https://example.com/example
+                        query: example
+        default:
+          description: The error envelope — the same shape for every non-2xx status.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      x-credits: 5
+      x-production-available: true
+      x-capacity:
+        status: not_assessed
+        message: Capacity is workload-dependent; configured routes do not establish sustained throughput or an availability guarantee.
+      x-availability-scope: Structural check of the effective registered chain, production permission, adapter, configured cost and quality floor without request parameters. True is not a live-health, credential, quota, subscription-entitlement, complete-data or deployment-exposure guarantee. False means no structurally eligible candidate; null means metadata could not establish availability. Composite child capability still depends on its component routes.
+      x-live-proven: true
+components:
+  schemas:
+    Success:
+      type: object
+      required:
+      - success
+      - platform
+      - endpoint
+      - data
+      - credits_used
+      - credits_remaining
+      - request_id
+      properties:
+        _completeness:
+          type: object
+          description: Reported response completeness, not a guarantee of complete platform history. Missing source assertions remain unknown.
+          properties:
+            state:
+              type: string
+              enum:
+              - complete
+              - partial
+              - unknown
+            scope:
+              type: string
+            inspection_limited:
+              type: boolean
+        success:
+          const: true
+        platform:
+          type: string
+        endpoint:
+          type: string
+          description: The resolved path, e.g. `/v1/github/profile`.
+        data:
+          description: Amazon responses include marketplace.country and marketplace.domain (resolved request marketplace, UK by default). X profiles preserve location, bio_link and cover_url when supplied. TikTok profiles preserve commerce_user, seller, region, location and business_category when supplied; region identifies the account region rather than personal residence. TikTok comments use platform_default selection, which can change between fetches; keep the same video and options when following cursors. Amazon review variant is readable text. Facebook profiles preserve cover_url, following and created_at when supplied; likes_count and followers are distinct and follower totals may be rounded. Endpoint-specific normalized payload, not one universal post/profile schema. Many lists use items/count/cursor; a null cursor means no usable next cursor was supplied, not proof that all history was retrieved. Check has_more and warnings where present. Social full-profile bundles use posts_cursor and posts_pagination.next_params; retain all returned next parameters. YouTube channel bundles instead use recent_videos, cursor and recent_videos_pagination. Inspect complete/partial/legs where supplied for bounded or failed components. Optional model-derived fields are labelled, not source facts.
+        credits_used:
+          type: integer
+        credits_remaining:
+          type: integer
+        request_id:
+          type: string
+        cached:
+          type: boolean
+        stale:
+          type: boolean
+          description: True only for an explicitly labelled, zero-credit reference snapshot served after a temporary upstream failure.
+        age_seconds:
+          type: integer
+          minimum: 0
+          description: Age of a stale snapshot since its original retrieval; not reset by outage recovery.
+        fetched_at:
+          type: string
+          format: date-time
+          description: Original retrieval time of a stale snapshot, in UTC.
+        synthetic:
+          type: boolean
+          description: Present and true only on the explicitly requested /sandbox surface. Synthetic responses are representative and charged 0 credits; production /v1 never returns them.
+        degraded:
+          type: boolean
+          description: Reserved for sandbox compatibility. Production /v1 reports upstream failure as an error and never serves a representative fallback.
+    Error:
+      type: object
+      required:
+      - success
+      - error
+      - credits_used
+      - request_id
+      properties:
+        success:
+          const: false
+        error:
+          type: object
+          required:
+          - type
+          - message
+          - status
+          properties:
+            type:
+              type: string
+              enum:
+              - UNAUTHORIZED
+              - KEY_REVOKED
+              - KEY_LIMIT_EXCEEDED
+              - RATE_LIMITED
+              - INSUFFICIENT_CREDITS
+              - RESOURCE_NOT_FOUND
+              - INVALID_PARAMETERS
+              - TARGET_ACCESS_DENIED
+              - UPSTREAM_ERROR
+              - UPSTREAM_TIMEOUT
+              - FREE_CAPACITY_UNAVAILABLE
+              - CAPACITY_UNAVAILABLE
+              - ENDPOINT_NOT_FOUND
+              - ENDPOINT_NOT_AVAILABLE
+              - FAIR_USE_EXCEEDED
+              - INTERNAL_ERROR
+            message:
+              type: string
+            status:
+              type: integer
+            doc_url:
+              type: string
+              description: Deep link to the exact section of the errors guide for this type.
+            details:
+              type: object
+        credits_used:
+          type:
+          - integer
+          - 'null'
+          description: Confirmed net charge; null when billing is pending reconciliation. Inspect error.details.billing_status and retain request_id.
+        credits_remaining:
+          type: integer
+        request_id:
+          type: string
+  securitySchemes:
+    ApiKeyHeader:
+      type: apiKey
+      in: header
+      name: x-api-key
+      description: Your API key (`mn_…`), from the console. The recommended style.
+    BearerKey:
+      type: http
+      scheme: bearer
+      description: The same key as a Bearer token, for clients that only expose an Authorization field. Keys are never accepted in the query string — URLs leak into logs and referrers.

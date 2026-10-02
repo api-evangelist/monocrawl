@@ -1,0 +1,20 @@
+generated: '2026-10-02'
+method: derived
+generator: derive-problem-types.py
+source:
+- openapi/monocrawl-openapi.json
+format: custom
+envelope:
+  media_type: application/json
+  schema: Error
+coverage:
+  operations: 622
+  statuses_declared: 1
+problems:
+- status: default
+  title: null
+  description: The error envelope — the same shape for every non-2xx status.
+  operations: 622
+  media_types:
+  - application/json
+  schema: Error

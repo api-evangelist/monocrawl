@@ -1,0 +1,21 @@
+generated: '2026-10-02'
+method: searched
+generator: extract-docs-artifacts.py (local)
+source: https://www.monocrawl.com/docs/authentication
+sources:
+- https://www.monocrawl.com/docs/authentication
+- https://www.monocrawl.com/glossary/reddit-api-keys
+- https://www.monocrawl.com/docs/authentication.md
+- https://www.monocrawl.com/docs/quickstart
+description: Monocrawl authenticates with a single API key sent on each request. The key goes in the `x-api-key` request header. Some clients
+  can also use the same key as a Bearer token in the `Authorization` header for GET requests.
+schemes:
+- type: http-bearer
+  name: Bearer Token
+  evidence: Some clients only expose an Authorization field. The same key works there as a Bearer token on GET /v1, GET /sandbox and /mcp.
+  location: header
+  header: Authorization
+  how_to_obtain: Use the same API key as a Bearer token; obtain the key as described for the API key.
+note: There are no OAuth flows, per‑platform credentials, or token refresh mechanisms. 1 extracted row(s) were dropped because their quote was
+  not on the page.
+docs: https://www.monocrawl.com/docs/authentication

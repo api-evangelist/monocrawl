@@ -1,0 +1,6 @@
+generated: '2026-10-02'
+method: derived
+source: https://www.monocrawl.com/mcp
+deployment:
+  mode: none
+  verified: derived

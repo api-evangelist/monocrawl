@@ -1,0 +1,2178 @@
+openapi: 3.2.0
+info:
+  title: Monocrawl Utility API
+  version: 0.1.0
+  description: One key, one envelope, one credit meter across social, search, commerce and web data.
+  contact:
+    name: Monocrawl support
+    url: https://www.monocrawl.com/contact
+  termsOfService: https://www.monocrawl.com/legal/terms-and-conditions
+servers:
+- url: https://www.monocrawl.com
+security:
+- ApiKeyHeader: []
+tags:
+- name: Utility
+paths:
+  /v1/utility/capabilities:
+    get:
+      operationId: utility_capabilities
+      tags:
+      - Utility
+      summary: Parameter capabilities
+      description: Accepted parameter capabilities from the current endpoint registry, with endpoint-specific descriptions, examples, prices and availability. Free metadata read; no suppliers are called. Filter by platform, endpoint/parameter search or HTTP method. Free — costs 0 credits.
+      parameters:
+      - name: param
+        in: query
+        required: false
+        schema:
+          type: string
+        example: date_posted
+        description: One accepted parameter name, such as date_posted, fit or dry_run. Omit for the complete index.
+      - name: platform
+        in: query
+        required: false
+        schema:
+          type: string
+        example: instagram
+        description: Only capabilities used by endpoints for this platform.
+      - name: search
+        in: query
+        required: false
+        schema:
+          type: string
+        example: date_posted
+        description: Literal case-insensitive match on endpoint identity, purpose, accepted parameter names and descriptions.
+      - name: method
+        in: query
+        required: false
+        schema:
+          type: string
+        example: GET
+        description: 'HTTP method filter: GET, POST or DELETE.'
+      - name: dry_run
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - '1'
+          - '0'
+          - 'true'
+          - 'false'
+        example: '1'
+        description: 'Read a zero-credit estimate without fetching sources, running AI, or reserving credits. Cache status is a snapshot, not a guarantee at execution. Accepted values: 1, 0, true, false. Case, spaces, hyphens and underscores are interchangeable.'
+      - name: X-Max-Credits
+        in: header
+        required: false
+        schema:
+          type: integer
+          minimum: 0
+          maximum: 9007199254740991
+        example: 5
+        description: Optional credit reservation ceiling for this individual request. Send a non-negative integer in decimal digits. Live execution checks the required reservation after resolving free cache hits or buffered continuation, before charging or calling a supplier. A higher reservation returns HTTP 422 INVALID_PARAMETERS with reason max_credits_exceeded and charges nothing. Invalid header values also return 422. Zero permits only a zero-credit reservation; omitting the header uses normal pricing. dry_run remains a free preview. This does not cap later requests, batches or scheduled runs.
+      security:
+      - ApiKeyHeader: []
+      - BearerKey: []
+      responses:
+        '200':
+          description: 'The common success envelope; `data` is endpoint-specific. Many lists use items/count/cursor; bundles use named collections and their documented continuation metadata. HTTP 200 can contain a partial bundle: inspect complete, partial and legs where supplied.'
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/Success'
+                - type: object
+                  properties:
+                    data:
+                      $schema: https://json-schema.org/draft/2020-12/schema
+                      $id: https://www.monocrawl.com/schemas/utility/capabilities.json
+                      title: utility/capabilities data fields
+                      description: Required core structure for successful data, with optional source fields. Additional fields are allowed. This is not a completeness guarantee.
+                      type: object
+                      properties:
+                        items:
+                          type:
+                          - array
+                          items:
+                            type: object
+                            properties:
+                              name:
+                                type:
+                                - string
+                                - 'null'
+                              endpoint_count:
+                                type:
+                                - number
+                                - 'null'
+                              endpoints:
+                                type:
+                                - array
+                                - 'null'
+                                items:
+                                  type:
+                                  - object
+                                  - 'null'
+                                  properties:
+                                    id:
+                                      type:
+                                      - string
+                                      - 'null'
+                                      description: id
+                                    method:
+                                      type:
+                                      - string
+                                      - 'null'
+                                      description: method
+                                    description:
+                                      type:
+                                      - string
+                                      - 'null'
+                                      description: description
+                                    credit_cost:
+                                      type:
+                                      - number
+                                      - 'null'
+                                    required:
+                                      type:
+                                      - boolean
+                                      - 'null'
+                                    example:
+                                      description: Operation-specific JSON value; inspect the status and requested operation before reading it.
+                                    allowed_values:
+                                      type:
+                                      - array
+                                      - 'null'
+                                      items:
+                                        description: Operation-specific JSON value; inspect the status and requested operation before reading it.
+                                    production_available:
+                                      type:
+                                      - boolean
+                                      - 'null'
+                                      description: production available
+                                    live_proven:
+                                      type:
+                                      - boolean
+                                      - 'null'
+                                      description: live proven
+                                  additionalProperties: true
+                            additionalProperties: true
+                            allOf:
+                            - anyOf:
+                              - required:
+                                - name
+                                properties:
+                                  name:
+                                    type:
+                                    - string
+                                    minLength: 1
+                              - required:
+                                - endpoint_count
+                                properties:
+                                  endpoint_count:
+                                    type:
+                                    - number
+                              - required:
+                                - endpoints
+                                properties:
+                                  endpoints:
+                                    type:
+                                    - array
+                                    items:
+                                      type:
+                                      - object
+                                      - 'null'
+                                      properties:
+                                        id:
+                                          type:
+                                          - string
+                                          - 'null'
+                                          description: id
+                                        method:
+                                          type:
+                                          - string
+                                          - 'null'
+                                          description: method
+                                        description:
+                                          type:
+                                          - string
+                                          - 'null'
+                                          description: description
+                                        credit_cost:
+                                          type:
+                                          - number
+                                          - 'null'
+                                        required:
+                                          type:
+                                          - boolean
+                                          - 'null'
+                                        example:
+                                          description: Operation-specific JSON value; inspect the status and requested operation before reading it.
+                                        allowed_values:
+                                          type:
+                                          - array
+                                          - 'null'
+                                          items:
+                                            description: Operation-specific JSON value; inspect the status and requested operation before reading it.
+                                        production_available:
+                                          type:
+                                          - boolean
+                                          - 'null'
+                                          description: production available
+                                        live_proven:
+                                          type:
+                                          - boolean
+                                          - 'null'
+                                          description: live proven
+                                      additionalProperties: true
+                        count:
+                          type:
+                          - number
+                          - 'null'
+                        cursor:
+                          type:
+                          - string
+                          - 'null'
+                        has_more:
+                          type:
+                          - boolean
+                          - 'null'
+                        endpoint_count:
+                          type:
+                          - number
+                          - 'null'
+                        filters:
+                          type:
+                          - object
+                          - 'null'
+                          properties:
+                            param:
+                              type:
+                              - string
+                              - 'null'
+                              description: param
+                          additionalProperties: true
+                        semantics:
+                          type:
+                          - string
+                          - 'null'
+                      additionalProperties: true
+                      required:
+                      - items
+                      x-contract-version: '2026-09-22'
+                      x-validation-scope: Required success payload structure; optional fields and source completeness remain separate.
+                      examples:
+                      - items: []
+                        count: 0
+                        cursor: null
+                        has_more: false
+                        endpoint_count: 0
+                        filters:
+                          param: null
+                        semantics: null
+        default:
+          description: The error envelope — the same shape for every non-2xx status.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      x-credits: 0
+      x-production-available: true
+      x-capacity:
+        status: not_assessed
+        message: Capacity is workload-dependent; configured routes do not establish sustained throughput or an availability guarantee.
+      x-availability-scope: Structural check of the effective registered chain, production permission, adapter, configured cost and quality floor without request parameters. True is not a live-health, credential, quota, subscription-entitlement, complete-data or deployment-exposure guarantee. False means no structurally eligible candidate; null means metadata could not establish availability. Composite child capability still depends on its component routes.
+      x-live-proven: true
+  /v1/utility/endpoint:
+    get:
+      operationId: utility_endpoint
+      tags:
+      - Utility
+      summary: Endpoint documentation
+      description: Full documentation for one endpoint — parameters, credit cost, auth header, and a ready-to-paste curl example. Free — costs 0 credits.
+      parameters:
+      - name: id
+        in: query
+        required: false
+        schema:
+          type: string
+        example: github/user
+        description: Endpoint id as platform/endpoint (or a /v1 path)
+      - name: url
+        in: query
+        required: false
+        schema:
+          type: string
+        example: https://www.monocrawl.com/v1/github/user
+        description: Full endpoint URL as an alternative to id
+      - name: method
+        in: query
+        required: false
+        schema:
+          type: string
+        example: GET
+        description: Ignored — all Monocrawl endpoints are GET
+      - name: dry_run
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - '1'
+          - '0'
+          - 'true'
+          - 'false'
+        example: '1'
+        description: 'Read a zero-credit estimate without fetching sources, running AI, or reserving credits. Cache status is a snapshot, not a guarantee at execution. Accepted values: 1, 0, true, false. Case, spaces, hyphens and underscores are interchangeable.'
+      - name: X-Max-Credits
+        in: header
+        required: false
+        schema:
+          type: integer
+          minimum: 0
+          maximum: 9007199254740991
+        example: 5
+        description: Optional credit reservation ceiling for this individual request. Send a non-negative integer in decimal digits. Live execution checks the required reservation after resolving free cache hits or buffered continuation, before charging or calling a supplier. A higher reservation returns HTTP 422 INVALID_PARAMETERS with reason max_credits_exceeded and charges nothing. Invalid header values also return 422. Zero permits only a zero-credit reservation; omitting the header uses normal pricing. dry_run remains a free preview. This does not cap later requests, batches or scheduled runs.
+      security:
+      - ApiKeyHeader: []
+      - BearerKey: []
+      responses:
+        '200':
+          description: 'The common success envelope; `data` is endpoint-specific. Many lists use items/count/cursor; bundles use named collections and their documented continuation metadata. HTTP 200 can contain a partial bundle: inspect complete, partial and legs where supplied.'
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/Success'
+                - type: object
+                  properties:
+                    data:
+                      $schema: https://json-schema.org/draft/2020-12/schema
+                      $id: https://www.monocrawl.com/schemas/utility/endpoint.json
+                      title: utility/endpoint data fields
+                      description: Required core structure for successful data, with optional source fields. Additional fields are allowed. This is not a completeness guarantee.
+                      type: object
+                      properties:
+                        id:
+                          type:
+                          - string
+                          - 'null'
+                          description: id
+                        platform:
+                          type:
+                          - string
+                          - 'null'
+                          description: platform
+                        endpoint:
+                          type:
+                          - string
+                          - 'null'
+                          description: endpoint
+                        name:
+                          type:
+                          - string
+                          - 'null'
+                          description: name
+                        description:
+                          type:
+                          - string
+                          - 'null'
+                          description: description
+                        credit_cost:
+                          type:
+                          - number
+                          - 'null'
+                        params:
+                          type:
+                          - array
+                          - 'null'
+                          items:
+                            type:
+                            - object
+                            - 'null'
+                            properties:
+                              name:
+                                type:
+                                - string
+                                - 'null'
+                                description: name
+                              doc:
+                                type:
+                                - string
+                                - 'null'
+                                description: doc
+                              required:
+                                type:
+                                - boolean
+                                - 'null'
+                              example:
+                                description: Operation-specific JSON value; inspect the status and requested operation before reading it.
+                            additionalProperties: true
+                        recommended_params:
+                          type:
+                          - array
+                          - 'null'
+                          items:
+                            type:
+                            - object
+                            - 'null'
+                            properties:
+                              name:
+                                type:
+                                - string
+                                - 'null'
+                                description: name
+                              reason:
+                                type:
+                                - string
+                                - 'null'
+                                description: reason
+                              cost_note:
+                                type:
+                                - string
+                                - 'null'
+                                description: cost note
+                              description:
+                                type:
+                                - string
+                                - 'null'
+                                description: description
+                              example:
+                                description: Operation-specific JSON value; inspect the status and requested operation before reading it.
+                              allowed_values:
+                                type:
+                                - array
+                                - 'null'
+                                items:
+                                  description: Operation-specific JSON value; inspect the status and requested operation before reading it.
+                            additionalProperties: true
+                        related_endpoints:
+                          type:
+                          - array
+                          - 'null'
+                          items:
+                            type:
+                            - object
+                            - 'null'
+                            properties:
+                              id:
+                                type:
+                                - string
+                                - 'null'
+                                description: id
+                              name:
+                                type:
+                                - string
+                                - 'null'
+                                description: name
+                              reason:
+                                type:
+                                - string
+                                - 'null'
+                                description: reason
+                              method:
+                                type:
+                                - string
+                                - 'null'
+                                description: method
+                              documentation:
+                                type:
+                                - string
+                                - 'null'
+                                description: documentation
+                              credit_cost:
+                                type:
+                                - number
+                                - 'null'
+                              production_available:
+                                type:
+                                - boolean
+                                - 'null'
+                            additionalProperties: true
+                        live_proven:
+                          type:
+                          - boolean
+                          - 'null'
+                          description: live proven
+                        production_available:
+                          type:
+                          - boolean
+                          - 'null'
+                          description: production available
+                        response_schema:
+                          type:
+                          - string
+                          - 'null'
+                        examples:
+                          description: Operation-specific JSON value; inspect the status and requested operation before reading it.
+                      additionalProperties: true
+                      allOf:
+                      - anyOf:
+                        - required:
+                          - id
+                          properties:
+                            id:
+                              type:
+                              - string
+                              description: id
+                              minLength: 1
+                        - required:
+                          - endpoint
+                          properties:
+                            endpoint:
+                              type:
+                              - string
+                              description: endpoint
+                              minLength: 1
+                        - required:
+                          - name
+                          properties:
+                            name:
+                              type:
+                              - string
+                              description: name
+                              minLength: 1
+                        - required:
+                          - description
+                          properties:
+                            description:
+                              type:
+                              - string
+                              description: description
+                              minLength: 1
+                        - required:
+                          - credit_cost
+                          properties:
+                            credit_cost:
+                              type:
+                              - number
+                        - required:
+                          - params
+                          properties:
+                            params:
+                              type:
+                              - array
+                              items:
+                                type:
+                                - object
+                                - 'null'
+                                properties:
+                                  name:
+                                    type:
+                                    - string
+                                    - 'null'
+                                    description: name
+                                  doc:
+                                    type:
+                                    - string
+                                    - 'null'
+                                    description: doc
+                                  required:
+                                    type:
+                                    - boolean
+                                    - 'null'
+                                  example:
+                                    description: Operation-specific JSON value; inspect the status and requested operation before reading it.
+                                additionalProperties: true
+                        - required:
+                          - recommended_params
+                          properties:
+                            recommended_params:
+                              type:
+                              - array
+                              items:
+                                type:
+                                - object
+                                - 'null'
+                                properties:
+                                  name:
+                                    type:
+                                    - string
+                                    - 'null'
+                                    description: name
+                                  reason:
+                                    type:
+                                    - string
+                                    - 'null'
+                                    description: reason
+                                  cost_note:
+                                    type:
+                                    - string
+                                    - 'null'
+                                    description: cost note
+                                  description:
+                                    type:
+                                    - string
+                                    - 'null'
+                                    description: description
+                                  example:
+                                    description: Operation-specific JSON value; inspect the status and requested operation before reading it.
+                                  allowed_values:
+                                    type:
+                                    - array
+                                    - 'null'
+                                    items:
+                                      description: Operation-specific JSON value; inspect the status and requested operation before reading it.
+                                additionalProperties: true
+                        - required:
+                          - related_endpoints
+                          properties:
+                            related_endpoints:
+                              type:
+                              - array
+                              items:
+                                type:
+                                - object
+                                - 'null'
+                                properties:
+                                  id:
+                                    type:
+                                    - string
+                                    - 'null'
+                                    description: id
+                                  name:
+                                    type:
+                                    - string
+                                    - 'null'
+                                    description: name
+                                  reason:
+                                    type:
+                                    - string
+                                    - 'null'
+                                    description: reason
+                                  method:
+                                    type:
+                                    - string
+                                    - 'null'
+                                    description: method
+                                  documentation:
+                                    type:
+                                    - string
+                                    - 'null'
+                                    description: documentation
+                                  credit_cost:
+                                    type:
+                                    - number
+                                    - 'null'
+                                  production_available:
+                                    type:
+                                    - boolean
+                                    - 'null'
+                                additionalProperties: true
+                        - required:
+                          - live_proven
+                          properties:
+                            live_proven:
+                              type:
+                              - boolean
+                              description: live proven
+                        - required:
+                          - production_available
+                          properties:
+                            production_available:
+                              type:
+                              - boolean
+                              description: production available
+                        - required:
+                          - response_schema
+                          properties:
+                            response_schema:
+                              type:
+                              - string
+                              minLength: 1
+                        - required:
+                          - examples
+                          properties:
+                            examples:
+                              description: Operation-specific JSON value; inspect the status and requested operation before reading it.
+                      x-contract-version: '2026-09-22'
+                      x-validation-scope: Required success payload structure; optional fields and source completeness remain separate.
+                      examples:
+                      - id: null
+                        platform: null
+                        endpoint: null
+                        name: null
+                        description: null
+                        credit_cost: 0
+                        params: []
+                        recommended_params: []
+                        related_endpoints: []
+                        live_proven: false
+                        production_available: false
+                        response_schema: null
+                        examples: null
+        default:
+          description: The error envelope — the same shape for every non-2xx status.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      x-credits: 0
+      x-production-available: true
+      x-capacity:
+        status: not_assessed
+        message: Capacity is workload-dependent; configured routes do not establish sustained throughput or an availability guarantee.
+      x-availability-scope: Structural check of the effective registered chain, production permission, adapter, configured cost and quality floor without request parameters. True is not a live-health, credential, quota, subscription-entitlement, complete-data or deployment-exposure guarantee. False means no structurally eligible candidate; null means metadata could not establish availability. Composite child capability still depends on its component routes.
+      x-live-proven: true
+  /v1/utility/endpoints:
+    get:
+      operationId: utility_endpoints
+      tags:
+      - Utility
+      summary: Endpoint catalogue
+      description: 'The live endpoint catalogue: every callable endpoint with its credit cost, parameters and description. Filter by platform, free-text search, or method. Free — costs 0 credits.'
+      parameters:
+      - name: platform
+        in: query
+        required: false
+        schema:
+          type: string
+        example: reddit
+        description: Only endpoints for this platform
+      - name: search
+        in: query
+        required: false
+        schema:
+          type: string
+        example: comments
+        description: Literal case-insensitive match on endpoint identity, name, description, accepted parameter names and descriptions.
+      - name: method
+        in: query
+        required: false
+        schema:
+          type: string
+        example: GET
+        description: 'HTTP method filter: GET, POST or DELETE.'
+      - name: dry_run
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - '1'
+          - '0'
+          - 'true'
+          - 'false'
+        example: '1'
+        description: 'Read a zero-credit estimate without fetching sources, running AI, or reserving credits. Cache status is a snapshot, not a guarantee at execution. Accepted values: 1, 0, true, false. Case, spaces, hyphens and underscores are interchangeable.'
+      - name: X-Max-Credits
+        in: header
+        required: false
+        schema:
+          type: integer
+          minimum: 0
+          maximum: 9007199254740991
+        example: 5
+        description: Optional credit reservation ceiling for this individual request. Send a non-negative integer in decimal digits. Live execution checks the required reservation after resolving free cache hits or buffered continuation, before charging or calling a supplier. A higher reservation returns HTTP 422 INVALID_PARAMETERS with reason max_credits_exceeded and charges nothing. Invalid header values also return 422. Zero permits only a zero-credit reservation; omitting the header uses normal pricing. dry_run remains a free preview. This does not cap later requests, batches or scheduled runs.
+      security:
+      - ApiKeyHeader: []
+      - BearerKey: []
+      responses:
+        '200':
+          description: 'The common success envelope; `data` is endpoint-specific. Many lists use items/count/cursor; bundles use named collections and their documented continuation metadata. HTTP 200 can contain a partial bundle: inspect complete, partial and legs where supplied.'
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/Success'
+                - type: object
+                  properties:
+                    data:
+                      $schema: https://json-schema.org/draft/2020-12/schema
+                      $id: https://www.monocrawl.com/schemas/utility/endpoints.json
+                      title: utility/endpoints data fields
+                      description: Required core structure for successful data, with optional source fields. Additional fields are allowed. This is not a completeness guarantee.
+                      type: object
+                      properties:
+                        items:
+                          type:
+                          - array
+                          items:
+                            type: object
+                            properties:
+                              id:
+                                type:
+                                - string
+                                - 'null'
+                                description: id
+                              platform:
+                                type:
+                                - string
+                                - 'null'
+                                description: platform
+                              endpoint:
+                                type:
+                                - string
+                                - 'null'
+                                description: endpoint
+                              name:
+                                type:
+                                - string
+                                - 'null'
+                                description: name
+                              description:
+                                type:
+                                - string
+                                - 'null'
+                                description: description
+                              credit_cost:
+                                type:
+                                - number
+                                - 'null'
+                              params:
+                                type:
+                                - array
+                                - 'null'
+                                items:
+                                  type:
+                                  - object
+                                  - 'null'
+                                  properties:
+                                    name:
+                                      type:
+                                      - string
+                                      - 'null'
+                                      description: name
+                                    doc:
+                                      type:
+                                      - string
+                                      - 'null'
+                                      description: doc
+                                    required:
+                                      type:
+                                      - boolean
+                                      - 'null'
+                                    example:
+                                      description: Operation-specific JSON value; inspect the status and requested operation before reading it.
+                                  additionalProperties: true
+                              recommended_params:
+                                type:
+                                - array
+                                - 'null'
+                                items:
+                                  type:
+                                  - object
+                                  - 'null'
+                                  properties:
+                                    name:
+                                      type:
+                                      - string
+                                      - 'null'
+                                      description: name
+                                    reason:
+                                      type:
+                                      - string
+                                      - 'null'
+                                      description: reason
+                                    cost_note:
+                                      type:
+                                      - string
+                                      - 'null'
+                                      description: cost note
+                                    description:
+                                      type:
+                                      - string
+                                      - 'null'
+                                      description: description
+                                    example:
+                                      description: Operation-specific JSON value; inspect the status and requested operation before reading it.
+                                    allowed_values:
+                                      type:
+                                      - array
+                                      - 'null'
+                                      items:
+                                        description: Operation-specific JSON value; inspect the status and requested operation before reading it.
+                                  additionalProperties: true
+                              related_endpoints:
+                                type:
+                                - array
+                                - 'null'
+                                items:
+                                  type:
+                                  - object
+                                  - 'null'
+                                  properties:
+                                    id:
+                                      type:
+                                      - string
+                                      - 'null'
+                                      description: id
+                                    name:
+                                      type:
+                                      - string
+                                      - 'null'
+                                      description: name
+                                    reason:
+                                      type:
+                                      - string
+                                      - 'null'
+                                      description: reason
+                                    method:
+                                      type:
+                                      - string
+                                      - 'null'
+                                      description: method
+                                    documentation:
+                                      type:
+                                      - string
+                                      - 'null'
+                                      description: documentation
+                                    credit_cost:
+                                      type:
+                                      - number
+                                      - 'null'
+                                    production_available:
+                                      type:
+                                      - boolean
+                                      - 'null'
+                                  additionalProperties: true
+                              live_proven:
+                                type:
+                                - boolean
+                                - 'null'
+                                description: live proven
+                              production_available:
+                                type:
+                                - boolean
+                                - 'null'
+                                description: production available
+                            additionalProperties: true
+                            allOf:
+                            - anyOf:
+                              - required:
+                                - id
+                                properties:
+                                  id:
+                                    type:
+                                    - string
+                                    description: id
+                                    minLength: 1
+                              - required:
+                                - endpoint
+                                properties:
+                                  endpoint:
+                                    type:
+                                    - string
+                                    description: endpoint
+                                    minLength: 1
+                              - required:
+                                - name
+                                properties:
+                                  name:
+                                    type:
+                                    - string
+                                    description: name
+                                    minLength: 1
+                              - required:
+                                - description
+                                properties:
+                                  description:
+                                    type:
+                                    - string
+                                    description: description
+                                    minLength: 1
+                              - required:
+                                - credit_cost
+                                properties:
+                                  credit_cost:
+                                    type:
+                                    - number
+                              - required:
+                                - params
+                                properties:
+                                  params:
+                                    type:
+                                    - array
+                                    items:
+                                      type:
+                                      - object
+                                      - 'null'
+                                      properties:
+                                        name:
+                                          type:
+                                          - string
+                                          - 'null'
+                                          description: name
+                                        doc:
+                                          type:
+                                          - string
+                                          - 'null'
+                                          description: doc
+                                        required:
+                                          type:
+                                          - boolean
+                                          - 'null'
+                                        example:
+                                          description: Operation-specific JSON value; inspect the status and requested operation before reading it.
+                                      additionalProperties: true
+                              - required:
+                                - recommended_params
+                                properties:
+                                  recommended_params:
+                                    type:
+                                    - array
+                                    items:
+                                      type:
+                                      - object
+                                      - 'null'
+                                      properties:
+                                        name:
+                                          type:
+                                          - string
+                                          - 'null'
+                                          description: name
+                                        reason:
+                                          type:
+                                          - string
+                                          - 'null'
+                                          description: reason
+                                        cost_note:
+                                          type:
+                                          - string
+                                          - 'null'
+                                          description: cost note
+                                        description:
+                                          type:
+                                          - string
+                                          - 'null'
+                                          description: description
+                                        example:
+                                          description: Operation-specific JSON value; inspect the status and requested operation before reading it.
+                                        allowed_values:
+                                          type:
+                                          - array
+                                          - 'null'
+                                          items:
+                                            description: Operation-specific JSON value; inspect the status and requested operation before reading it.
+                                      additionalProperties: true
+                              - required:
+                                - related_endpoints
+                                properties:
+                                  related_endpoints:
+                                    type:
+                                    - array
+                                    items:
+                                      type:
+                                      - object
+                                      - 'null'
+                                      properties:
+                                        id:
+                                          type:
+                                          - string
+                                          - 'null'
+                                          description: id
+                                        name:
+                                          type:
+                                          - string
+                                          - 'null'
+                                          description: name
+                                        reason:
+                                          type:
+                                          - string
+                                          - 'null'
+                                          description: reason
+                                        method:
+                                          type:
+                                          - string
+                                          - 'null'
+                                          description: method
+                                        documentation:
+                                          type:
+                                          - string
+                                          - 'null'
+                                          description: documentation
+                                        credit_cost:
+                                          type:
+                                          - number
+                                          - 'null'
+                                        production_available:
+                                          type:
+                                          - boolean
+                                          - 'null'
+                                      additionalProperties: true
+                              - required:
+                                - live_proven
+                                properties:
+                                  live_proven:
+                                    type:
+                                    - boolean
+                                    description: live proven
+                              - required:
+                                - production_available
+                                properties:
+                                  production_available:
+                                    type:
+                                    - boolean
+                                    description: production available
+                        count:
+                          type:
+                          - number
+                          - 'null'
+                        cursor:
+                          type:
+                          - string
+                          - 'null'
+                        has_more:
+                          type:
+                          - boolean
+                          - 'null'
+                      additionalProperties: true
+                      required:
+                      - items
+                      x-contract-version: '2026-09-22'
+                      x-validation-scope: Required success payload structure; optional fields and source completeness remain separate.
+                      examples:
+                      - items: []
+                        count: 0
+                        cursor: null
+                        has_more: false
+        default:
+          description: The error envelope — the same shape for every non-2xx status.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      x-credits: 0
+      x-production-available: true
+      x-capacity:
+        status: not_assessed
+        message: Capacity is workload-dependent; configured routes do not establish sustained throughput or an availability guarantee.
+      x-availability-scope: Structural check of the effective registered chain, production permission, adapter, configured cost and quality floor without request parameters. True is not a live-health, credential, quota, subscription-entitlement, complete-data or deployment-exposure guarantee. False means no structurally eligible candidate; null means metadata could not establish availability. Composite child capability still depends on its component routes.
+      x-live-proven: true
+  /v1/utility/llms:
+    get:
+      operationId: utility_llms
+      tags:
+      - Utility
+      summary: LLM context payload
+      description: 'Agent-ready context payload: base URL, auth header, envelope and error model, plus the compact endpoint catalogue grouped by platform. Free — costs 0 credits.'
+      parameters:
+      - name: platform
+        in: query
+        required: false
+        schema:
+          type: string
+        example: reddit
+        description: Limit the catalogue to one platform
+      - name: format
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - markdown
+          - json
+        example: markdown
+        description: 'markdown (default) or json Accepted values: markdown, json. Case, spaces, hyphens and underscores are interchangeable.'
+      - name: dry_run
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - '1'
+          - '0'
+          - 'true'
+          - 'false'
+        example: '1'
+        description: 'Read a zero-credit estimate without fetching sources, running AI, or reserving credits. Cache status is a snapshot, not a guarantee at execution. Accepted values: 1, 0, true, false. Case, spaces, hyphens and underscores are interchangeable.'
+      - name: X-Max-Credits
+        in: header
+        required: false
+        schema:
+          type: integer
+          minimum: 0
+          maximum: 9007199254740991
+        example: 5
+        description: Optional credit reservation ceiling for this individual request. Send a non-negative integer in decimal digits. Live execution checks the required reservation after resolving free cache hits or buffered continuation, before charging or calling a supplier. A higher reservation returns HTTP 422 INVALID_PARAMETERS with reason max_credits_exceeded and charges nothing. Invalid header values also return 422. Zero permits only a zero-credit reservation; omitting the header uses normal pricing. dry_run remains a free preview. This does not cap later requests, batches or scheduled runs.
+      security:
+      - ApiKeyHeader: []
+      - BearerKey: []
+      responses:
+        '200':
+          description: 'The common success envelope; `data` is endpoint-specific. Many lists use items/count/cursor; bundles use named collections and their documented continuation metadata. HTTP 200 can contain a partial bundle: inspect complete, partial and legs where supplied.'
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/Success'
+                - type: object
+                  properties:
+                    data:
+                      $schema: https://json-schema.org/draft/2020-12/schema
+                      $id: https://www.monocrawl.com/schemas/utility/llms.json
+                      title: utility/llms data fields
+                      description: Required core structure for successful data, with optional source fields. Additional fields are allowed. This is not a completeness guarantee.
+                      type: object
+                      properties:
+                        format:
+                          type:
+                          - string
+                          - 'null'
+                          description: format
+                        content:
+                          type:
+                          - string
+                          - 'null'
+                          description: content
+                        base_url:
+                          type:
+                          - string
+                          - 'null'
+                          description: base url
+                        platforms:
+                          description: Operation-specific JSON value; inspect the status and requested operation before reading it.
+                        endpoints:
+                          type:
+                          - array
+                          - 'null'
+                          items:
+                            type:
+                            - object
+                            - 'null'
+                            properties:
+                              id:
+                                type:
+                                - string
+                                - 'null'
+                                description: id
+                              platform:
+                                type:
+                                - string
+                                - 'null'
+                                description: platform
+                              endpoint:
+                                type:
+                                - string
+                                - 'null'
+                                description: endpoint
+                              name:
+                                type:
+                                - string
+                                - 'null'
+                                description: name
+                              description:
+                                type:
+                                - string
+                                - 'null'
+                                description: description
+                              credit_cost:
+                                type:
+                                - number
+                                - 'null'
+                              params:
+                                type:
+                                - array
+                                - 'null'
+                                items:
+                                  type:
+                                  - object
+                                  - 'null'
+                                  properties:
+                                    name:
+                                      type:
+                                      - string
+                                      - 'null'
+                                      description: name
+                                    doc:
+                                      type:
+                                      - string
+                                      - 'null'
+                                      description: doc
+                                    required:
+                                      type:
+                                      - boolean
+                                      - 'null'
+                                    example:
+                                      description: Operation-specific JSON value; inspect the status and requested operation before reading it.
+                                  additionalProperties: true
+                              recommended_params:
+                                type:
+                                - array
+                                - 'null'
+                                items:
+                                  type:
+                                  - object
+                                  - 'null'
+                                  properties:
+                                    name:
+                                      type:
+                                      - string
+                                      - 'null'
+                                      description: name
+                                    reason:
+                                      type:
+                                      - string
+                                      - 'null'
+                                      description: reason
+                                    cost_note:
+                                      type:
+                                      - string
+                                      - 'null'
+                                      description: cost note
+                                    description:
+                                      type:
+                                      - string
+                                      - 'null'
+                                      description: description
+                                    example:
+                                      description: Operation-specific JSON value; inspect the status and requested operation before reading it.
+                                    allowed_values:
+                                      type:
+                                      - array
+                                      - 'null'
+                                      items:
+                                        description: Operation-specific JSON value; inspect the status and requested operation before reading it.
+                                  additionalProperties: true
+                              related_endpoints:
+                                type:
+                                - array
+                                - 'null'
+                                items:
+                                  type:
+                                  - object
+                                  - 'null'
+                                  properties:
+                                    id:
+                                      type:
+                                      - string
+                                      - 'null'
+                                      description: id
+                                    name:
+                                      type:
+                                      - string
+                                      - 'null'
+                                      description: name
+                                    reason:
+                                      type:
+                                      - string
+                                      - 'null'
+                                      description: reason
+                                    method:
+                                      type:
+                                      - string
+                                      - 'null'
+                                      description: method
+                                    documentation:
+                                      type:
+                                      - string
+                                      - 'null'
+                                      description: documentation
+                                    credit_cost:
+                                      type:
+                                      - number
+                                      - 'null'
+                                    production_available:
+                                      type:
+                                      - boolean
+                                      - 'null'
+                                  additionalProperties: true
+                              live_proven:
+                                type:
+                                - boolean
+                                - 'null'
+                                description: live proven
+                              production_available:
+                                type:
+                                - boolean
+                                - 'null'
+                                description: production available
+                            additionalProperties: true
+                      additionalProperties: true
+                      allOf:
+                      - anyOf:
+                        - required:
+                          - format
+                          properties:
+                            format:
+                              type:
+                              - string
+                              description: format
+                              minLength: 1
+                        - required:
+                          - content
+                          properties:
+                            content:
+                              type:
+                              - string
+                              description: content
+                              minLength: 1
+                        - required:
+                          - base_url
+                          properties:
+                            base_url:
+                              type:
+                              - string
+                              description: base url
+                              minLength: 1
+                        - required:
+                          - platforms
+                          properties:
+                            platforms:
+                              description: Operation-specific JSON value; inspect the status and requested operation before reading it.
+                        - required:
+                          - endpoints
+                          properties:
+                            endpoints:
+                              type:
+                              - array
+                              items:
+                                type:
+                                - object
+                                - 'null'
+                                properties:
+                                  id:
+                                    type:
+                                    - string
+                                    - 'null'
+                                    description: id
+                                  platform:
+                                    type:
+                                    - string
+                                    - 'null'
+                                    description: platform
+                                  endpoint:
+                                    type:
+                                    - string
+                                    - 'null'
+                                    description: endpoint
+                                  name:
+                                    type:
+                                    - string
+                                    - 'null'
+                                    description: name
+                                  description:
+                                    type:
+                                    - string
+                                    - 'null'
+                                    description: description
+                                  credit_cost:
+                                    type:
+                                    - number
+                                    - 'null'
+                                  params:
+                                    type:
+                                    - array
+                                    - 'null'
+                                    items:
+                                      type:
+                                      - object
+                                      - 'null'
+                                      properties:
+                                        name:
+                                          type:
+                                          - string
+                                          - 'null'
+                                          description: name
+                                        doc:
+                                          type:
+                                          - string
+                                          - 'null'
+                                          description: doc
+                                        required:
+                                          type:
+                                          - boolean
+                                          - 'null'
+                                        example:
+                                          description: Operation-specific JSON value; inspect the status and requested operation before reading it.
+                                      additionalProperties: true
+                                  recommended_params:
+                                    type:
+                                    - array
+                                    - 'null'
+                                    items:
+                                      type:
+                                      - object
+                                      - 'null'
+                                      properties:
+                                        name:
+                                          type:
+                                          - string
+                                          - 'null'
+                                          description: name
+                                        reason:
+                                          type:
+                                          - string
+                                          - 'null'
+                                          description: reason
+                                        cost_note:
+                                          type:
+                                          - string
+                                          - 'null'
+                                          description: cost note
+                                        description:
+                                          type:
+                                          - string
+                                          - 'null'
+                                          description: description
+                                        example:
+                                          description: Operation-specific JSON value; inspect the status and requested operation before reading it.
+                                        allowed_values:
+                                          type:
+                                          - array
+                                          - 'null'
+                                          items:
+                                            description: Operation-specific JSON value; inspect the status and requested operation before reading it.
+                                      additionalProperties: true
+                                  related_endpoints:
+                                    type:
+                                    - array
+                                    - 'null'
+                                    items:
+                                      type:
+                                      - object
+                                      - 'null'
+                                      properties:
+                                        id:
+                                          type:
+                                          - string
+                                          - 'null'
+                                          description: id
+                                        name:
+                                          type:
+                                          - string
+                                          - 'null'
+                                          description: name
+                                        reason:
+                                          type:
+                                          - string
+                                          - 'null'
+                                          description: reason
+                                        method:
+                                          type:
+                                          - string
+                                          - 'null'
+                                          description: method
+                                        documentation:
+                                          type:
+                                          - string
+                                          - 'null'
+                                          description: documentation
+                                        credit_cost:
+                                          type:
+                                          - number
+                                          - 'null'
+                                        production_available:
+                                          type:
+                                          - boolean
+                                          - 'null'
+                                      additionalProperties: true
+                                  live_proven:
+                                    type:
+                                    - boolean
+                                    - 'null'
+                                    description: live proven
+                                  production_available:
+                                    type:
+                                    - boolean
+                                    - 'null'
+                                    description: production available
+                                additionalProperties: true
+                      x-contract-version: '2026-09-22'
+                      x-validation-scope: Required success payload structure; optional fields and source completeness remain separate.
+                      examples:
+                      - format: null
+                        content: null
+                        base_url: null
+                        platforms: null
+                        endpoints: []
+        default:
+          description: The error envelope — the same shape for every non-2xx status.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      x-credits: 0
+      x-production-available: true
+      x-capacity:
+        status: not_assessed
+        message: Capacity is workload-dependent; configured routes do not establish sustained throughput or an availability guarantee.
+      x-availability-scope: Structural check of the effective registered chain, production permission, adapter, configured cost and quality floor without request parameters. True is not a live-health, credential, quota, subscription-entitlement, complete-data or deployment-exposure guarantee. False means no structurally eligible candidate; null means metadata could not establish availability. Composite child capability still depends on its component routes.
+      x-live-proven: true
+  /v1/utility/quickstart:
+    get:
+      operationId: utility_quickstart
+      tags:
+      - Utility
+      summary: Quickstart
+      description: 'Get started in one call: the cheapest live endpoint for a platform, a copy-paste curl, and a sketch of the response envelope you will get back. Free — costs 0 credits.'
+      parameters:
+      - name: platform
+        in: query
+        required: false
+        schema:
+          type: string
+        example: reddit
+        description: Platform to start with; omit for the cheapest live endpoint overall
+      - name: dry_run
+        in: query
+        required: false
+        schema:
+          type: string
+          enum:
+          - '1'
+          - '0'
+          - 'true'
+          - 'false'
+        example: '1'
+        description: 'Read a zero-credit estimate without fetching sources, running AI, or reserving credits. Cache status is a snapshot, not a guarantee at execution. Accepted values: 1, 0, true, false. Case, spaces, hyphens and underscores are interchangeable.'
+      - name: X-Max-Credits
+        in: header
+        required: false
+        schema:
+          type: integer
+          minimum: 0
+          maximum: 9007199254740991
+        example: 5
+        description: Optional credit reservation ceiling for this individual request. Send a non-negative integer in decimal digits. Live execution checks the required reservation after resolving free cache hits or buffered continuation, before charging or calling a supplier. A higher reservation returns HTTP 422 INVALID_PARAMETERS with reason max_credits_exceeded and charges nothing. Invalid header values also return 422. Zero permits only a zero-credit reservation; omitting the header uses normal pricing. dry_run remains a free preview. This does not cap later requests, batches or scheduled runs.
+      security:
+      - ApiKeyHeader: []
+      - BearerKey: []
+      responses:
+        '200':
+          description: 'The common success envelope; `data` is endpoint-specific. Many lists use items/count/cursor; bundles use named collections and their documented continuation metadata. HTTP 200 can contain a partial bundle: inspect complete, partial and legs where supplied.'
+          content:
+            application/json:
+              schema:
+                allOf:
+                - $ref: '#/components/schemas/Success'
+                - type: object
+                  properties:
+                    data:
+                      $schema: https://json-schema.org/draft/2020-12/schema
+                      $id: https://www.monocrawl.com/schemas/utility/quickstart.json
+                      title: utility/quickstart data fields
+                      description: Required core structure for successful data, with optional source fields. Additional fields are allowed. This is not a completeness guarantee.
+                      type: object
+                      properties:
+                        platform:
+                          type:
+                          - string
+                          - 'null'
+                        endpoint:
+                          type:
+                          - object
+                          - 'null'
+                          properties:
+                            id:
+                              type:
+                              - string
+                              - 'null'
+                              description: id
+                            platform:
+                              type:
+                              - string
+                              - 'null'
+                              description: platform
+                            endpoint:
+                              type:
+                              - string
+                              - 'null'
+                              description: endpoint
+                            name:
+                              type:
+                              - string
+                              - 'null'
+                              description: name
+                            description:
+                              type:
+                              - string
+                              - 'null'
+                              description: description
+                            credit_cost:
+                              type:
+                              - number
+                              - 'null'
+                            params:
+                              type:
+                              - array
+                              - 'null'
+                              items:
+                                type:
+                                - object
+                                - 'null'
+                                properties:
+                                  name:
+                                    type:
+                                    - string
+                                    - 'null'
+                                    description: name
+                                  doc:
+                                    type:
+                                    - string
+                                    - 'null'
+                                    description: doc
+                                  required:
+                                    type:
+                                    - boolean
+                                    - 'null'
+                                  example:
+                                    description: Operation-specific JSON value; inspect the status and requested operation before reading it.
+                                additionalProperties: true
+                            recommended_params:
+                              type:
+                              - array
+                              - 'null'
+                              items:
+                                type:
+                                - object
+                                - 'null'
+                                properties:
+                                  name:
+                                    type:
+                                    - string
+                                    - 'null'
+                                    description: name
+                                  reason:
+                                    type:
+                                    - string
+                                    - 'null'
+                                    description: reason
+                                  cost_note:
+                                    type:
+                                    - string
+                                    - 'null'
+                                    description: cost note
+                                  description:
+                                    type:
+                                    - string
+                                    - 'null'
+                                    description: description
+                                  example:
+                                    description: Operation-specific JSON value; inspect the status and requested operation before reading it.
+                                  allowed_values:
+                                    type:
+                                    - array
+                                    - 'null'
+                                    items:
+                                      description: Operation-specific JSON value; inspect the status and requested operation before reading it.
+                                additionalProperties: true
+                            related_endpoints:
+                              type:
+                              - array
+                              - 'null'
+                              items:
+                                type:
+                                - object
+                                - 'null'
+                                properties:
+                                  id:
+                                    type:
+                                    - string
+                                    - 'null'
+                                    description: id
+                                  name:
+                                    type:
+                                    - string
+                                    - 'null'
+                                    description: name
+                                  reason:
+                                    type:
+                                    - string
+                                    - 'null'
+                                    description: reason
+                                  method:
+                                    type:
+                                    - string
+                                    - 'null'
+                                    description: method
+                                  documentation:
+                                    type:
+                                    - string
+                                    - 'null'
+                                    description: documentation
+                                  credit_cost:
+                                    type:
+                                    - number
+                                    - 'null'
+                                  production_available:
+                                    type:
+                                    - boolean
+                                    - 'null'
+                                additionalProperties: true
+                            live_proven:
+                              type:
+                              - boolean
+                              - 'null'
+                              description: live proven
+                            production_available:
+                              type:
+                              - boolean
+                              - 'null'
+                              description: production available
+                          additionalProperties: true
+                        curl:
+                          type:
+                          - string
+                          - 'null'
+                        expected_envelope:
+                          type:
+                          - object
+                          - 'null'
+                          properties: {}
+                          additionalProperties: true
+                        auth:
+                          type:
+                          - object
+                          - 'null'
+                          properties:
+                            header:
+                              type:
+                              - string
+                              - 'null'
+                              description: header
+                            doc:
+                              type:
+                              - string
+                              - 'null'
+                              description: doc
+                          additionalProperties: true
+                      additionalProperties: true
+                      allOf:
+                      - anyOf:
+                        - required:
+                          - endpoint
+                          properties:
+                            endpoint:
+                              type:
+                              - object
+                              properties:
+                                id:
+                                  type:
+                                  - string
+                                  - 'null'
+                                  description: id
+                                platform:
+                                  type:
+                                  - string
+                                  - 'null'
+                                  description: platform
+                                endpoint:
+                                  type:
+                                  - string
+                                  - 'null'
+                                  description: endpoint
+                                name:
+                                  type:
+                                  - string
+                                  - 'null'
+                                  description: name
+                                description:
+                                  type:
+                                  - string
+                                  - 'null'
+                                  description: description
+                                credit_cost:
+                                  type:
+                                  - number
+                                  - 'null'
+                                params:
+                                  type:
+                                  - array
+                                  - 'null'
+                                  items:
+                                    type:
+                                    - object
+                                    - 'null'
+                                    properties:
+                                      name:
+                                        type:
+                                        - string
+                                        - 'null'
+                                        description: name
+                                      doc:
+                                        type:
+                                        - string
+                                        - 'null'
+                                        description: doc
+                                      required:
+                                        type:
+                                        - boolean
+                                        - 'null'
+                                      example:
+                                        description: Operation-specific JSON value; inspect the status and requested operation before reading it.
+                                    additionalProperties: true
+                                recommended_params:
+                                  type:
+                                  - array
+                                  - 'null'
+                                  items:
+                                    type:
+                                    - object
+                                    - 'null'
+                                    properties:
+                                      name:
+                                        type:
+                                        - string
+                                        - 'null'
+                                        description: name
+                                      reason:
+                                        type:
+                                        - string
+                                        - 'null'
+                                        description: reason
+                                      cost_note:
+                                        type:
+                                        - string
+                                        - 'null'
+                                        description: cost note
+                                      description:
+                                        type:
+                                        - string
+                                        - 'null'
+                                        description: description
+                                      example:
+                                        description: Operation-specific JSON value; inspect the status and requested operation before reading it.
+                                      allowed_values:
+                                        type:
+                                        - array
+                                        - 'null'
+                                        items:
+                                          description: Operation-specific JSON value; inspect the status and requested operation before reading it.
+                                    additionalProperties: true
+                                related_endpoints:
+                                  type:
+                                  - array
+                                  - 'null'
+                                  items:
+                                    type:
+                                    - object
+                                    - 'null'
+                                    properties:
+                                      id:
+                                        type:
+                                        - string
+                                        - 'null'
+                                        description: id
+                                      name:
+                                        type:
+                                        - string
+                                        - 'null'
+                                        description: name
+                                      reason:
+                                        type:
+                                        - string
+                                        - 'null'
+                                        description: reason
+                                      method:
+                                        type:
+                                        - string
+                                        - 'null'
+                                        description: method
+                                      documentation:
+                                        type:
+                                        - string
+                                        - 'null'
+                                        description: documentation
+                                      credit_cost:
+                                        type:
+                                        - number
+                                        - 'null'
+                                      production_available:
+                                        type:
+                                        - boolean
+                                        - 'null'
+                                    additionalProperties: true
+                                live_proven:
+                                  type:
+                                  - boolean
+                                  - 'null'
+                                  description: live proven
+                                production_available:
+                                  type:
+                                  - boolean
+                                  - 'null'
+                                  description: production available
+                              additionalProperties: true
+                        - required:
+                          - curl
+                          properties:
+                            curl:
+                              type:
+                              - string
+                              minLength: 1
+                        - required:
+                          - expected_envelope
+                          properties:
+                            expected_envelope:
+                              type:
+                              - object
+                              properties: {}
+                              additionalProperties: true
+                        - required:
+                          - auth
+                          properties:
+                            auth:
+                              type:
+                              - object
+                              properties:
+                                header:
+                                  type:
+                                  - string
+                                  - 'null'
+                                  description: header
+                                doc:
+                                  type:
+                                  - string
+                                  - 'null'
+                                  description: doc
+                              additionalProperties: true
+                      x-contract-version: '2026-09-22'
+                      x-validation-scope: Required success payload structure; optional fields and source completeness remain separate.
+                      examples:
+                      - platform: null
+                        endpoint:
+                          id: null
+                          platform: null
+                          endpoint: null
+                          name: null
+                          description: null
+                          credit_cost: 0
+                          params: []
+                          recommended_params: []
+                          related_endpoints: []
+                          live_proven: false
+                          production_available: false
+                        curl: null
+                        expected_envelope: {}
+                        auth:
+                          header: null
+                          doc: null
+        default:
+          description: The error envelope — the same shape for every non-2xx status.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      x-credits: 0
+      x-production-available: true
+      x-capacity:
+        status: not_assessed
+        message: Capacity is workload-dependent; configured routes do not establish sustained throughput or an availability guarantee.
+      x-availability-scope: Structural check of the effective registered chain, production permission, adapter, configured cost and quality floor without request parameters. True is not a live-health, credential, quota, subscription-entitlement, complete-data or deployment-exposure guarantee. False means no structurally eligible candidate; null means metadata could not establish availability. Composite child capability still depends on its component routes.
+      x-live-proven: true
+components:
+  schemas:
+    Success:
+      type: object
+      required:
+      - success
+      - platform
+      - endpoint
+      - data
+      - credits_used
+      - credits_remaining
+      - request_id
+      properties:
+        _completeness:
+          type: object
+          description: Reported response completeness, not a guarantee of complete platform history. Missing source assertions remain unknown.
+          properties:
+            state:
+              type: string
+              enum:
+              - complete
+              - partial
+              - unknown
+            scope:
+              type: string
+            inspection_limited:
+              type: boolean
+        success:
+          const: true
+        platform:
+          type: string
+        endpoint:
+          type: string
+          description: The resolved path, e.g. `/v1/github/profile`.
+        data:
+          description: Amazon responses include marketplace.country and marketplace.domain (resolved request marketplace, UK by default). X profiles preserve location, bio_link and cover_url when supplied. TikTok profiles preserve commerce_user, seller, region, location and business_category when supplied; region identifies the account region rather than personal residence. TikTok comments use platform_default selection, which can change between fetches; keep the same video and options when following cursors. Amazon review variant is readable text. Facebook profiles preserve cover_url, following and created_at when supplied; likes_count and followers are distinct and follower totals may be rounded. Endpoint-specific normalized payload, not one universal post/profile schema. Many lists use items/count/cursor; a null cursor means no usable next cursor was supplied, not proof that all history was retrieved. Check has_more and warnings where present. Social full-profile bundles use posts_cursor and posts_pagination.next_params; retain all returned next parameters. YouTube channel bundles instead use recent_videos, cursor and recent_videos_pagination. Inspect complete/partial/legs where supplied for bounded or failed components. Optional model-derived fields are labelled, not source facts.
+        credits_used:
+          type: integer
+        credits_remaining:
+          type: integer
+        request_id:
+          type: string
+        cached:
+          type: boolean
+        stale:
+          type: boolean
+          description: True only for an explicitly labelled, zero-credit reference snapshot served after a temporary upstream failure.
+        age_seconds:
+          type: integer
+          minimum: 0
+          description: Age of a stale snapshot since its original retrieval; not reset by outage recovery.
+        fetched_at:
+          type: string
+          format: date-time
+          description: Original retrieval time of a stale snapshot, in UTC.
+        synthetic:
+          type: boolean
+          description: Present and true only on the explicitly requested /sandbox surface. Synthetic responses are representative and charged 0 credits; production /v1 never returns them.
+        degraded:
+          type: boolean
+          description: Reserved for sandbox compatibility. Production /v1 reports upstream failure as an error and never serves a representative fallback.
+    Error:
+      type: object
+      required:
+      - success
+      - error
+      - credits_used
+      - request_id
+      properties:
+        success:
+          const: false
+        error:
+          type: object
+          required:
+          - type
+          - message
+          - status
+          properties:
+            type:
+              type: string
+              enum:
+              - UNAUTHORIZED
+              - KEY_REVOKED
+              - KEY_LIMIT_EXCEEDED
+              - RATE_LIMITED
+              - INSUFFICIENT_CREDITS
+              - RESOURCE_NOT_FOUND
+              - INVALID_PARAMETERS
+              - TARGET_ACCESS_DENIED
+              - UPSTREAM_ERROR
+              - UPSTREAM_TIMEOUT
+              - FREE_CAPACITY_UNAVAILABLE
+              - CAPACITY_UNAVAILABLE
+              - ENDPOINT_NOT_FOUND
+              - ENDPOINT_NOT_AVAILABLE
+              - FAIR_USE_EXCEEDED
+              - INTERNAL_ERROR
+            message:
+              type: string
+            status:
+              type: integer
+            doc_url:
+              type: string
+              description: Deep link to the exact section of the errors guide for this type.
+            details:
+              type: object
+        credits_used:
+          type:
+          - integer
+          - 'null'
+          description: Confirmed net charge; null when billing is pending reconciliation. Inspect error.details.billing_status and retain request_id.
+        credits_remaining:
+          type: integer
+        request_id:
+          type: string
+  securitySchemes:
+    ApiKeyHeader:
+      type: apiKey
+      in: header
+      name: x-api-key
+      description: Your API key (`mn_…`), from the console. The recommended style.
+    BearerKey:
+      type: http
+      scheme: bearer
+      description: The same key as a Bearer token, for clients that only expose an Authorization field. Keys are never accepted in the query string — URLs leak into logs and referrers.

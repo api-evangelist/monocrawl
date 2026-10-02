@@ -1,0 +1,24 @@
+generated: '2026-10-02'
+method: searched
+generator: extract-docs-artifacts.py (local)
+source: https://www.monocrawl.com/docs/versioning.md
+sources:
+- https://www.monocrawl.com/docs/versioning.md
+- https://www.monocrawl.com/docs/versioning
+- https://www.monocrawl.com/docs/quickstart
+- https://www.monocrawl.com/docs/quickstart.md
+versioning:
+  how_selected: path
+  docs: https://www.monocrawl.com/docs/versioning.md
+deprecation:
+  policy: An endpoint or field slated for removal is announced on the changelog with a removal date at least 90 days out. From the announcement
+    until that date, every direct /v1 response for the endpoint carries deprecation and sunset headers.
+  notice_period: 90 days
+  headers:
+  - deprecation
+  - sunset
+  - link
+  docs: https://www.monocrawl.com/docs/versioning.md
+note: Fields not stated in the provided pages are set to null.
+status_page: null
+docs: https://www.monocrawl.com/docs/versioning.md
