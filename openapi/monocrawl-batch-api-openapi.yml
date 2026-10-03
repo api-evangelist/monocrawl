@@ -720,30 +720,6 @@ paths:
                 $ref: '#/components/schemas/Error'
 components:
   schemas:
-    BatchRequest:
-      type: object
-      required:
-      - requests
-      properties:
-        requests:
-          type: array
-          maxItems: 20
-          items:
-            type: object
-            required:
-            - platform
-            - endpoint
-            properties:
-              platform:
-                type: string
-                example: github
-              endpoint:
-                type: string
-                example: profile
-              params:
-                type: object
-                additionalProperties:
-                  type: string
     Error:
       type: object
       required:
@@ -798,6 +774,30 @@ components:
           type: integer
         request_id:
           type: string
+    BatchRequest:
+      type: object
+      required:
+      - requests
+      properties:
+        requests:
+          type: array
+          maxItems: 20
+          items:
+            type: object
+            required:
+            - platform
+            - endpoint
+            properties:
+              platform:
+                type: string
+                example: github
+              endpoint:
+                type: string
+                example: profile
+              params:
+                type: object
+                additionalProperties:
+                  type: string
   securitySchemes:
     ApiKeyHeader:
       type: apiKey

@@ -10817,6 +10817,60 @@ paths:
       x-live-proven: true
 components:
   schemas:
+    Error:
+      type: object
+      required:
+      - success
+      - error
+      - credits_used
+      - request_id
+      properties:
+        success:
+          const: false
+        error:
+          type: object
+          required:
+          - type
+          - message
+          - status
+          properties:
+            type:
+              type: string
+              enum:
+              - UNAUTHORIZED
+              - KEY_REVOKED
+              - KEY_LIMIT_EXCEEDED
+              - RATE_LIMITED
+              - INSUFFICIENT_CREDITS
+              - RESOURCE_NOT_FOUND
+              - INVALID_PARAMETERS
+              - TARGET_ACCESS_DENIED
+              - UPSTREAM_ERROR
+              - UPSTREAM_TIMEOUT
+              - FREE_CAPACITY_UNAVAILABLE
+              - CAPACITY_UNAVAILABLE
+              - ENDPOINT_NOT_FOUND
+              - ENDPOINT_NOT_AVAILABLE
+              - FAIR_USE_EXCEEDED
+              - INTERNAL_ERROR
+            message:
+              type: string
+            status:
+              type: integer
+            doc_url:
+              type: string
+              description: Deep link to the exact section of the errors guide for this type.
+            details:
+              type: object
+        credits_used:
+          type:
+          - integer
+          - 'null'
+          description: Confirmed net charge; null when billing is pending reconciliation. Inspect error.details.billing_status and retain request_id.
+        credits_remaining:
+          type: integer
+        request_id:
+          type: string
     Success:
       type: object
       required:
@@ -10876,60 +10930,6 @@ components:
         degraded:
           type: boolean
           description: Reserved for sandbox compatibility. Production /v1 reports upstream failure as an error and never serves a representative fallback.
-    Error:
-      type: object
-      required:
-      - success
-      - error
-      - credits_used
-      - request_id
-      properties:
-        success:
-          const: false
-        error:
-          type: object
-          required:
-          - type
-          - message
-          - status
-          properties:
-            type:
-              type: string
-              enum:
-              - UNAUTHORIZED
-              - KEY_REVOKED
-              - KEY_LIMIT_EXCEEDED
-              - RATE_LIMITED
-              - INSUFFICIENT_CREDITS
-              - RESOURCE_NOT_FOUND
-              - INVALID_PARAMETERS
-              - TARGET_ACCESS_DENIED
-              - UPSTREAM_ERROR
-              - UPSTREAM_TIMEOUT
-              - FREE_CAPACITY_UNAVAILABLE
-              - CAPACITY_UNAVAILABLE
-              - ENDPOINT_NOT_FOUND
-              - ENDPOINT_NOT_AVAILABLE
-              - FAIR_USE_EXCEEDED
-              - INTERNAL_ERROR
-            message:
-              type: string
-            status:
-              type: integer
-            doc_url:
-              type: string
-              description: Deep link to the exact section of the errors guide for this type.
-            details:
-              type: object
-        credits_used:
-          type:
-          - integer
-          - 'null'
-          description: Confirmed net charge; null when billing is pending reconciliation. Inspect error.details.billing_status and retain request_id.
-        credits_remaining:
-          type: integer
-        request_id:
-          type: string
   securitySchemes:
     ApiKeyHeader:
       type: apiKey
