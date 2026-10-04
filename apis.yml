@@ -15,6 +15,11 @@ created: '2026-10-02'
 modified: '2026-10-02'
 tags:
 - Company
+- Data
+- Social Media
+- E-Commerce
+tags_raw:
+- Company
 - API
 - Data
 - Social Media
@@ -25,6 +30,9 @@ maintainers:
 - FN: APIs.json
   email: info@apis.io
 common:
+- type: CapabilityMap
+  url: capabilities/monocrawl-capability-edges.yml
+  name: Monocrawl Business Capability Map
 - type: AgenticAccess
   url: agentic-access/monocrawl-agentic-access.yml
 - type: Plans
@@ -234,6 +242,8 @@ apis:
   description: The Credits API from Monocrawl — 2 operation(s) for credits.
   humanURL: https://www.monocrawl.com/docs/api-reference
   tags:
+  - Credit
+  tags_raw:
   - Credits
   properties:
   - type: OpenAPI
@@ -495,6 +505,8 @@ apis:
   description: The Job boards API from Monocrawl — 11 operation(s) for job boards.
   humanURL: https://www.monocrawl.com/docs/api-reference
   tags:
+  - Job Board
+  tags_raw:
   - Job boards
   properties:
   - type: OpenAPI
@@ -664,6 +676,8 @@ apis:
   description: The Mosaic API from Monocrawl — 3 operation(s) for mosaic.
   humanURL: https://www.monocrawl.com/docs/api-reference
   tags:
+  - MOSAIC
+  tags_raw:
   - Mosaic
   properties:
   - type: OpenAPI
@@ -794,6 +808,8 @@ apis:
   description: The Snapchat API from Monocrawl — 3 operation(s) for snapchat.
   humanURL: https://www.monocrawl.com/docs/api-reference
   tags:
+  - snapchat
+  tags_raw:
   - Snapchat
   properties:
   - type: OpenAPI
@@ -924,6 +940,8 @@ apis:
   description: The TripAdvisor API from Monocrawl — 17 operation(s) for tripadvisor.
   humanURL: https://www.monocrawl.com/docs/api-reference
   tags:
+  - tripadvisor
+  tags_raw:
   - TripAdvisor
   properties:
   - type: OpenAPI
@@ -1093,6 +1111,8 @@ apis:
   description: The Linked In API from Monocrawl — 44 operation(s) for linked in.
   humanURL: https://www.monocrawl.com/docs/api-reference
   tags:
+  - LinkedIn
+  tags_raw:
   - Linked In
   properties:
   - type: OpenAPI
