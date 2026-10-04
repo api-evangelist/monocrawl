@@ -1111,8 +1111,6 @@ apis:
   description: The Linked In API from Monocrawl — 44 operation(s) for linked in.
   humanURL: https://www.monocrawl.com/docs/api-reference
   tags:
-  - LinkedIn
-  tags_raw:
   - Linked In
   properties:
   - type: OpenAPI
