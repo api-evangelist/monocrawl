@@ -1,0 +1,12 @@
+{
+ "url": "https://www.monocrawl.com/openapi.json",
+ "requested_url": "https://www.monocrawl.com/openapi.json",
+ "status": 200,
+ "content_type": "application/json",
+ "bytes": 6284372,
+ "sha256": "94a99afaeaafe161052f6457ddb5b3d64091cc31466d8e7e747c9b48798d00d8",
+ "fetched_at": "2026-10-04",
+ "fetched_by": "APIEvangelist-Harvest/1.0 (+https://apievangelist.com)",
+ "match": "equivalent",
+ "note": "Re-fetched from the provider by verify-openapi-sources.py; the provider's current document describes the same operations (Jaccard 0.998), but the bytes differ, so the archive is an earlier or reformatted copy."
+}
