@@ -29,7 +29,7 @@ edges:
     registered_name: com.monocrawl/mcp
     register_id: com.monocrawl/mcp
     detected_by: sweep-agent-tools.py
-    detected: '2026-10-14'
+    detected: '2026-10-15'
   mcp_registry:
     servers:
     - com.monocrawl/mcp
